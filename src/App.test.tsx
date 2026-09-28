@@ -3,6 +3,7 @@ import { renderToString } from 'react-dom/server';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import { Dashboard } from './components/Dashboard';
+import { FinancialOverview } from './components/Platform';
 import { useAppStore } from './store/useAppStore';
 import type { AuthContextValue } from './hooks/useAuth';
 import type { Category, Transaction } from './types';
@@ -12,12 +13,17 @@ const fixture = vi.hoisted(() => ({
   auth: { user: null, loading: false, requiresMfa: false, authError: null } as Partial<AuthContextValue>,
   error: null as Error | null,
   profile: { id: 'test-user', username: 'Test member', currency: 'USD', language: 'en', theme: 'light', mfa_enabled: false, created_at: '' },
+  platform: {} as Record<string, unknown[]>,
 }));
 vi.mock('./store/useAppStore', async () => {
   const actual = await vi.importActual<typeof import('./store/useAppStore')>('./store/useAppStore');
   return { useAppStore: Object.assign((selector?: (state: ReturnType<typeof actual.useAppStore.getState>) => unknown) => selector ? selector(actual.useAppStore.getState()) : actual.useAppStore.getState(), actual.useAppStore) };
 });
 vi.mock('./hooks/useAuth', () => ({ useAuth: () => fixture.auth }));
+vi.mock('./hooks/usePlatformData', () => ({
+  usePlatformTable: (table: string) => ({ data: fixture.platform[table] ?? [], isPending: false, error: null, refetch: vi.fn() }),
+  usePlatformMutation: () => ({ create: { isPending: false }, update: { isPending: false }, remove: { isPending: false } }),
+}));
 vi.mock('./lib/supabase', () => ({ supabase: { auth: {} } }));
 vi.mock('./hooks/useFinanceData', () => ({
   useTransactions: () => ({ data: [{ id: 'tx-1', description: 'Coffee', amount: '7.00', currency: 'USD', type: 'expense', transaction_date: '2026-09-19T10:00:00Z' }], isPending: false, error: fixture.error }),
@@ -36,6 +42,7 @@ function render() {
 beforeEach(() => {
   fixture.auth = { user: null, loading: false, requiresMfa: false, authError: null };
   fixture.error = null;
+  fixture.platform = {};
   useAppStore.setState({ activeTab: 'transactions', currency: 'USD', locale: 'en', theme: 'light' });
 });
 describe('application auth and view integration', () => {
@@ -62,7 +69,9 @@ describe('application auth and view integration', () => {
     const html = render();
     expect(html).toContain('Coffee');
     expect(html).toContain('$7.00');
-    for (const path of ['transactions', 'categories', 'payments', 'settings']) expect(html).toContain(`href="/${path}"`);
+    for (const path of ['transactions', 'accounts', 'goals', 'savings', 'debts', 'categories', 'payments', 'settings']) expect(html).toContain(`href="/${path}"`);
+    expect(html).toContain('aria-label="Open navigation"');
+    expect(html).toContain('Accounts');
   });
   it('renders real query errors instead of treating a failed read as an empty account', () => {
     fixture.auth.user = { id: 'test-user' } as AuthContextValue['user'];
@@ -81,6 +90,28 @@ describe('application auth and view integration', () => {
     expect(html).toContain('aria-label="System"');
     expect(html).toContain('aria-label="Light"');
     expect(html).toContain('aria-label="Dark"');
+    expect(html).toContain('Danger zone');
+    expect(html).toContain('Delete Prism account');
+  });
+  it('renders goal, savings, account, and both debt directions in the authenticated workspace', () => {
+    fixture.auth.user = { id: 'test-user', email: 'test@example.invalid' } as AuthContextValue['user'];
+    fixture.platform = {
+      accounts: [{ id: 'a', user_id: 'test-user', name: 'Wallet', currency: 'USD', opening_balance: '100.00', archived: false, created_at: '' }],
+      objectives: [{ id: 'g', user_id: 'test-user', kind: 'goal', name: 'Emergency fund', notes: '', category: 'Safety', priority: 'high', target_amount: '100.00', currency: 'USD', target_date: null, status: 'active', created_at: '', updated_at: '' }, { id: 's', user_id: 'test-user', kind: 'savings', name: 'Travel', notes: '', category: 'Travel', priority: 'normal', target_amount: '200.00', currency: 'USD', target_date: null, status: 'active', created_at: '', updated_at: '' }],
+      objective_contributions: [], objective_milestones: [], debt_repayments: [],
+      person_debts: [{ id: 'd1', user_id: 'test-user', direction: 'i_owe', counterparty: 'Alex', original_amount: '30.00', currency: 'USD', due_date: null, notes: '', created_at: '', updated_at: '' }, { id: 'd2', user_id: 'test-user', direction: 'owed_to_me', counterparty: 'Jo', original_amount: '20.00', currency: 'USD', due_date: null, notes: '', created_at: '', updated_at: '' }],
+    };
+    for (const [tab, marker] of [['accounts','Wallet'],['goals','Emergency fund'],['savings','Travel'],['debts','Alex']] as const) {
+      useAppStore.setState({ activeTab: tab });
+      expect(render()).toContain(marker);
+    }
+    useAppStore.setState({ activeTab: 'debts' });
+    expect(render()).toContain('Jo');
+    const overview = renderToString(<QueryClientProvider client={new QueryClient()}><FinancialOverview /></QueryClientProvider>);
+    expect(overview).toContain('Money I owe');
+    expect(overview).toContain('Owed to me');
+    expect(overview).not.toContain('YOUR DIRECTION');
+    expect(overview).not.toContain('Financial progress');
   });
 });
 
@@ -96,6 +127,15 @@ describe('dashboard financial insights', () => {
     expect(html).toContain('Investment is your highest spending category');
     expect(html).toContain('94.8%');
     expect(html).not.toContain('1,000.00 after expenses');
+    expect(html).toContain('cash-flow-income');
+    expect(html).toContain('cash-flow-expense');
+  });
+
+  it('places the financial account summary immediately after the KPI grid', () => {
+    useAppStore.setState({ currency: 'MYR', locale: 'en', exchangeRates: null });
+    const html = renderToString(<Dashboard transactions={[]} categories={[]} payments={[]} month="2026-09" onEdit={() => {}} onDelete={() => {}} accountSummary={<section>ACCOUNT SUMMARY MARKER</section>} />);
+    expect(html.indexOf('metric-grid')).toBeLessThan(html.indexOf('ACCOUNT SUMMARY MARKER'));
+    expect(html.indexOf('ACCOUNT SUMMARY MARKER')).toBeLessThan(html.indexOf('dashboard-chart-grid'));
   });
 
   it('shows a simple empty state when the selected month has no transactions', () => {

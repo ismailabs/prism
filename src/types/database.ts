@@ -1,4 +1,4 @@
-import type { Category, PaymentMethod, Profile, Transaction } from './index';
+import type { Account, Category, DebtRepayment, Objective, ObjectiveContribution, ObjectiveMilestone, PaymentMethod, PersonDebt, Profile, Transaction } from './index';
 
 type RowObject<T> = { [K in keyof T]: T[K] };
 interface Table<Row, Insert, Update> {
@@ -16,10 +16,16 @@ export interface Database {
       categories: Table<Category, OwnedInsert<Category>, Partial<Omit<Category, 'id' | 'user_id' | 'created_at'>>>;
       payment_methods: Table<PaymentMethod, OwnedInsert<PaymentMethod>, Partial<Omit<PaymentMethod, 'id' | 'user_id' | 'created_at'>>>;
       transactions: Table<Transaction, OwnedInsert<Transaction>, Partial<Omit<Transaction, 'id' | 'user_id' | 'created_at'>>>;
+      accounts: Table<Account, OwnedInsert<Account>, Partial<Omit<Account, 'id' | 'user_id' | 'created_at'>>>;
+      objectives: Table<Objective, OwnedInsert<Objective>, Partial<Omit<Objective, 'id' | 'user_id' | 'created_at'>>>;
+      objective_contributions: Table<ObjectiveContribution, OwnedInsert<ObjectiveContribution>, Partial<Omit<ObjectiveContribution, 'id' | 'user_id' | 'created_at'>>>;
+      objective_milestones: Table<ObjectiveMilestone, OwnedInsert<ObjectiveMilestone>, Partial<Omit<ObjectiveMilestone, 'id' | 'user_id' | 'created_at'>>>;
+      person_debts: Table<PersonDebt, OwnedInsert<PersonDebt>, Partial<Omit<PersonDebt, 'id' | 'user_id' | 'created_at'>>>;
+      debt_repayments: Table<DebtRepayment, OwnedInsert<DebtRepayment>, Partial<Omit<DebtRepayment, 'id' | 'user_id' | 'created_at'>>>;
     };
     Views: { [key in never]: never };
     Functions: {
-      delete_own_account: { Args: Record<string, never>; Returns: undefined };
+      delete_own_account: { Args: { confirmation: string }; Returns: undefined };
     };
     Enums: { [key in never]: never };
     CompositeTypes: { [key in never]: never };

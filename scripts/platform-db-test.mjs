@@ -1,0 +1,80 @@
+import { PGlite } from '@electric-sql/pglite';
+import { readFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+
+const db = await PGlite.create();
+const sql = async path => db.exec(await readFile(path,'utf8'));
+const a=randomUUID(), b=randomUUID(), sa=randomUUID(), sb=randomUUID();
+async function identity(user,session) {
+  await db.exec('reset role');
+  await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:user,session_id:session,aal:'aal1'})]);
+  await db.exec('set role authenticated');
+}
+try {
+  await sql('supabase/tests/auth-fixture.sql');
+  await sql('supabase/migrations/20260928000200_initial_finance_tracker.sql');
+  await db.query('insert into auth.users(id) values($1),($2)',[a,b]);
+  await db.query('insert into auth.sessions(id,user_id) values($1,$2),($3,$4)',[sa,a,sb,b]);
+  await db.query("insert into public.transactions(user_id,amount,currency,type,description) values($1,'20.00','MYR','expense','Preserved')",[a]);
+  const before=(await db.query('select id,user_id,amount::text,description from public.transactions')).rows;
+  await sql('supabase/migrations/20260928031516_personal_finance_platform.sql');
+  await sql('supabase/migrations/20260928032448_exact_money_validation.sql');
+  await sql('supabase/migrations/20260928043611_focused_crud_integrity.sql');
+  await sql('supabase/migrations/20260928082016_harden_self_delete_rpc.sql');
+  assert.deepEqual((await db.query('select id,user_id,amount::text,description from public.transactions')).rows,before);
+  await identity(a,sa);
+  const account=(await db.query("insert into public.accounts(user_id,name,currency,opening_balance) values(auth.uid(),'Wallet','MYR','100.00') returning id")).rows[0].id;
+  const tx=(await db.query("insert into public.transactions(user_id,amount,currency,type,account_id,description) values(auth.uid(),'10.00','MYR','expense',$1,'Save') returning id",[account])).rows[0].id;
+  const goal=(await db.query("insert into public.objectives(user_id,kind,name,target_amount,currency) values(auth.uid(),'goal','Trip','50.00','MYR') returning id")).rows[0].id;
+  await assert.rejects(db.query("insert into public.transactions(user_id,amount,currency,type) values(auth.uid(),'1.001','MYR','expense')"));
+  await assert.rejects(db.query("insert into public.objectives(user_id,kind,name,target_amount,currency) values(auth.uid(),'goal','Invalid','1.001','MYR')"));
+  const savings=(await db.query("insert into public.objectives(user_id,kind,name,target_amount,currency) values(auth.uid(),'savings','Buffer','25.00','MYR') returning id")).rows[0].id;
+  await db.query("insert into public.objective_contributions(user_id,objective_id,currency,amount) values(auth.uid(),$1,'MYR','15.00')",[goal]);
+  await db.query("insert into public.objective_contributions(user_id,objective_id,currency,transaction_id) values(auth.uid(),$1,'MYR',$2)",[savings,tx]);
+  await db.query("insert into public.objective_milestones(user_id,objective_id,name,amount) values(auth.uid(),$1,'Halfway','25.00')",[goal]);
+  const jpy=(await db.query("insert into public.objectives(user_id,kind,name,target_amount,currency) values(auth.uid(),'goal','Tokyo','100','JPY') returning id")).rows[0].id;
+  await assert.rejects(db.query("insert into public.objective_milestones(user_id,objective_id,name,amount) values(auth.uid(),$1,'Invalid','1.50')",[jpy]));
+  const owe=(await db.query("insert into public.person_debts(user_id,direction,counterparty,original_amount,currency) values(auth.uid(),'i_owe','Alex','100.00','MYR') returning id")).rows[0].id;
+  const receivable=(await db.query("insert into public.person_debts(user_id,direction,counterparty,original_amount,currency) values(auth.uid(),'owed_to_me','Jo','30.00','MYR') returning id")).rows[0].id;
+  await db.query("insert into public.debt_repayments(user_id,debt_id,currency,amount) values(auth.uid(),$1,'MYR','40.00')",[owe]);
+  const income=(await db.query("insert into public.transactions(user_id,amount,currency,type) values(auth.uid(),'30.00','MYR','income') returning id")).rows[0].id;
+  await db.query("insert into public.debt_repayments(user_id,debt_id,currency,transaction_id) values(auth.uid(),$1,'MYR',$2)",[receivable,income]);
+  await assert.rejects(db.query("insert into public.debt_repayments(user_id,debt_id,currency,amount) values(auth.uid(),$1,'MYR','61.00')",[owe]));
+  await assert.rejects(db.query("update public.person_debts set original_amount='39.00' where id=$1",[owe]));
+  await assert.rejects(db.query("insert into public.debt_repayments(user_id,debt_id,currency,transaction_id) values(auth.uid(),$1,'MYR',$2)",[owe,tx]));
+  await assert.rejects(db.query("update public.transactions set type='expense' where id=$1",[income]));
+  await assert.rejects(db.query("update public.transactions set amount='31.00' where id=$1",[income]));
+  await db.query("update public.transactions set amount='8.00' where id=$1",[tx]);
+  assert.equal((await db.query('select amount::text from public.transactions where id=$1',[tx])).rows[0].amount,'8.00');
+  await db.query("update public.accounts set name='Daily wallet', opening_balance='125.00' where id=$1",[account]);
+  assert.deepEqual((await db.query('select name,opening_balance::text from public.accounts where id=$1',[account])).rows[0],{name:'Daily wallet',opening_balance:'125.00'});
+  await assert.rejects(db.query("update public.accounts set currency='USD' where id=$1",[account]));
+  await assert.rejects(db.query('delete from public.accounts where id=$1',[account]));
+  await identity(b,sb);
+  await assert.rejects(db.query("insert into public.transactions(user_id,amount,currency,type,account_id) values(auth.uid(),'1.00','MYR','expense',$1)",[account]));
+  for(const table of ['accounts','objectives','objective_contributions','objective_milestones','person_debts','debt_repayments']) {
+    assert.equal((await db.query(`select count(*)::int as count from public.${table}`)).rows[0].count,0,`${table} leaked`);
+  }
+  assert.equal((await db.query('update public.person_debts set counterparty=$1 where id=$2',['Stolen',owe])).affectedRows,0);
+  await assert.rejects(db.query("insert into public.objective_contributions(user_id,objective_id,currency,amount) values(auth.uid(),$1,'MYR','1.00')",[goal]));
+  await assert.rejects(db.query("insert into public.debt_repayments(user_id,debt_id,currency,amount) values(auth.uid(),$1,'MYR','1.00')",[owe]));
+  await identity(a,sa);
+  await db.query('delete from public.objectives where id=$1',[goal]);
+  assert.equal((await db.query('select count(*)::int as count from public.objective_contributions where objective_id=$1',[goal])).rows[0].count,0);
+  assert.equal((await db.query('select count(*)::int as count from public.objective_milestones where objective_id=$1',[goal])).rows[0].count,0);
+  await db.query('delete from public.objectives where id=$1',[savings]);
+  assert.equal((await db.query('select count(*)::int as count from public.transactions where id=$1',[tx])).rows[0].count,1);
+  await db.query('delete from public.person_debts where id=$1',[owe]);
+  assert.equal((await db.query('select count(*)::int as count from public.debt_repayments where debt_id=$1',[owe])).rows[0].count,0);
+  await db.query('delete from public.person_debts where id=$1',[receivable]);
+  assert.equal((await db.query('select count(*)::int as count from public.transactions where id=$1',[income])).rows[0].count,1);
+  await db.query('delete from public.transactions where id=$1',[tx]);
+  assert.equal((await db.query('select count(*)::int as count from public.objective_contributions where transaction_id=$1',[tx])).rows[0].count,0);
+  await assert.rejects(db.query("select public.delete_own_account('WRONG')"));
+  await db.query("select public.delete_own_account('DELETE')");
+  await db.exec('reset role');
+  assert.equal((await db.query('select count(*)::int as count from auth.users where id=$1',[a])).rows[0].count,0);
+  assert.equal((await db.query('select count(*)::int as count from public.accounts where user_id=$1',[a])).rows[0].count,0);
+  console.log('PASS migrations, account edit/delete integrity, goal/savings/debt cascades, linked transactions, self-delete confirmation, ownership RLS');
+} catch (error) { console.error('Platform DB test failed:', error.message, 'detail:', error.detail, 'hint:', error.hint, 'position:', error.position); process.exitCode=1; } finally { await db.close(); }

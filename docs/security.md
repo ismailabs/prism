@@ -20,7 +20,7 @@ The trigger on `auth.mfa_factors` synchronizes `profiles.mfa_enabled` after enro
 
 Composite foreign keys ensure transactions can only reference their owner's categories and payment methods, and category type must match transaction type. Removing a category or payment method clears its transaction references while preserving financial history. Deleting an Auth user cascades to every owned row. Category type changes fail while existing transactions reference the old type, so users must recategorize those transactions first.
 
-`delete_own_account()` takes no user ID. It derives the owner from the authenticated request, checks the live session and MFA, revokes all sessions, then deletes that same Auth user. The settings UI asks the user to confirm this destructive operation and clears its local session afterward. Normal API clients cannot delete profiles or other Auth identities directly. P.R.I.S.M. creates no Storage objects; externally added Storage objects require their own cleanup before account deletion.
+Account deletion is intentionally not exposed by the current UI. The active baseline migration contains a proposed MFA-gated RPC, but it has not yet been validated against a real Supabase Auth environment; therefore it is deferred and must not be advertised as available.
 
 Security-definer implementation functions are confined to `prism_private` with an empty `search_path`, explicit grants, and explicit caller checks for callable operations. Public RPC wrappers run as the caller. Do not add `prism_private` to the exposed API schemas. Trigger functions cannot be called as ordinary RPCs.
 

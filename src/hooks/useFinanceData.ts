@@ -139,7 +139,7 @@ function useResourceMutations<Row extends OwnedRow, Input extends object>(reposi
     if (context.ledger.pendingCount === 0) ledgers.get(client)?.delete(ledgerKey);
   };
   const invalidate = async () => {
-    if (client.isMutating({ mutationKey: mutationKey(userId) }) === 1) await client.invalidateQueries({ queryKey: financeKeys.all(userId) });
+    if (client.isMutating({ mutationKey: mutationKey(userId) }) === 1) await Promise.all([client.invalidateQueries({ queryKey: financeKeys.all(userId) }), client.invalidateQueries({ queryKey: ['platform', userId] })]);
   };
   const create = useMutation<Row, Error, Input, MutationContext<Row>>({
     mutationKey: mutationKey(userId), scope,

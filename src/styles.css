@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root { --background:#f6f7fb; --foreground:#20283d; --card:#fff; --border:#e3e7f0; --muted:#eef1f7; --subtle:#69758c; color-scheme:light; }
-  .dark { --background:#101521; --foreground:#edf0f7; --card:#192130; --border:#2c374a; --muted:#222e41; --subtle:#a2aec2; color-scheme:dark; }
+  :root { --background:#f6f7fb; --foreground:#20283d; --card:#fff; --border:#e3e7f0; --muted:#eef1f7; --subtle:#59657a; --cash-income:#047857; --cash-expense:#dc2626; color-scheme:light; }
+  .dark { --background:#101521; --foreground:#edf0f7; --card:#192130; --border:#2c374a; --muted:#222e41; --subtle:#a2aec2; --cash-income:#34d399; --cash-expense:#f87171; color-scheme:dark; }
   html, body, #root { width: 100%; max-width: 100%; overflow-x: hidden; }
   body { @apply m-0 bg-background font-sans text-foreground antialiased; }
   button, a, input, select { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2; }
@@ -24,6 +24,11 @@
   .app-nav::-webkit-scrollbar { display: none; }
   .app-nav a { @apply flex min-h-11 shrink-0 items-center gap-2 border-b-2 border-transparent px-4 py-4 text-sm font-medium text-subtle; }
   .app-nav a[aria-current=page] { @apply border-primary text-primary; }
+  .mobile-nav-backdrop { @apply fixed inset-0 z-40 bg-slate-950/50 sm:hidden; }
+  .mobile-nav-panel { @apply fixed inset-y-0 left-0 z-50 flex w-[min(19rem,calc(100vw_-_3rem))] flex-col border-r border-border bg-card shadow-2xl sm:hidden; }
+  .mobile-nav-links { @apply flex flex-1 flex-col gap-1 overflow-y-auto p-3; }
+  .mobile-nav-links a { @apply flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium text-subtle; }
+  .mobile-nav-links a[aria-current=page] { @apply bg-primary/10 text-primary; }
   .app-main { @apply mx-auto w-full max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8; }
   .card { @apply rounded-2xl border border-border bg-card shadow-sm; }
   .card-heading { @apply flex flex-wrap items-center justify-between gap-4 border-b border-border px-4 py-5 sm:px-5; }
@@ -33,7 +38,7 @@
   .input { @apply w-full min-w-0 max-w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground; }
   .btn-primary { @apply rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700; }
   .btn-secondary { @apply rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted; }
-  .error-message { @apply rounded-lg bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400; }
+  .error-message { @apply rounded-lg bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300; }
   .warning-message { @apply rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm; }
   .eyebrow { @apply text-[10px] font-semibold uppercase tracking-[.16em] text-subtle; }
   .modal-content { @apply fixed left-1/2 top-1/2 z-50 w-[calc(100vw_-_2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-4 text-foreground shadow-2xl sm:p-6; max-height: calc(100dvh - 2rem); overflow-wrap: anywhere; }
@@ -71,6 +76,8 @@
   .dashboard-chart-grid, .dashboard-bottom-grid { @apply grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]; }
   .chart-legend { @apply flex flex-wrap gap-3 text-[10px] text-subtle; }
   .chart-legend span { @apply flex items-center gap-1; } .chart-legend i { @apply h-2 w-2 rounded-sm; }
+  .chart-legend .cash-flow-income { color:var(--cash-income); } .chart-legend .cash-flow-income i { background:var(--cash-income); }
+  .chart-legend .cash-flow-expense { color:var(--cash-expense); } .chart-legend .cash-flow-expense i { background:var(--cash-expense); }
   .chart-empty-overlay { @apply absolute inset-0 flex flex-col items-center justify-center gap-2 bg-card text-xs; }
   .chart-empty-overlay span { @apply text-subtle; }
   .chart-footer { @apply flex justify-between border-t border-border px-5 py-3 text-[10px] text-subtle; }
