@@ -1,0 +1,9 @@
+# Audit material and local QA must never be uploaded with the application.
+docs/
+artifacts/
+scripts/
+supabase/
+AGENTS.md
+.env*
+!.env.example
+*.log
