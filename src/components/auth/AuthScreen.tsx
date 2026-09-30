@@ -1,11 +1,15 @@
-import { useState, type FormEvent } from 'react';
-import { ArrowRight, Eye, EyeOff, LoaderCircle, LockKeyhole } from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
+import { ArrowRight,Eye,EyeOff,LoaderCircle,LockKeyhole } from 'lucide-react';
+import { useState,type FormEvent } from 'react';
 import { z } from 'zod';
 import { supabase } from '../../lib/supabase';
 import { useAuthCopy } from './copy';
+import { PasswordRecovery } from './PasswordRecovery';
 
 export function AuthScreen() {
   const copy = useAuthCopy();
+  const [forgot,setForgot]=useState(false);
+  const ms=useAppStore(s=>s.locale)==='ms';
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,6 +52,7 @@ export function AuthScreen() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); setBusy(false); }
   }
 
+  if(forgot)return <PasswordRecovery reset={false} onBack={()=>setForgot(false)}/>;
   return <section className="mx-auto w-full max-w-md space-y-6" aria-labelledby="auth-title">
     <div className="space-y-2"><h1 id="auth-title" className="text-2xl font-semibold tracking-tight">{mode === 'signin' ? copy.welcome : copy.createIntro}</h1><p className="text-sm text-muted-foreground">{mode === 'signin' ? copy.subtitle : copy.createSubtitle}</p></div>
     <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1" role="group" aria-label="Authentication mode">
@@ -63,6 +68,7 @@ export function AuthScreen() {
       {notice && <p className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-300" role="status">{notice}</p>}
       <button type="submit" className="btn-primary flex w-full items-center justify-center gap-2" disabled={busy}>{busy ? <><LoaderCircle size={17} className="animate-spin" />{copy.waiting}</> : <>{mode === 'signin' ? copy.signIn : copy.signUp}<ArrowRight size={17} /></>}</button>
     </form>
+    <button type="button" className="text-link" onClick={()=>setForgot(true)}>{ms?'Lupa kata laluan?':'Forgot password?'}</button>
     <p className="flex items-start justify-center gap-2 text-center text-xs leading-relaxed text-muted-foreground"><LockKeyhole size={14} className="mt-0.5 shrink-0" />{copy.privacy}</p>
   </section>;
 }

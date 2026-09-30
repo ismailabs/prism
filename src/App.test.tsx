@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { QueryClient,QueryClientProvider } from '@tanstack/react-query';
 import { renderToString } from 'react-dom/server';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { beforeEach,describe,expect,it,vi } from 'vitest';
 import App from './App';
 import { Dashboard } from './components/Dashboard';
 import { FinancialOverview } from './components/Platform';
-import { useAppStore } from './store/useAppStore';
 import type { AuthContextValue } from './hooks/useAuth';
-import type { Category, Transaction } from './types';
 import './i18n';
+import { useAppStore } from './store/useAppStore';
+import type { Category,Transaction } from './types';
 
 const fixture = vi.hoisted(() => ({
   auth: { user: null, loading: false, requiresMfa: false, authError: null } as Partial<AuthContextValue>,
@@ -24,6 +24,8 @@ vi.mock('./hooks/usePlatformData', () => ({
   usePlatformTable: (table: string) => ({ data: fixture.platform[table] ?? [], isPending: false, error: null, refetch: vi.fn() }),
   usePlatformMutation: () => ({ create: { isPending: false }, update: { isPending: false }, remove: { isPending: false } }),
 }));
+vi.mock('./hooks/useFinancialReports',()=>({useFinancialReport:()=>({data:undefined,isPending:false,error:null}),useTransactionPage:()=>({data:{rows:[{id:'tx-1',user_id:'test-user',description:'Coffee',amount:'7.00',currency:'USD',type:'expense',category_id:null,payment_method_id:null,transaction_date:'2026-09-19T10:00:00Z',created_at:''}],total:1},isPending:false,error:null})}));
+vi.mock('./hooks/usePlanningData',()=>({usePlanningData:()=>({budgets:{data:[],isPending:false,error:null},rules:{data:[],isPending:false,error:null},importRows:{isPending:false}})}));
 vi.mock('./lib/supabase', () => ({ supabase: { auth: {} } }));
 vi.mock('./hooks/useFinanceData', () => ({
   useTransactions: () => ({ data: [{ id: 'tx-1', description: 'Coffee', amount: '7.00', currency: 'USD', type: 'expense', transaction_date: '2026-09-19T10:00:00Z' }], isPending: false, error: fixture.error }),
@@ -69,7 +71,7 @@ describe('application auth and view integration', () => {
     const html = render();
     expect(html).toContain('Coffee');
     expect(html).toContain('$7.00');
-    for (const path of ['transactions', 'accounts', 'goals', 'savings', 'debts', 'categories', 'payments', 'settings']) expect(html).toContain(`href="/${path}"`);
+    for (const path of ['transactions', 'accounts', 'plans', 'debts', 'settings']) expect(html).toContain(`href="/${path}"`);
     expect(html).toContain('aria-label="Open navigation"');
     expect(html).toContain('Accounts');
   });

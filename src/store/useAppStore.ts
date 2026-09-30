@@ -1,6 +1,7 @@
+import { browserTimezone } from '@/domain/dates';
+import type { Currency,ExchangeRates,Locale,Tab,Theme } from '@/types';
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import type { Currency, ExchangeRates, Locale, Tab, Theme } from '@/types';
+import { createJSONStorage,persist } from 'zustand/middleware';
 
 export interface AppStore {
   theme: Theme;
@@ -8,6 +9,8 @@ export interface AppStore {
   currency: Currency;
   exchangeRates: ExchangeRates | null;
   activeTab: Tab;
+  financialTimezone: string;
+  setFinancialTimezone: (financialTimezone: string) => void;
   setTheme: (theme: Theme) => void;
   setLocale: (locale: Locale) => void;
   setCurrency: (currency: Currency) => void;
@@ -23,6 +26,8 @@ export const useAppStore = create<AppStore>()(
       currency: 'USD',
       exchangeRates: null,
       activeTab: 'dashboard',
+      financialTimezone: browserTimezone(),
+      setFinancialTimezone: (financialTimezone) => set({ financialTimezone }),
       setTheme: (theme) => set({ theme }),
       setLocale: (locale) => set({ locale }),
       setCurrency: (currency) => set({ currency }),

@@ -1,16 +1,17 @@
-import { useEffect } from 'react';
-import { useIsMutating, useMutation, useQuery, useQueryClient, type QueryClient, type QueryKey } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import { OptimisticLedger } from '@/lib/finance';
+import { browserTimezone } from '@/domain/dates';
 import { useAuth } from '@/hooks/useAuth';
-import type { Category, NewCategory, NewPaymentMethod, NewTransaction, PaymentMethod, Profile, Transaction } from '@/types';
+import { OptimisticLedger } from '@/lib/finance';
+import { supabase } from '@/lib/supabase';
+import type { Category,NewCategory,NewPaymentMethod,NewTransaction,PaymentMethod,Profile,Transaction } from '@/types';
+import { useIsMutating,useMutation,useQuery,useQueryClient,type QueryClient,type QueryKey } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 type Resource = 'transactions' | 'categories' | 'payment_methods';
 interface OwnedRow { id: string; user_id: string; created_at: string }
 export type UpdateTransaction = Partial<NewTransaction> & { id: string };
 export type UpdateCategory = Partial<NewCategory> & { id: string };
 export type UpdatePaymentMethod = Partial<NewPaymentMethod> & { id: string };
-export type ProfileUpdate = Partial<Pick<Profile, 'username' | 'currency' | 'language' | 'theme'>>;
+export type ProfileUpdate = Partial<Pick<Profile, 'username' | 'currency' | 'language' | 'theme' | 'financial_timezone'>>;
 interface MutationContext<T> { token: string; ledger: OptimisticLedger<T> }
 interface Repository<Row extends OwnedRow, Input extends object> {
   resource: Resource;
@@ -30,10 +31,10 @@ export const financeKeys = {
 const mutationKey = (userId?: string) => ['finance-write', userId ?? 'signed-out'] as const;
 const ledgers = new WeakMap<QueryClient, Map<string, unknown>>();
 
-/** PostgREST serializes numeric columns as JSON numbers. Normalize immediately so
- * every subsequent financial operation receives exact decimal text. */
+/** Fail closed if an exact view ever returns a JSON number. */
 function normalizeTransaction(row: Transaction): Transaction {
-  return { ...row, amount: String(row.amount) };
+  if (typeof row.amount !== 'string') throw new Error('The exact-money API returned a non-text amount.');
+  return row;
 }
 
 function requireUser(userId: string | undefined, allowed: boolean): string {
@@ -55,15 +56,7 @@ export function useTransactions() {
     staleTime: 30_000,
     queryFn: async ({ signal }): Promise<Transaction[]> => {
       const id = requireUser(userId, allowed);
-      const rows: Transaction[] = [];
-      let offset = 0;
-      while (true) {
-        const { data, error } = await supabase.from('transactions').select('*').eq('user_id', id).order('transaction_date', { ascending: false }).order('id').range(offset, offset + 999).abortSignal(signal);
-        if (error) throw error;
-        rows.push(...data.map(normalizeTransaction));
-        if (data.length < 1_000) return rows;
-        offset += 1_000;
-      }
+      const {data,error}=await supabase.from('exact_transactions').select('*').eq('user_id',id).order('transaction_date',{ascending:false}).order('id').range(0,49).abortSignal(signal);if(error)throw error;return data.map(normalizeTransaction);
     },
   });
 }
@@ -109,6 +102,7 @@ export function useProfile() {
     queryFn: async ({ signal }): Promise<Profile> => {
       const { data, error } = await supabase.from('profiles').select('*').eq('id', requireUser(userId, allowed)).abortSignal(signal).single();
       if (error) throw error;
+      if(data.financial_timezone == null){ const zone=browserTimezone();const saved=await supabase.from('profiles').update({financial_timezone:zone}).eq('id',data.id).is('financial_timezone',null).select('*').maybeSingle();if(saved.error)throw saved.error;return saved.data??data;}
       return data;
     },
   });
@@ -171,14 +165,18 @@ function useResourceMutations<Row extends OwnedRow, Input extends object>(reposi
 const transactions: Repository<Transaction, NewTransaction> = {
   resource: 'transactions',
   create: async (userId, input) => {
-    const { data, error } = await supabase.from('transactions').insert({ ...input, user_id: userId }).select('*').single();
+    const { data, error } = await supabase.from('transactions').insert({ ...input, user_id: userId }).select('id').single();
     if (error) throw error;
-    return normalizeTransaction(data);
+    const saved = await supabase.from('exact_transactions').select('*').eq('id', data.id).eq('user_id',userId).single();
+    if(saved.error)throw saved.error;
+    return normalizeTransaction(saved.data);
   },
   update: async (userId, { id, ...input }) => {
-    const { data, error } = await supabase.from('transactions').update(input).eq('id', id).eq('user_id', userId).select('*').single();
+    const { data, error } = await supabase.from('transactions').update(input).eq('id', id).eq('user_id', userId).select('id').single();
     if (error) throw error;
-    return normalizeTransaction(data);
+    const saved = await supabase.from('exact_transactions').select('*').eq('id', data.id).eq('user_id',userId).single();
+    if(saved.error)throw saved.error;
+    return normalizeTransaction(saved.data);
   },
   remove: async (userId, id) => {
     const { error } = await supabase.from('transactions').delete().eq('id', id).eq('user_id', userId).select('id').single();
@@ -275,16 +273,11 @@ export function useFinanceRealtime(): void {
     const refresh = () => {
       if (client.isMutating({ mutationKey: mutationKey(userId) }) === 0) void client.invalidateQueries({ queryKey: financeKeys.all(userId) });
     };
-    const channel = supabase.channel(`finance:${userId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: `user_id=eq.${userId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories', filter: `user_id=eq.${userId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'payment_methods', filter: `user_id=eq.${userId}` }, refresh)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, refresh)
-      // Deleted rows expose only their primary keys, so invalidate and let RLS scope the subsequent read.
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'transactions' }, refresh)
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'categories' }, refresh)
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'payment_methods' }, refresh)
-      .subscribe();
+    const channel=supabase.channel(`finance:${userId}`);
+    // Subscribe only to published tables. Other platform resources refresh after
+    // writes and on focus/reconnect; they do not create ineffective subscriptions.
+    for(const table of ['transactions','categories','payment_methods','profiles','transfers','monthly_budgets','recurring_rules'])channel.on('postgres_changes',{event:'*',schema:'public',table},()=>{refresh();void client.invalidateQueries({queryKey:['platform',userId]});});
+    channel.subscribe();
     return () => { void supabase.removeChannel(channel); };
   }, [allowed, client, userId]);
 }

@@ -3,7 +3,8 @@ import { createRequire } from 'node:module';
 import { mkdir, writeFile } from 'node:fs/promises';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PRISM_PLAYWRIGHT || 'playwright');
-const browser = await chromium.launch({ headless: true, channel: 'msedge' });
+process.env.VITE_SUPABASE_URL='https://fixture.supabase.co';process.env.VITE_SUPABASE_ANON_KEY='fixture-anon-key';const {createServer}=await import('vite');const devServer=await createServer({server:{host:'127.0.0.1',port:5174,strictPort:true}});await devServer.listen();
+const browser = await chromium.launch({ headless: true, ...(process.platform==='win32'?{channel:'msedge'}:{}) });
 const context = await browser.newContext();
 const page = await context.newPage();
 const errors = [];
@@ -14,10 +15,10 @@ const language = localStorage.getItem('qa-locale') || 'en';
 const theme = localStorage.getItem('qa-theme') || 'light';
 const category = { id: 'cat-1', name: 'VeryLongCategoryName'.repeat(4), type: 'expense', color: '#4265ee' };
 const payment = { id: 'pay-1', name: 'VeryLongPaymentMethod'.repeat(4), type: 'credit_card' };
-const transaction = { id: 'tx-1', description: 'LongUnbrokenDescription'.repeat(12), amount: 999999999999, currency: 'MYR', type: 'expense', category_id: 'cat-1', payment_method_id: 'pay-1', transaction_date: '2026-09-19T12:00:00Z' };
+const transaction = { id: 'tx-1', description: 'LongUnbrokenDescription'.repeat(12), amount: '999999999999.00', currency: 'MYR', type: 'expense', category_id: 'cat-1', payment_method_id: 'pay-1', transaction_date: '2026-09-19T12:00:00Z' };
 const result = data => ({ data, isPending: false, error: null, refetch: async () => {} });
 const mutation = { isPending: false, mutateAsync: async () => {} };
-export const useTransactions = () => result([transaction, { ...transaction, id: 'tx-2', type: 'income', description: 'Salary', amount: 5000 }]);
+export const useTransactions = () => result([transaction, { ...transaction, id: 'tx-2', type: 'income', description: 'Salary', amount: '5000.00' }]);
 export const useCategories = () => result([category]);
 export const usePaymentMethods = () => result([payment]);
 export const useProfile = () => result({ id: 'qa-user', username: 'ExtremelyLongDisplayName'.repeat(4), currency: 'MYR', language, theme });
@@ -27,9 +28,13 @@ export const useCategoryMutations = useTransactionMutations;
 export const usePaymentMethodMutations = useTransactionMutations;
 export const useUpdateProfile = () => mutation;
 `;
-await context.route('**/src/hooks/useAuth.tsx', route => route.fulfill({ contentType: 'application/javascript', body: auth }));
-await context.route('**/src/hooks/useFinanceData.ts', route => route.fulfill({ contentType: 'application/javascript', body: finance }));
-await context.route('**/src/lib/supabase.ts', route => route.fulfill({ contentType: 'application/javascript', body: `export const supabase = { auth: { mfa: { listFactors: async () => ({ data: { totp: [] }, error: null }) } } };` }));
+await context.route('**/src/hooks/useAuth.tsx*', route => route.fulfill({ contentType: 'application/javascript', body: auth }));
+await context.route('**/src/hooks/useFinanceData.ts*', route => route.fulfill({ contentType: 'application/javascript', body: finance }));
+const platform = `const result=data=>({data,isPending:false,error:null,refetch:async()=>{}});const mutation={isPending:false,mutateAsync:async()=>{}};export const usePlatformTable=()=>result([]);export const usePlatformMutation=()=>({create:mutation,update:mutation,remove:mutation});`;
+await context.route('**/src/hooks/usePlatformData.ts*',route=>route.fulfill({contentType:'application/javascript',body:platform}));
+await context.route('**/src/hooks/useFinancialReports.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const useFinancialReport=()=>({data:undefined,isPending:false,error:null});export const useTransactionPage=()=>({data:{rows:[{id:'tx-1',user_id:'qa-user',amount:'25.00',currency:'MYR',type:'expense',category_id:null,payment_method_id:null,description:'Purchase',transaction_date:'2026-09-19T12:00:00Z',created_at:''}],total:1},isPending:false,error:null});`}));
+await context.route('**/src/hooks/usePlanningData.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const usePlanningData=()=>({budgets:{data:[],error:null},rules:{data:[],error:null},importRows:{isPending:false}});`}));
+await context.route('**/src/lib/supabase.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `export const supabase = { auth: { mfa: { listFactors: async () => ({ data: { totp: [] }, error: null }) } } };` }));
 await context.route('**/api/rates?*', route => route.fulfill({ json: { base: 'MYR', rates: { USD: .23, EUR: .21, JPY: 34, MYR: 1 }, updatedAt: Date.now(), source: 'QA fixture' } }));
 const checks = [];
 async function contained(label, dialog = false) {
@@ -62,8 +67,8 @@ try {
     await context.addInitScript(({ locale }) => { localStorage.setItem('qa-locale', locale); localStorage.setItem('qa-theme', locale === 'ms' ? 'dark' : 'light'); }, { locale });
     for (const width of (process.env.PRISM_QA_WIDTH ? [Number(process.env.PRISM_QA_WIDTH)] : [320, 360, 375, 390, 414, 640, 768, 1440])) {
       await page.setViewportSize({ width, height: width === 1440 ? 1000 : 740 });
-      for (const route of ['/', '/transactions', '/categories', '/payments', '/settings']) {
-        await page.goto(`http://127.0.0.1:5173${route}`);
+      for (const route of ['/', '/transactions', '/accounts', '/plans', '/debts', '/categories', '/payments', '/settings']) {
+        await page.goto(`http://127.0.0.1:5174${route}`);
         await page.locator('main h1').waitFor();
         await page.locator('main .card, main .metric-grid').first().waitFor();
         await contained(`${locale} ${width} ${route}`);
@@ -95,8 +100,8 @@ try {
     }
   }
   await page.setViewportSize({ width: 320, height: 360 });
-  await page.goto('http://127.0.0.1:5173/transactions');
-  await page.getByRole('button', { name: 'Add transaction', exact: true }).click();
+  await page.goto('http://127.0.0.1:5174/transactions');
+  await page.getByRole('button', { name: /^(Add transaction|Tambah transaksi)$/, exact: true }).click();
   await contained('short viewport 320x360 dialog', true);
   assert.deepEqual(errors, [], 'Browser exceptions');
   await writeFile('artifacts/responsive-checks.json', JSON.stringify({ checks, errors }, null, 2));
@@ -105,4 +110,4 @@ try {
   console.log(JSON.stringify({ url: page.url(), text: await page.locator('body').innerText(), errors }));
   await page.screenshot({ path: 'artifacts/qa-failure.png', fullPage: true });
   throw error;
-} finally { await browser.close(); }
+} finally { await browser.close();if(devServer)await devServer.close(); }

@@ -1,34 +1,21 @@
-import type { Account, Category, DebtRepayment, Objective, ObjectiveContribution, ObjectiveMilestone, PaymentMethod, PersonDebt, Profile, Transaction } from './index';
+import type { Database as Generated } from './database.generated';
+import type { Account,Category,DebtRepayment,MonthlyBudget,MonthlyTotal,Objective,ObjectiveContribution,ObjectiveMilestone,PaymentMethod,PersonDebt,Profile,RecurringRule,Transaction,Transfer } from './index';
 
-type RowObject<T> = { [K in keyof T]: T[K] };
-interface Table<Row, Insert, Update> {
-  Row: RowObject<Row>;
-  Insert: RowObject<Insert>;
-  Update: RowObject<Update>;
-  Relationships: [];
-}
-type OwnedInsert<T extends { id: string; created_at: string }> = Omit<T, 'id' | 'created_at'> & { id?: string; created_at?: string };
-
-export interface Database {
-  public: {
-    Tables: {
-      profiles: Table<Profile, Pick<Profile, 'id'> & Partial<Omit<Profile, 'id'>>, Partial<Pick<Profile, 'username' | 'currency' | 'language' | 'theme'>>>;
-      categories: Table<Category, OwnedInsert<Category>, Partial<Omit<Category, 'id' | 'user_id' | 'created_at'>>>;
-      payment_methods: Table<PaymentMethod, OwnedInsert<PaymentMethod>, Partial<Omit<PaymentMethod, 'id' | 'user_id' | 'created_at'>>>;
-      transactions: Table<Transaction, OwnedInsert<Transaction>, Partial<Omit<Transaction, 'id' | 'user_id' | 'created_at'>>>;
-      accounts: Table<Account, OwnedInsert<Account>, Partial<Omit<Account, 'id' | 'user_id' | 'created_at'>>>;
-      objectives: Table<Objective, OwnedInsert<Objective>, Partial<Omit<Objective, 'id' | 'user_id' | 'created_at'>>>;
-      objective_contributions: Table<ObjectiveContribution, OwnedInsert<ObjectiveContribution>, Partial<Omit<ObjectiveContribution, 'id' | 'user_id' | 'created_at'>>>;
-      objective_milestones: Table<ObjectiveMilestone, OwnedInsert<ObjectiveMilestone>, Partial<Omit<ObjectiveMilestone, 'id' | 'user_id' | 'created_at'>>>;
-      person_debts: Table<PersonDebt, OwnedInsert<PersonDebt>, Partial<Omit<PersonDebt, 'id' | 'user_id' | 'created_at'>>>;
-      debt_repayments: Table<DebtRepayment, OwnedInsert<DebtRepayment>, Partial<Omit<DebtRepayment, 'id' | 'user_id' | 'created_at'>>>;
-    };
-    Views: { [key in never]: never };
-    Functions: {
-      delete_own_account: { Args: { confirmation: string }; Returns: undefined };
-    };
-    Enums: { [key in never]: never };
-    CompositeTypes: { [key in never]: never };
-  };
-}
-
+type Models={accounts:Account;categories:Category;debt_repayments:DebtRepayment;monthly_budgets:MonthlyBudget;objectives:Objective;objective_contributions:ObjectiveContribution;objective_milestones:ObjectiveMilestone;payment_methods:PaymentMethod;person_debts:PersonDebt;profiles:Profile;recurring_rules:RecurringRule;transactions:Transaction;transfers:Transfer};
+type MoneyColumn='amount'|'opening_balance'|'target_amount'|'original_amount'|'source_amount'|'destination_amount';
+/** Retain generated columns/default optionality. Narrow SQL CHECK-constrained
+ * text fields to domain unions; raw numeric reads stay numbers. Only writes and
+ * exact invoker-view reads use decimal text. Computed view fields cannot leak
+ * into raw table mutations because they are absent from the generated keys. */
+type Columns<G,D,Raw extends boolean=false>={ [K in keyof G]: K extends keyof D ? Raw extends true ? K extends MoneyColumn ? G[K] : Exclude<D[K],undefined> : Exclude<D[K],undefined> : G[K] };
+type GeneratedTable=Generated['public']['Tables'];
+type Tables={ [K in keyof GeneratedTable]:K extends keyof Models ? {
+ Row:Columns<GeneratedTable[K]['Row'],Models[K],true>;
+ Insert:Columns<GeneratedTable[K]['Insert'],Models[K]>;
+ Update:Columns<GeneratedTable[K]['Update'],Models[K]>;
+ Relationships:GeneratedTable[K]['Relationships'];
+}:GeneratedTable[K] };
+type ViewModels={exact_accounts:Account;exact_debt_repayments:DebtRepayment;exact_monthly_budgets:MonthlyBudget;exact_objectives:Objective;exact_objective_contributions:ObjectiveContribution;exact_objective_milestones:ObjectiveMilestone;exact_person_debts:PersonDebt;exact_recurring_rules:RecurringRule;exact_transactions:Transaction;exact_transfers:Transfer;finance_monthly_totals:MonthlyTotal;finance_net_flow:{user_id:string;currency:Account['currency'];amount:string}};
+type GeneratedView=Generated['public']['Views'];
+type Views={ [K in keyof GeneratedView]:K extends keyof ViewModels ? {Row:Columns<GeneratedView[K]['Row'],ViewModels[K]>;Relationships:GeneratedView[K]['Relationships']}:GeneratedView[K] };
+export type Database=Omit<Generated,'public'> & {public:Omit<Generated['public'],'Tables'|'Views'> & {Tables:Tables;Views:Views}};

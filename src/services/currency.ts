@@ -1,6 +1,6 @@
+import { decimalMoney,parseMoneyTotal } from '@/domain/money';
 import { useAppStore } from '@/store/useAppStore';
-import type { Currency, ExchangeRates, Locale } from '@/types';
-import { decimalMoney, parseMoney } from '@/domain/money';
+import type { Currency,ExchangeRates,Locale } from '@/types';
 
 export const RATE_CACHE_MS = 60 * 60 * 1_000;
 export const MAX_STALE_RATE_MS = 7 * 24 * RATE_CACHE_MS;
@@ -64,7 +64,7 @@ export function convertCurrency(amount: string | number, from: Currency, to: Cur
     return converted;
   }
   const exact = typeof amount === 'string' ? amount : String(amount);
-  const minor = parseMoney(exact, from);
+  const minor = parseMoneyTotal(exact, from);
   if (from === to) return Number(exact);
   if (!isExchangeRates(rates) || Date.now() - rates.updatedAt > MAX_STALE_RATE_MS) throw new Error('Current exchange rates are required to convert this amount.');
   // FX feeds are approximate by nature. Convert only at this presentation boundary;
@@ -80,7 +80,7 @@ export function formatCurrency(amount: string | number, currency: Currency, loca
     return new Intl.NumberFormat(locale === 'ms' ? 'ms-MY' : 'en-US', { style: 'currency', currency }).format(amount);
   }
   const exact = typeof amount === 'string' ? amount : String(amount);
-  const minor = parseMoney(exact, currency);
+  const minor = parseMoneyTotal(exact, currency);
   const scale = currency === 'JPY' ? 0 : 2;
   const whole = minor < 0n ? -minor / 10n ** BigInt(scale) : minor / 10n ** BigInt(scale);
   const fraction = scale ? (minor < 0n ? -minor : minor).toString().padStart(scale + 1, '0').slice(-scale) : '';

@@ -1,6 +1,7 @@
+import { clearPrivateQueries } from '@/lib/privateCache';
+import type { Session,User } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
+import { createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 
 export interface AuthContextValue {
@@ -9,6 +10,8 @@ export interface AuthContextValue {
   loading: boolean;
   requiresMfa: boolean;
   authError: string | null;
+  recovery?: boolean;
+  completeRecovery: () => void;
   refreshMfa: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -17,8 +20,11 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const queryClient = useQueryClient();
+  const sessionToken=useRef<string|undefined>(undefined);
   const activeUserId = useRef<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [recovery,setRecovery] = useState(false);
+  const completeRecovery=useCallback(()=>{setRecovery(false);window.history.replaceState(null,'',window.location.pathname);},[]);
   const [loading, setLoading] = useState(true);
   const [requiresMfa, setRequiresMfa] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -60,14 +66,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     mounted.current = true;
     const timers = new Set<ReturnType<typeof setTimeout>>();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if(event==='PASSWORD_RECOVERY')setRecovery(true);
       const nextUserId = nextSession?.user.id ?? null;
-      if (activeUserId.current !== nextUserId) {
+      if (activeUserId.current !== nextUserId || (nextSession?.access_token && nextSession.access_token !== sessionToken.current)) {
         // Cancel reads before removing private caches on account changes.
-        void queryClient.cancelQueries({ predicate: query => ['finance'].includes(String(query.queryKey[0])) });
-        queryClient.removeQueries({ predicate: query => ['finance'].includes(String(query.queryKey[0])) });
+        clearPrivateQueries(queryClient);
         activeUserId.current = nextUserId;
       }
+      sessionToken.current=nextSession?.access_token;
       const expectedRevision = ++revision.current;
       setSession(nextSession);
       setLoading(Boolean(nextSession));
@@ -91,7 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) throw error;
   }, []);
 
-  const value = useMemo<AuthContextValue>(() => ({ user: session?.user ?? null, session, loading, requiresMfa, authError, refreshMfa, signOut }), [session, loading, requiresMfa, authError, refreshMfa, signOut]);
+  const value = useMemo<AuthContextValue>(() => ({ user: session?.user ?? null, session, loading, requiresMfa, authError, recovery, completeRecovery, refreshMfa, signOut }), [session, loading, requiresMfa, authError, recovery, completeRecovery, refreshMfa, signOut]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

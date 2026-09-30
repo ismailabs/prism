@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { Check, LoaderCircle, Plus, ShieldCheck, Smartphone, X } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { Check,LoaderCircle,Plus,ShieldCheck,Smartphone,X } from 'lucide-react';
+import { useEffect,useRef,useState,type FormEvent } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
 import { useAuthCopy } from './copy';
 
 interface EnrolledFactor { id: string; name: string }
@@ -68,7 +68,7 @@ export function MfaSetup() {
       if (verifyError) throw verifyError;
       setPending(null); setCode(''); setNotice(copy.enabled);
       await refreshMfa(); await loadFactors();
-      await queryClient.invalidateQueries({ queryKey: ['profile'] });
+      await queryClient.invalidateQueries({ queryKey: ['finance'] });
     } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); }
     finally { setBusy(false); }
   }
@@ -82,7 +82,7 @@ export function MfaSetup() {
       setRemoving(null); setNotice(copy.removed);
       await supabase.auth.refreshSession();
       await refreshMfa(); await loadFactors();
-      await queryClient.invalidateQueries({ queryKey: ['profile'] });
+      await queryClient.invalidateQueries({ queryKey: ['finance'] });
     } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); }
     finally { setBusy(false); }
   }

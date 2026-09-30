@@ -1,9 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from './useAuth';
-import { supabase } from '@/lib/supabase';
-import type { Account, DebtRepayment, Objective, ObjectiveContribution, ObjectiveMilestone, PersonDebt } from '@/types';
-
-type TableName = 'accounts' | 'objectives' | 'objective_contributions' | 'objective_milestones' | 'person_debts' | 'debt_repayments';
+import { supabase } from "@/lib/supabase";
+import type {
+  Account,
+  DebtRepayment,
+  Objective,
+  ObjectiveContribution,
+  ObjectiveMilestone,
+  PersonDebt,
+  Transfer,
+} from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "./useAuth";
+import { financeKeys } from "./useFinanceData";
 type Rows = {
   accounts: Account;
   objectives: Objective;
@@ -11,60 +18,397 @@ type Rows = {
   objective_milestones: ObjectiveMilestone;
   person_debts: PersonDebt;
   debt_repayments: DebtRepayment;
+  transfers: Transfer;
 };
-
-function normalize<T extends TableName>(table: T, row: Rows[T]): Rows[T] {
-  const copy = { ...row } as Record<string, unknown>;
-  for (const key of table === 'accounts' ? ['opening_balance'] : table === 'objectives' ? ['target_amount'] : table === 'objective_milestones' || table === 'objective_contributions' || table === 'debt_repayments' ? ['amount'] : ['original_amount']) {
-    if (copy[key] !== null && copy[key] !== undefined) copy[key] = String(copy[key]);
-  }
-  return copy as unknown as Rows[T];
+type TableName = keyof Rows;
+type Input<Row> = Omit<
+  Row,
+  | "id"
+  | "user_id"
+  | "created_at"
+  | "updated_at"
+  | "effective_amount"
+  | "balance"
+  | "transaction_count"
+  | "linked_activity_count"
+>;
+interface Repository<Row> {
+  read: (userId: string, signal?: AbortSignal) => Promise<Row[]>;
+  create: (userId: string, input: Input<Row>) => Promise<void>;
+  update: (
+    userId: string,
+    id: string,
+    input: Partial<Input<Row>>,
+  ) => Promise<void>;
+  remove: (userId: string, id: string) => Promise<void>;
 }
-
+const repositories: { [K in TableName]: Repository<Rows[K]> } = {
+  accounts: {
+    read: async (userId, signal) => {
+      const rows: Rows["accounts"][] = [];
+      for (let offset = 0; ; offset += 1000) {
+        let request = supabase
+          .from("exact_accounts")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at")
+          .order("id")
+          .range(offset, offset + 999);
+        if (signal) request = request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 1000) return rows;
+      }
+    },
+    create: async (userId, input) => {
+      const { error } = await supabase
+        .from("accounts")
+        .insert({ ...input, user_id: userId });
+      if (error) throw error;
+    },
+    update: async (userId, id, input) => {
+      const { error } = await supabase
+        .from("accounts")
+        .update(input)
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+    remove: async (userId, id) => {
+      const { error } = await supabase
+        .from("accounts")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+  },
+  objectives: {
+    read: async (userId, signal) => {
+      const rows: Rows["objectives"][] = [];
+      for (let offset = 0; ; offset += 1000) {
+        let request = supabase
+          .from("exact_objectives")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at")
+          .order("id")
+          .range(offset, offset + 999);
+        if (signal) request = request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 1000) return rows;
+      }
+    },
+    create: async (userId, input) => {
+      const { error } = await supabase
+        .from("objectives")
+        .insert({ ...input, user_id: userId });
+      if (error) throw error;
+    },
+    update: async (userId, id, input) => {
+      const { error } = await supabase
+        .from("objectives")
+        .update(input)
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+    remove: async (userId, id) => {
+      const { error } = await supabase
+        .from("objectives")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+  },
+  objective_contributions: {
+    read: async (userId, signal) => {
+      const rows: Rows["objective_contributions"][] = [];
+      for (let offset = 0; ; offset += 1000) {
+        let request = supabase
+          .from("exact_objective_contributions")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at")
+          .order("id")
+          .range(offset, offset + 999);
+        if (signal) request = request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 1000) return rows;
+      }
+    },
+    create: async (userId, input) => {
+      const { error } = await supabase
+        .from("objective_contributions")
+        .insert({ ...input, user_id: userId });
+      if (error) throw error;
+    },
+    update: async (userId, id, input) => {
+      const { error } = await supabase
+        .from("objective_contributions")
+        .update(input)
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+    remove: async (userId, id) => {
+      const { error } = await supabase
+        .from("objective_contributions")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+  },
+  objective_milestones: {
+    read: async (userId, signal) => {
+      const rows: Rows["objective_milestones"][] = [];
+      for (let offset = 0; ; offset += 1000) {
+        let request = supabase
+          .from("exact_objective_milestones")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at")
+          .order("id")
+          .range(offset, offset + 999);
+        if (signal) request = request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 1000) return rows;
+      }
+    },
+    create: async (userId, input) => {
+      const { error } = await supabase
+        .from("objective_milestones")
+        .insert({ ...input, user_id: userId });
+      if (error) throw error;
+    },
+    update: async (userId, id, input) => {
+      const { error } = await supabase
+        .from("objective_milestones")
+        .update(input)
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+    remove: async (userId, id) => {
+      const { error } = await supabase
+        .from("objective_milestones")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+  },
+  person_debts: {
+    read: async (userId, signal) => {
+      const rows: Rows["person_debts"][] = [];
+      for (let offset = 0; ; offset += 1000) {
+        let request = supabase
+          .from("exact_person_debts")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at")
+          .order("id")
+          .range(offset, offset + 999);
+        if (signal) request = request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 1000) return rows;
+      }
+    },
+    create: async (userId, input) => {
+      const { error } = await supabase
+        .from("person_debts")
+        .insert({ ...input, user_id: userId });
+      if (error) throw error;
+    },
+    update: async (userId, id, input) => {
+      const { error } = await supabase
+        .from("person_debts")
+        .update(input)
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+    remove: async (userId, id) => {
+      const { error } = await supabase
+        .from("person_debts")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+  },
+  debt_repayments: {
+    read: async (userId, signal) => {
+      const rows: Rows["debt_repayments"][] = [];
+      for (let offset = 0; ; offset += 1000) {
+        let request = supabase
+          .from("exact_debt_repayments")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at")
+          .order("id")
+          .range(offset, offset + 999);
+        if (signal) request = request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 1000) return rows;
+      }
+    },
+    create: async (userId, input) => {
+      const { error } = await supabase
+        .from("debt_repayments")
+        .insert({ ...input, user_id: userId });
+      if (error) throw error;
+    },
+    update: async (userId, id, input) => {
+      const { error } = await supabase
+        .from("debt_repayments")
+        .update(input)
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+    remove: async (userId, id) => {
+      const { error } = await supabase
+        .from("debt_repayments")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+  },
+  transfers: {
+    read: async (userId, signal) => {
+      const rows: Rows["transfers"][] = [];
+      for (let offset = 0; ; offset += 1000) {
+        let request = supabase
+          .from("exact_transfers")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at")
+          .order("id")
+          .range(offset, offset + 999);
+        if (signal) request = request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 1000) return rows;
+      }
+    },
+    create: async (userId, input) => {
+      const { error } = await supabase
+        .from("transfers")
+        .insert({ ...input, user_id: userId });
+      if (error) throw error;
+    },
+    update: async (userId, id, input) => {
+      const { error } = await supabase
+        .from("transfers")
+        .update(input)
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+    remove: async (userId, id) => {
+      const { error } = await supabase
+        .from("transfers")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+  },
+};
 export function usePlatformTable<T extends TableName>(table: T) {
   const { user, loading, requiresMfa } = useAuth();
   const userId = user?.id;
   return useQuery({
-    queryKey: ['platform', userId, table], enabled: !!userId && !loading && !requiresMfa, staleTime: 20_000,
-    queryFn: async ({ signal }): Promise<Rows[T][]> => {
-      if (!userId) throw new Error('Sign in first.');
-      const rows: Rows[T][] = [];
-      for (let offset = 0; ; offset += 1000) {
-        const { data, error } = await supabase.from(table as 'accounts').select('*').eq('user_id', userId).range(offset, offset + 999).abortSignal(signal);
-        if (error) throw error;
-        rows.push(...(data as unknown as Rows[T][]).map(row => normalize(table, row)));
-        if (data.length < 1000) return rows;
-      }
+    queryKey: ["platform", userId, table],
+    enabled: !!userId && !loading && !requiresMfa,
+    staleTime: 20000,
+    queryFn: ({ signal }) => {
+      if (!userId) throw new Error("Sign in first.");
+      return repositories[table].read(userId, signal);
     },
   });
 }
-
 export function usePlatformMutation<T extends TableName>(table: T) {
-  const { user, requiresMfa } = useAuth();
+  const { user, loading, requiresMfa } = useAuth();
   const client = useQueryClient();
   const userId = user?.id;
-  const verify = () => { if (!userId || requiresMfa) throw new Error('A verified sign-in is required.'); return userId; };
-  const refresh = () => client.invalidateQueries({ queryKey: ['platform', userId] });
+  const verify = () => {
+    if (!userId || loading || requiresMfa)
+      throw new Error("A verified sign-in is required.");
+    return userId;
+  };
+  const refresh = async () => {
+    await Promise.all([
+      client.invalidateQueries({ queryKey: ["platform", userId] }),
+      client.invalidateQueries({ queryKey: financeKeys.all(userId) }),
+    ]);
+  };
   return {
     create: useMutation({
-      mutationFn: async (input: Omit<Rows[T], 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-        const { data, error } = await supabase.from(table as 'accounts').insert({ ...input, user_id: verify() } as never).select('*').single();
-        if (error) throw error;
-        return normalize(table, data as unknown as Rows[T]);
-      }, onSuccess: refresh,
+      mutationKey: ["platform-write", userId],
+      mutationFn: (input: Input<Rows[T]>) =>
+        repositories[table].create(verify(), input),
+      onSuccess: refresh,
     }),
     update: useMutation({
-      mutationFn: async ({ id, values }: { id: string; values: Partial<Rows[T]> }) => {
-        const { data, error } = await supabase.from(table as 'accounts').update(values as never).eq('id', id).eq('user_id', verify()).select('*').single();
-        if (error) throw error;
-        return normalize(table, data as unknown as Rows[T]);
-      }, onSuccess: refresh,
+      mutationKey: ["platform-write", userId],
+      mutationFn: ({
+        id,
+        values,
+      }: {
+        id: string;
+        values: Partial<Input<Rows[T]>>;
+      }) => repositories[table].update(verify(), id, values),
+      onSuccess: refresh,
     }),
     remove: useMutation({
-      mutationFn: async (id: string) => {
-        const { error } = await supabase.from(table as 'accounts').delete().eq('id', id).eq('user_id', verify()).select('id').single();
-        if (error) throw error;
-      }, onSuccess: refresh,
+      mutationKey: ["platform-write", userId],
+      mutationFn: (id: string) => repositories[table].remove(verify(), id),
+      onSuccess: refresh,
     }),
   };
 }

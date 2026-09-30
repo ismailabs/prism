@@ -11,3 +11,12 @@
 `20260928082016_harden_self_delete_rpc.sql` moves the privileged portion of self-deletion back into the unexposed `prism_private` schema and leaves only a security-invoker wrapper in the public API. It was applied to production on 2026-09-28.
 
 Apply the baseline only to an empty non-production Supabase project after replay validation. The live project predates local migration tracking; its baseline tables already existed before the additive migration. Do not push the baseline SQL onto that production project. Historical schema snapshots and the deferred event-ledger proposal live in `../reference/` and are intentionally outside the executable migration directory.
+
+## New forward migrations
+
+- `20260930135217_financial_foundations.sql`: profile timezone, transfers, cash-account/transfer allocation links, locking validators, exact-money invoker views and account summaries.
+- `20260930135222_reporting_and_planning.sql`: ordinary reporting views, budgets, recurring rules, atomic/idempotent import and occurrence RPCs, server pagination, indexes, RLS/grants and realtime registration.
+- `20260930135716_financial_relationship_indexes.sql`: eleven composite relationship indexes, removal of two redundant indexes introduced by the preceding forward migrations.
+- `20260930141104_canonical_financial_transport.sql`: canonical native-currency text scale for every exact view, including historical JPY values with redundant zero decimals; no stored values are changed.
+
+All four replay after the immutable historical chain and were applied to the intended production project on 2026-09-30 under these matching remote versions. Apply only these forward changes to the existing production project. The harden-self-delete local version `20260928082016` is recorded remotely as `20260928082111`; preserve this history difference rather than replaying old migrations. Exact view reads preserve all historical monetary values; existing link classification assumptions are documented in the root README.

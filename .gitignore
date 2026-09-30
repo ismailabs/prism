@@ -13,6 +13,3 @@ supabase/.temp/
 supabase/.branches/
 supabase/.snapshots/
 *.log
-
-.vercel
-.env*
