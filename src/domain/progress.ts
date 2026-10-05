@@ -9,7 +9,7 @@ function linkedAmount(amount: string | null, transactionId: string | null, trans
 }
 
 export function objectiveProgress(objective: Objective, contributions: ObjectiveContribution[], transactions: Transaction[]) {
-  const fundedMinor = contributions.filter(item => item.objective_id === objective.id).reduce((total, item) => total + linkedAmount(item.effective_amount ?? item.amount, item.transaction_id, transactions, objective.currency), 0n);
+  const fundedMinor = contributions.filter(item => item.objective_id === objective.id && (!item.contributed_at || new Date(item.contributed_at).getTime() <= Date.now())).reduce((total, item) => total + linkedAmount(item.effective_amount ?? item.amount, item.transaction_id, transactions, objective.currency), 0n);
   const targetMinor = parseMoney(objective.target_amount, objective.currency);
   return {
     funded: decimalMoney(fundedMinor, objective.currency),
@@ -20,7 +20,7 @@ export function objectiveProgress(objective: Objective, contributions: Objective
 }
 
 export function debtProgress(debt: PersonDebt, repayments: DebtRepayment[], transactions: Transaction[], timezone = browserTimezone()) {
-  const paidMinor = repayments.filter(item => item.debt_id === debt.id).reduce((total, item) => total + linkedAmount(item.effective_amount ?? item.amount, item.transaction_id, transactions, debt.currency), 0n);
+  const paidMinor = repayments.filter(item => item.debt_id === debt.id && (!item.paid_at || new Date(item.paid_at).getTime() <= Date.now())).reduce((total, item) => total + linkedAmount(item.effective_amount ?? item.amount, item.transaction_id, transactions, debt.currency), 0n);
   const originalMinor = parseMoney(debt.original_amount, debt.currency);
   const remainingMinor = originalMinor > paidMinor ? originalMinor - paidMinor : 0n;
   return {

@@ -5,6 +5,7 @@ import { SettingsView } from "@/components/financial/Settings";
 import { Onboarding } from "@/components/financial/Onboarding";
 import { Plans } from "@/components/financial/Planning";
 import { ManageLists } from "@/components/ManageLists";
+import { LoadingState } from "@/components/LoadingState";
 import {
   AccountsPage,
   AccountsSection,
@@ -16,7 +17,9 @@ import { TransactionDialog } from "@/components/TransactionDialog";
 import { Transactions } from "@/components/Transactions";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/dialog";
-import { browserTimezone, financialDate } from "@/domain/dates";
+import { browserTimezone } from "@/domain/dates";
+import { useFinancialPeriod } from '@/hooks/useFinancialPeriod';
+import { PeriodSelector, periodLabel } from '@/components/analytics/PeriodSelector';
 import { useAuth } from "@/hooks/useAuth";
 import {
   useCategories,
@@ -35,6 +38,10 @@ import type { Tab, Transaction } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   HandCoins,
+  ChartNoAxesCombined,
+  Search,
+  Eye,
+  EyeOff,
   Landmark,
   LayoutDashboard,
   LogOut,
@@ -48,15 +55,20 @@ import {
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { AnalyticsBar } from "@/components/analytics/AnalyticsBar";
+import { CommandPalette } from "@/components/CommandPalette";
+import { useNavigationGestures } from "@/hooks/useNavigationGestures";
 
 const Dashboard = lazy(() =>
   import("@/components/Dashboard").then((module) => ({
     default: module.Dashboard,
   })),
 );
+const Analytics = lazy(() => import('@/components/analytics/Analytics').then(module=>({default:module.Analytics})));
 const tabs = [
   { id: "dashboard", icon: LayoutDashboard },
   { id: "transactions", icon: Wallet },
+  { id: "analytics", icon: ChartNoAxesCombined },
   { id: "accounts", icon: Landmark },
   { id: "plans", icon: Target },
   { id: "debts", icon: HandCoins },
@@ -68,7 +80,7 @@ function routeTab(): Tab | null {
   if (typeof window === "undefined") return "dashboard";
   const route = window.location.pathname.replace(/^\/+|\/+$/g, "");
   return route === ""
-    ? "dashboard"
+    ? useAppStore.getState().personalization.landingPage
     : (tabs.find((tab) => tab.id === route)?.id ??
         (["goals", "savings", "categories", "payments"].includes(route)
           ? (route as Tab)
@@ -79,7 +91,7 @@ export default function App() {
   const { user, loading, requiresMfa, authError, recovery, completeRecovery } =
     useAuth();
   const { t, i18n } = useTranslation();
-  const { theme, locale, activeTab, setActiveTab } = useAppStore();
+  const { theme, locale, activeTab, setActiveTab, personalization } = useAppStore();
   const [notFound, setNotFound] = useState(() => routeTab() === null);
   useEffect(() => {
     const sync = () => {
@@ -91,7 +103,7 @@ export default function App() {
     const unsubscribe = useAppStore.subscribe((state, previous) => {
       if (state.activeTab !== previous.activeTab) {
         const path =
-          state.activeTab === "dashboard" ? "/" : `/${state.activeTab}`;
+          state.activeTab === "dashboard" ? (state.personalization.landingPage==='dashboard'?'/':'/dashboard') : `/${state.activeTab}`;
         if (window.location.pathname !== path)
           window.history.pushState(null, "", path);
         setNotFound(false);
@@ -119,6 +131,11 @@ export default function App() {
     return () => media.removeEventListener("change", apply);
   }, [theme]);
   useEffect(() => {
+    document.documentElement.dataset.accent=personalization.accent;
+    document.documentElement.dataset.density=personalization.density;
+    document.documentElement.dataset.motion=personalization.motion;
+  },[personalization.accent,personalization.density,personalization.motion]);
+  useEffect(() => {
     document.title = `P.R.I.S.M. · ${t(activeTab)}`;
   }, [activeTab, t]);
 
@@ -136,24 +153,23 @@ export default function App() {
   if (loading)
     return (
       <main className="grid min-h-screen place-items-center">
-        <p role="status">{t("loading")}</p>
+        <div className="w-full max-w-4xl p-6"><LoadingState /></div>
       </main>
     );
   if (!user)
     return (
-      <main className="auth-shell">
-        <div className="auth-brand">
-          <img src="/prism.svg" width="44" height="44" alt="" />
-          <span>P.R.I.S.M.</span>
+      <main className="auth-layout">
+        <aside className="auth-story">
+          <a href="/" className="auth-brand"><img src="/prism.svg" width="38" height="38" alt="" /><span>PRISM<span className="brand-caption">{locale === 'ms' ? 'Kewangan peribadi' : 'Personal finance'}</span></span></a>
+          <div className="auth-story-copy"><p className="eyebrow">{locale === 'ms' ? 'SEBUAH RUANG UNTUK WANG ANDA' : 'A SPACE FOR YOUR MONEY'}</p><h2>{locale === 'ms' ? 'Sedikit kejelasan. Lebih banyak kemungkinan.' : 'A little clarity. A lot more possibility.'}</h2><p>{locale === 'ms' ? 'Fahami perbelanjaan anda, rancang perkara yang penting dan lihat kemajuan anda.' : 'Understand your spending, make room for what matters, and see your progress.'}</p></div>
+          <div className="prism-art" aria-hidden="true"><span /><span /><span /></div>
+          <p className="auth-story-footer">{locale === 'ms' ? 'Pendapatan · Perbelanjaan · Perancangan' : 'Income · Spending · Plans'}</p>
+        </aside>
+        <div className="auth-form-side">
+          <div className="auth-preferences"><select className="input" aria-label={t('language')} value={locale} onChange={event => useAppStore.getState().setLocale(event.target.value === 'ms' ? 'ms' : 'en')}><option value="en">English</option><option value="ms">Bahasa Melayu</option></select><select className="input" aria-label={t('theme')} value={theme} onChange={event => useAppStore.getState().setTheme(event.target.value as 'system' | 'light' | 'dark')}><option value="system">{t('system')}</option><option value="light">{t('light')}</option><option value="dark">{t('dark')}</option></select></div>
+          <div className="auth-form"><AuthScreen /></div>
+          <img src="/built-by-ismail.png" alt="Built by Ismail" className="auth-credit" />
         </div>
-        <div className="card w-full max-w-lg p-7 sm:p-10">
-          <AuthScreen />
-        </div>
-        <img
-          src="/built-by-ismail.png"
-          alt="Built by Ismail"
-          className="block h-auto w-full max-w-[180px] object-contain"
-        />
       </main>
     );
   if (requiresMfa || authError)
@@ -186,15 +202,35 @@ function Workspace() {
   const debtRepayments = usePlatformTable("debt_repayments");
   const mutations = useTransactionMutations();
   useFinanceRealtime();
-  const [selectedMonth, setMonth] = useState<string|null>(null);
-  const month=selectedMonth ?? financialDate(new Date(),profile.data?.financial_timezone ?? store.financialTimezone).slice(0,7);
-  const report = useFinancialReport(month);
+  const { selection, period, setSelection } = useFinancialPeriod();
+  const label = periodLabel(selection, store.locale, t);
+  const report = useFinancialReport(period, store.personalization.analyticsBar || ['dashboard', 'analytics'].includes(store.activeTab));
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [navigationOpen, setNavigationOpen] = useState(false);
+  const [paletteOpen,setPaletteOpen]=useState(false);
+  const [routeRevision,setRouteRevision]=useState(0);
+  useNavigationGestures(navigationOpen,setNavigationOpen);
+  useEffect(()=>{
+    const media=window.matchMedia('(min-width: 640px)');
+    const close=()=>{if(media.matches)setNavigationOpen(false);};
+    media.addEventListener('change',close);
+    return ()=>media.removeEventListener('change',close);
+  },[]);
+  useEffect(()=>{const update=()=>setRouteRevision(r=>r+1);window.addEventListener('popstate',update);return ()=>window.removeEventListener('popstate',update);},[]);
+  useEffect(()=>{
+    const keyboard=(event:KeyboardEvent)=>{
+      const typing=(event.target as Element)?.closest('input,textarea,select,[contenteditable="true"]');
+      if((event.ctrlKey||event.metaKey)&&!event.altKey&&event.key.toLowerCase()==='k'){if(document.querySelector('[role="dialog"]')&&!document.querySelector('#command-list'))return;event.preventDefault();setPaletteOpen(v=>!v);return;}
+      if(typing||event.ctrlKey||event.metaKey||!event.altKey||document.querySelector('[role="dialog"]'))return;
+      if(event.key.toLowerCase()==='n'){event.preventDefault();document.querySelector<HTMLButtonElement>('[data-quick-add]')?.click();}
+      if(event.key.toLowerCase()==='p'){event.preventDefault();const state=useAppStore.getState();state.setPersonalization({privacyMode:!state.personalization.privacyMode});}
+    };
+    document.addEventListener('keydown',keyboard);return ()=>document.removeEventListener('keydown',keyboard);
+  },[]);
   const menuButton = useRef<HTMLButtonElement>(null);
   const navigationPanel = useRef<HTMLElement>(null);
   const [online, setOnline] = useState(navigator.onLine);
@@ -236,6 +272,7 @@ function Workspace() {
   useEffect(() => {
     if (!navigationOpen) return;
     const previousOverflow = document.body.style.overflow;
+    const returnFocus = menuButton.current;
     document.body.style.overflow = "hidden";
     const panel = navigationPanel.current;
     const focusable = panel?.querySelectorAll<HTMLElement>(
@@ -264,6 +301,7 @@ function Workspace() {
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKey);
+      requestAnimationFrame(()=>returnFocus?.focus());
     };
   }, [navigationOpen]);
   const requireAuth = (action: () => void) => {
@@ -324,15 +362,18 @@ function Workspace() {
         ? "allTransactions"
         : store.activeTab;
   const navigate = (tab: Tab) => {
+    if(tab===store.activeTab && window.location.search){window.history.pushState(null,'',tab==='dashboard'?'/':`/${tab}`);setRouteRevision(r=>r+1);}
     store.setActiveTab(tab);
     setNavigationOpen(false);
   };
   const navigationLinks = (closeLabel = false) =>
     tabs.map(({ id, icon: Icon }) => (
       <a
-        href={id === "dashboard" ? "/" : `/${id}`}
+        href={id === "dashboard" ? (store.personalization.landingPage==='dashboard'?'/':'/dashboard') : `/${id}`}
         key={id}
-        aria-current={store.activeTab === id ? "page" : undefined}
+        title={t(id)}
+        aria-label={t(id)}
+        aria-current={(store.activeTab === id || (id === 'plans' && ['goals','savings'].includes(store.activeTab)) || (id === 'settings' && ['categories','payments'].includes(store.activeTab))) ? "page" : undefined}
         onClick={(event) => {
           if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
             return;
@@ -341,21 +382,27 @@ function Workspace() {
         }}
       >
         <Icon size={17} />
-        {t(id)}
+        <span>{t(id)}</span>
         {closeLabel && store.activeTab === id && (
-          <span className="sr-only">, current page</span>
+          <span className="sr-only">{store.locale === 'ms' ? ', halaman semasa' : ', current page'}</span>
         )}
       </a>
     ));
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${store.personalization.sidebarCompact?'sidebar-compact':''}`}>
       <a
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-background focus:p-3"
         href="#main-content"
       >
         {store.locale === "ms" ? "Langkau ke kandungan" : "Skip to content"}
       </a>
-      <header className="app-header">
+      <aside className="desktop-sidebar">
+        <a className="brand sidebar-brand" href="/" onClick={event => { event.preventDefault(); navigate('dashboard'); }}><img src="/prism.svg" width="35" height="35" alt="" /><span>PRISM<span className="brand-caption">{store.locale === 'ms' ? 'Kewangan peribadi' : 'Personal finance'}</span></span></a>
+        <p className="eyebrow sidebar-label">{store.locale === 'ms' ? 'WANG ANDA' : 'YOUR MONEY'}</p>
+        <nav className="sidebar-links" aria-label={t('workspace')}>{navigationLinks()}</nav>
+        <div className="sidebar-footer"><p>{store.locale === 'ms' ? 'Sedikit kejelasan, setiap hari.' : 'A little clarity, every day.'}</p><Button variant="ghost" disabled={signingOut} onClick={() => void logout()}><LogOut size={16} />{t('signOut')}</Button></div>
+      </aside>
+      <header className="app-header" inert={navigationOpen}>
         <div className="flex min-w-0 items-center gap-2">
           <Button
             ref={menuButton}
@@ -370,7 +417,7 @@ function Workspace() {
             <Menu size={20} />
           </Button>
           <a
-            className="brand"
+            className="brand header-brand"
             href="/"
             onClick={(event) => {
               event.preventDefault();
@@ -378,18 +425,24 @@ function Workspace() {
             }}
           >
             <img src="/prism.svg" alt="" width="34" height="34" />
-            P.R.I.S.M.
+            PRISM
           </a>
+          <span className="header-context">{t('personalWorkspace')}<span>/</span><strong>{t(store.activeTab)}</strong></span>
         </div>
         <div className="flex min-w-0 items-center gap-1 sm:gap-3">
+          <Button variant="ghost" size="icon" aria-label={t('quickNavigation')} title={t('keyboardHint')} onClick={()=>setPaletteOpen(true)}><Search size={18}/></Button>
+          <Button variant="ghost" size="icon" aria-label={t('privacyMode')} title={t(store.personalization.privacyMode?'privacyOn':'privacyOff')} aria-pressed={store.personalization.privacyMode} onClick={()=>store.setPersonalization({privacyMode:!store.personalization.privacyMode})}>{store.personalization.privacyMode?<EyeOff size={18}/>:<Eye size={18}/>}</Button>
+          <span className="header-currency">{store.currency}</span>
           <button
-            className="hidden min-w-0 max-w-20 truncate text-sm font-medium min-[420px]:block sm:max-w-44"
+            className="profile-button"
+            aria-label={t('settings')}
             onClick={() => navigate("settings")}
           >
-            {profile.data?.username || user?.email}
+            <span className="profile-avatar" aria-hidden="true">{(profile.data?.username || user?.email || 'P').slice(0,1).toUpperCase()}</span><span className="profile-name">{profile.data?.username || user?.email}</span>
           </button>
           <Button
             variant="ghost"
+            className="header-signout"
             aria-label={t("signOut")}
             disabled={signingOut}
             onClick={() => void logout()}
@@ -428,7 +481,7 @@ function Workspace() {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Close navigation"
+                aria-label={t('closeNavigation')}
                 onClick={() => {
                   setNavigationOpen(false);
                   menuButton.current?.focus();
@@ -443,32 +496,22 @@ function Workspace() {
           </aside>
         </>
       )}
-      <main id="main-content" className="app-main">
-        <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
+      <main id="main-content" className="app-main" inert={navigationOpen}>
+        {profile.data&&!report.error&&<AnalyticsBar report={report.data} period={period} label={label}/>}
+        <div className="page-heading">
           <div>
-            <p className="eyebrow mb-2">{t("personalWorkspace")}</p>
+            <p className="eyebrow mb-2">{store.activeTab === 'dashboard' ? (profile.isPending ? t('loading') : label) : t('personalWorkspace')}</p>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               {t(title)}
             </h1>
+            <p className="page-description">{store.activeTab === 'dashboard' ? (store.locale === 'ms' ? 'Kedudukan anda hari ini. Ruang untuk hari esok.' : 'Where you stand today. Room for tomorrow.') : store.activeTab === 'transactions' ? (store.locale === 'ms' ? 'Semak, cari dan rekod wang yang masuk dan keluar.' : 'Review, find, and record the money coming in and going out.') : null}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            {store.activeTab === "dashboard" && (
-              <label className="form-field">
-                {t("month")}
-                <input
-                  className="input"
-                  type="month"
-                  value={month}
-                  onChange={(event) => {
-                    if (/^\d{4}-(0[1-9]|1[0-2])$/.test(event.target.value))
-                      setMonth(event.target.value);
-                  }}
-                />
-              </label>
+            {profile.data && (store.activeTab === "dashboard" || store.activeTab === "analytics") && (
+              <PeriodSelector selection={selection} period={period} onChange={setSelection}/>
             )}
-            {(store.activeTab === "dashboard" ||
-              store.activeTab === "transactions") && (
-              <Button onClick={add} disabled={pending || !!dataError}>
+            {(
+              <Button data-quick-add onClick={add} disabled={pending || !!dataError}>
                 <Plus size={16} />
                 {t("addTransaction")}
               </Button>
@@ -504,9 +547,9 @@ function Workspace() {
             </Button>
           </section>
         ) : pending ? (
-          <p role="status">{t("loading")}</p>
+          <LoadingState />
         ) : (
-          <Suspense fallback={<p role="status">{t("loading")}</p>}>
+          <Suspense fallback={<LoadingState />}>
             {store.activeTab === "dashboard" && profile.data && (
               <Onboarding profile={profile.data} />
             )}
@@ -514,15 +557,18 @@ function Workspace() {
               <Dashboard
                 {...data}
                 report={report.data}
-                month={month}
+                period={period}
+                periodLabel={label}
                 onEdit={edit}
                 onDelete={setDeleting}
                 accountSummary={<FinancialOverview />}
+                onAdd={add}
               />
             )}
+            {store.activeTab === "analytics" && <Analytics period={period} categories={data.categories}/>}
             {store.activeTab === "transactions" && (
               <div className="space-y-7">
-                <Transactions
+                <Transactions key={routeRevision}
                   {...data}
                   search={search}
                   setSearch={setSearch}
@@ -560,6 +606,8 @@ function Workspace() {
           </p>
         )}
       </main>
+      <Button className="quick-add-mobile" size="icon" aria-label={t('quickAdd')} onClick={add} disabled={pending||!!dataError}><Plus size={22}/></Button>
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} onAdd={add} canAdd={!pending&&!dataError&&online}/>
       <TransactionDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

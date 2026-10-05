@@ -9,6 +9,12 @@ const debt = (direction:PersonDebt['direction']):PersonDebt => ({id:'d',user_id:
 const repayment = (amount:string|null, transaction_id:string|null):DebtRepayment => ({id:'r',user_id:'u',debt_id:'d',currency:'MYR',amount,transaction_id,note:'',paid_at:'',created_at:''});
 
 describe('real financial progress',()=>{
+  it('excludes scheduled contributions and repayments even when server exact values exist',()=>{
+    const scheduledContribution={...contribution('scheduled','100.00',null),effective_amount:'100.00',contributed_at:'2099-01-01T00:00:00Z'};
+    const scheduledRepayment={...repayment('100.00',null),effective_amount:'100.00',paid_at:'2099-01-01T00:00:00Z'};
+    expect(objectiveProgress(objective,[scheduledContribution],[])).toMatchObject({funded:'0.00',completed:false});
+    expect(debtProgress(debt('i_owe'),[scheduledRepayment],[])).toMatchObject({paid:'0.00',settled:false});
+  });
   it('derives goal and savings funding from manual and linked amounts, including edits and deletion',()=>{
     const entries=[contribution('1','25.00',null),contribution('2',null,'t')];
     expect(objectiveProgress(objective,entries,[transaction('t','50.00')])).toMatchObject({funded:'75.00',remaining:'25.00',percent:75,completed:false});

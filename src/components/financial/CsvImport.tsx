@@ -109,7 +109,7 @@ export function CsvImport({
   const invalidate = () => setPreview(null);
   return (
     <>
-      <div className="flex justify-end mb-3">
+      <div className="flex">
         <Button variant="outline" onClick={() => { if(!doc)setOptions(current=>({...current,currency:useAppStore.getState().currency})); setOpen(true); }}>
           {c("Import CSV", "Import CSV")}
         </Button>

@@ -1,0 +1,45 @@
+import { PGlite } from '@electric-sql/pglite';
+import { replay } from './foundations-db-test.mjs';
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+const db=new PGlite();
+try {
+  await replay(db);
+  const user=randomUUID(),other=randomUUID(),session=randomUUID(),otherSession=randomUUID();
+  await db.query('insert into auth.users(id) values($1),($2)',[user,other]);
+  await db.query('insert into auth.sessions(id,user_id) values($1,$2),($3,$4)',[session,user,otherSession,other]);
+  const identity=async(id,sid,aal='aal1')=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:id,session_id:sid,aal})]);await db.exec('set role authenticated');};
+  await identity(user,session);
+  assert.equal((await db.query('select default_analysis_period from public.profiles')).rows[0].default_analysis_period,'month');
+  await db.query("update public.profiles set financial_timezone='Asia/Kuala_Lumpur',default_analysis_period='last-6-months' where id=auth.uid()");
+  await assert.rejects(db.query("update public.profiles set default_analysis_period='custom' where id=auth.uid()"));
+  await db.query("insert into public.transactions(user_id,amount,currency,type,description,transaction_date) values(auth.uid(),'90071992547409.93','MYR','income','zone boundary','2025-12-31T17:00:00Z'),(auth.uid(),'0.10','MYR','income','same day','2026-01-01T00:00:00Z'),(auth.uid(),'0.20','MYR','income','next day','2026-01-02T00:00:00Z'),(auth.uid(),'20.00','MYR','expense','earliest','1999-01-01T00:00:00Z'),(auth.uid(),'99.00','MYR','expense','future','2099-01-01T00:00:00Z')");
+  const daily=(await db.query("select financial_date,amount,transaction_count from public.finance_daily_totals order by financial_date")).rows;
+  assert.deepEqual(daily,[{financial_date:'1999-01-01',amount:'20.00',transaction_count:1},{financial_date:'2026-01-01',amount:'90071992547410.03',transaction_count:2},{financial_date:'2026-01-02',amount:'0.20',transaction_count:1}]);
+  assert.equal((await db.query("select amount from public.finance_daily_totals where financial_date between '2026-01-01' and '2026-01-01'")).rows[0].amount,'90071992547410.03');
+  const category=(await db.query("insert into public.categories(user_id,name,type,color) values(auth.uid(),'Usage QA','income','#00ffff') returning id")).rows[0].id;
+  await db.query("update public.transactions set category_id=$1 where type='income'",[category]);
+  assert.equal((await db.query('select transaction_count from public.finance_list_usage where id=$1',[category])).rows[0].transaction_count,3);
+  await db.query('delete from public.categories where id=$1',[category]);
+  assert.equal((await db.query("select count(*)::integer as count from public.transactions where type='income' and category_id is null")).rows[0].count,3);
+  const objective=(await db.query("insert into public.objectives(user_id,kind,name,target_amount,currency) values(auth.uid(),'goal','Future goal','100.00','MYR') returning id")).rows[0].id;
+  await db.query("insert into public.objective_contributions(user_id,objective_id,currency,amount,contributed_at) values(auth.uid(),$1,'MYR','100.00','2099-01-01')",[objective]);
+  assert.equal((await db.query('select effective_amount from public.exact_objective_contributions')).rows[0].effective_amount,'0.00');
+  const debt=(await db.query("insert into public.person_debts(user_id,direction,counterparty,original_amount,currency) values(auth.uid(),'i_owe','Future QA','100.00','MYR') returning id")).rows[0].id;
+  await db.query("insert into public.debt_repayments(user_id,debt_id,currency,amount,paid_at) values(auth.uid(),$1,'MYR','100.00','2099-01-01')",[debt]);
+  assert.equal((await db.query('select effective_amount from public.exact_debt_repayments')).rows[0].effective_amount,'0.00');
+  await identity(other,otherSession);
+  assert.equal((await db.query('select count(*)::integer as count from public.finance_daily_totals')).rows[0].count,0);
+  assert.equal((await db.query('select default_analysis_period from public.profiles')).rows[0].default_analysis_period,'month');
+  await db.query("update public.profiles set default_analysis_period='all-time' where id=auth.uid()");
+  await identity(user,session);
+  assert.equal((await db.query('select default_analysis_period from public.profiles')).rows[0].default_analysis_period,'last-6-months');
+  await db.exec('reset role');
+  // The fixture models verified factors, matching the existing MFA policy.
+  await db.query("insert into auth.mfa_factors(id,user_id,status) values($1,$2,'verified')",[randomUUID(),user]);
+  await identity(user,session,'aal1');assert.equal((await db.query('select count(*)::integer as count from public.finance_daily_totals')).rows[0].count,0);
+  assert.equal((await db.query("update public.profiles set default_analysis_period='month' where id=auth.uid() returning id")).rows.length,0);
+  await identity(user,session,'aal2');assert.equal((await db.query('select count(*)::integer as count from public.finance_daily_totals')).rows[0].count,3);
+  await db.exec('reset role; set role anon');await assert.rejects(db.query('select * from public.finance_daily_totals'));
+  console.log('PASS profile period defaults/validation/ownership/MFA; exact daily/custom/all-time/timezone aggregates; future progress; anonymous denial');
+} catch(error) {console.error(error.message,error.detail ?? '');process.exitCode=1;} finally {await db.close();}

@@ -6,7 +6,7 @@ const { chromium } = require(process.env.PRISM_PLAYWRIGHT || 'playwright');
 process.env.VITE_SUPABASE_URL='https://fixture.supabase.co';process.env.VITE_SUPABASE_ANON_KEY='fixture-anon-key';const {createServer}=await import('vite');const devServer=await createServer({server:{host:'127.0.0.1',port:5174,strictPort:true}});await devServer.listen();
 const browser = await chromium.launch({ headless: true, ...(process.platform==='win32'?{channel:'msedge'}:{}) });
 const context = await browser.newContext();
-const page = await context.newPage();
+let page = await context.newPage();
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 const auth = `export const useAuth = () => ({ user: { id: 'qa-user', email: 'long-email-address@example.invalid' }, loading: false, requiresMfa: false, authError: null, signOut: async () => {}, refreshMfa: async () => {} }); export const AuthProvider = ({ children }) => children;`;
@@ -19,6 +19,7 @@ const transaction = { id: 'tx-1', description: 'LongUnbrokenDescription'.repeat(
 const result = data => ({ data, isPending: false, error: null, refetch: async () => {} });
 const mutation = { isPending: false, mutateAsync: async () => {} };
 export const useTransactions = () => result([transaction, { ...transaction, id: 'tx-2', type: 'income', description: 'Salary', amount: '5000.00' }]);
+export const useListUsage = () => result([]);
 export const useCategories = () => result([category]);
 export const usePaymentMethods = () => result([payment]);
 export const useProfile = () => result({ id: 'qa-user', username: 'ExtremelyLongDisplayName'.repeat(4), currency: 'MYR', language, theme });
@@ -32,7 +33,7 @@ await context.route('**/src/hooks/useAuth.tsx*', route => route.fulfill({ conten
 await context.route('**/src/hooks/useFinanceData.ts*', route => route.fulfill({ contentType: 'application/javascript', body: finance }));
 const platform = `const result=data=>({data,isPending:false,error:null,refetch:async()=>{}});const mutation={isPending:false,mutateAsync:async()=>{}};export const usePlatformTable=()=>result([]);export const usePlatformMutation=()=>({create:mutation,update:mutation,remove:mutation});`;
 await context.route('**/src/hooks/usePlatformData.ts*',route=>route.fulfill({contentType:'application/javascript',body:platform}));
-await context.route('**/src/hooks/useFinancialReports.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const useFinancialReport=()=>({data:undefined,isPending:false,error:null});export const useTransactionPage=()=>({data:{rows:[{id:'tx-1',user_id:'qa-user',amount:'25.00',currency:'MYR',type:'expense',category_id:null,payment_method_id:null,description:'Purchase',transaction_date:'2026-09-19T12:00:00Z',created_at:''}],total:1},isPending:false,error:null});`}));
+await context.route('**/src/hooks/useFinancialReports.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const useAnalyticsReport = () => ({data:[],isPending:false,error:null}); export const useFinancialReport=()=>({data:undefined,isPending:false,error:null});export const useTransactionPage=()=>({data:{rows:[{id:'tx-1',user_id:'qa-user',amount:'25.00',currency:'MYR',type:'expense',category_id:null,payment_method_id:null,description:'Purchase',transaction_date:'2026-09-19T12:00:00Z',created_at:''}],total:1},isPending:false,error:null});`}));
 await context.route('**/src/hooks/usePlanningData.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const usePlanningData=()=>({budgets:{data:[],error:null},rules:{data:[],error:null},importRows:{isPending:false}});`}));
 await context.route('**/src/lib/supabase.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `export const supabase = { auth: { mfa: { listFactors: async () => ({ data: { totp: [] }, error: null }) } } };` }));
 await context.route('**/api/rates?*', route => route.fulfill({ json: { base: 'MYR', rates: { USD: .23, EUR: .21, JPY: 34, MYR: 1 }, updatedAt: Date.now(), source: 'QA fixture' } }));
@@ -42,7 +43,7 @@ async function contained(label, dialog = false) {
     const root = isDialog ? document.querySelector('[role="dialog"], dialog[open]') : document.documentElement;
     const rect = root.getBoundingClientRect();
     const leaks = [...root.querySelectorAll('input, select, button, h1, h2, h3, h4, p, dd')].filter(el => {
-      if (!el.getClientRects().length || el.closest('.app-nav, table, [data-radix-popper-content-wrapper]')) return false;
+      if (!el.getClientRects().length || el.closest('.app-nav, .analytics-bar, table, [data-radix-popper-content-wrapper]')) return false;
       const r = el.getBoundingClientRect();
       return r.width && (r.left < -1 || r.right > innerWidth + 1);
     }).map(el => ({ tag: el.tagName, text: el.textContent.slice(0, 60), width: el.getBoundingClientRect().width }));
@@ -65,12 +66,25 @@ await mkdir('artifacts', { recursive: true });
 try {
   for (const locale of ['en', 'ms']) {
     await context.addInitScript(({ locale }) => { localStorage.setItem('qa-locale', locale); localStorage.setItem('qa-theme', locale === 'ms' ? 'dark' : 'light'); }, { locale });
-    for (const width of (process.env.PRISM_QA_WIDTH ? [Number(process.env.PRISM_QA_WIDTH)] : [320, 360, 375, 390, 414, 640, 768, 1440])) {
+    for (const width of (process.env.PRISM_QA_WIDTH ? [Number(process.env.PRISM_QA_WIDTH)] : [320, 360, 375, 390, 414, 640, 768, 1024, 1280, 1440])) {
+      // Release the prior document and its dev-module graph on low-memory hosts.
+      await page.close();
+      page = await context.newPage();
+      page.on('pageerror', error => errors.push(error.message));
       await page.setViewportSize({ width, height: width === 1440 ? 1000 : 740 });
-      for (const route of ['/', '/transactions', '/accounts', '/plans', '/debts', '/categories', '/payments', '/settings']) {
-        await page.goto(`http://127.0.0.1:5174${route}`);
-        await page.locator('main h1').waitFor();
+      await page.goto('http://127.0.0.1:5174/');
+      const routeTitles = locale === 'en'
+        ? ['Overview','All transactions','Analytics','Accounts','Plans','Goals','Savings','Personal debts','Categories','Payment methods','Settings']
+        : ['Gambaran keseluruhan','Semua transaksi','Analitik','Akaun','Perancangan','Matlamat','Simpanan','Hutang peribadi','Kategori','Kaedah pembayaran','Tetapan'];
+      let routeIndex = 0;
+      for (const route of ['/', '/transactions', '/analytics', '/accounts', '/plans', '/goals', '/savings', '/debts', '/categories', '/payments', '/settings']) {
+        if (route !== '/') await page.evaluate(path => { history.pushState(null, '', path); dispatchEvent(new PopStateEvent('popstate')); }, route);
+        await page.waitForFunction(title => document.querySelector('main h1')?.textContent === title, routeTitles[routeIndex++]);
         await page.locator('main .card, main .metric-grid').first().waitFor();
+        if (route === '/') {
+          await page.getByLabel(locale === 'en' ? 'Month' : 'Bulan', {exact:true}).fill('2026-09');
+          await page.locator('.snapshot').waitFor();
+        }
         await contained(`${locale} ${width} ${route}`);
         if (width === 375 && locale === 'en') await page.screenshot({ path: `artifacts/mobile-${route === '/' ? 'dashboard' : route.slice(1)}.png`, fullPage: true });
         if (route === '/transactions') {
@@ -97,6 +111,7 @@ try {
           await page.keyboard.press('Escape');
         }
       }
+      console.log(`Verified ${locale} at ${width}px`);
     }
   }
   await page.setViewportSize({ width: 320, height: 360 });

@@ -8,6 +8,8 @@ import type {
 } from "@/types";
 import { financialDate } from "./dates";
 import { decimalMoney, parseMoneyTotal } from "./money";
+import { categoryColor, ratio } from './analytics';
+import { analyticsPeriod, calendarDays, periodIncludes, periodMonths, type Period } from './periods';
 export interface FinancialReport {
   monthly: MonthlyTotal[];
   net: { user_id: string; currency: Currency; amount: string }[];
@@ -15,7 +17,7 @@ export interface FinancialReport {
 export function dashboardFinancials(
   transactions: Transaction[],
   categories: Category[],
-  month: string,
+  month: string | Period,
   currency: Currency,
   rates: ExchangeRates | null,
   timezone: string,
@@ -25,14 +27,9 @@ export function dashboardFinancials(
 ) {
   const now = new Date();
   const today = financialDate(now, timezone);
-  const [year, index] = month.split("-").map(Number);
-  const days = new Date(Date.UTC(year, index, 0)).getUTCDate();
-  const dayCount =
-    today.slice(0, 7) === month
-      ? Number(today.slice(8))
-      : month > today.slice(0, 7)
-        ? 0
-        : days;
+  const period = typeof month === 'string' ? analyticsPeriod(month, 1) : month;
+  const days = period.from && period.to ? calendarDays(period.from, period.to) : 0;
+  const dayCount = period.from && period.to && period.from <= today ? calendarDays(period.from, period.to < today ? period.to : today) : 0;
   const ordinary = transactions.filter(
     (tx) =>
       (!tx.activity_kind || tx.activity_kind === "ordinary") &&
@@ -42,6 +39,7 @@ export function dashboardFinancials(
     report?.monthly ??
     ordinary.map((tx) => ({
       user_id: tx.user_id,
+      financial_date: tx.financial_date ?? financialDate(tx.transaction_date, timezone),
       month: (
         tx.financial_date ?? financialDate(tx.transaction_date, timezone)
       ).slice(0, 7),
@@ -75,7 +73,7 @@ export function dashboardFinancials(
       return "0";
     }
   };
-  const selected = rows.filter((r) => r.month === month);
+  const selected = rows.filter((r) => periodIncludes(r.financial_date ?? r.month + '-01', period));
   const incomeExact = safe(selected.filter((r) => r.type === "income"));
   const expenseExact = safe(selected.filter((r) => r.type === "expense"));
   const net =
@@ -88,20 +86,24 @@ export function dashboardFinancials(
       ),
     }));
   const balanceExact = safe(net);
-  const chart = Array.from({ length: 6 }, (_, i) => {
-    const date = new Date(Date.UTC(year, index - 6 + i, 1));
-    const key = date.toISOString().slice(0, 7);
+  const chart = periodMonths(period, rows.map(r => r.financial_date ?? r.month + '-01')).map(key => {
+    const date = new Date(key + '-01T12:00:00Z');
     return {
+      incomeExact: safe(selected.filter((r) => r.month === key && r.type === "income")),
+      expenseExact: safe(selected.filter((r) => r.month === key && r.type === "expense")),
+      from: period.from > key + '-01' ? period.from : key + '-01',
+      to: period.to,
       key,
       name: date.toLocaleDateString(locale === "ms" ? "ms-MY" : "en-US", {
         month: "short",
+        year: "2-digit",
         timeZone: "UTC",
       }),
       income: Number(
-        safe(rows.filter((r) => r.month === key && r.type === "income")),
+        safe(selected.filter((r) => r.month === key && r.type === "income")),
       ),
       expense: Number(
-        safe(rows.filter((r) => r.month === key && r.type === "expense")),
+        safe(selected.filter((r) => r.month === key && r.type === "expense")),
       ),
     };
   });
@@ -117,8 +119,10 @@ export function dashboardFinancials(
         selected.filter((r) => r.type === "expense" && r.category_id === id),
       );
       return {
+        id,
+        count: selected.filter(r => r.type === "expense" && r.category_id === id).reduce((n,r)=>n+r.transaction_count,0),
         name: c?.name ?? uncategorized,
-        color: c?.color ?? "#94a3b8",
+        color: categoryColor(id, categories),
         exact,
         value: Number(exact),
       };
@@ -166,7 +170,7 @@ export function dashboardFinancials(
     breakdown,
     unavailable,
     mixed: [...rows, ...net].some((r) => r.currency !== currency),
-    savingsRate: income ? (Number(netExact) / income) * 100 : 0,
+    savingsRate: ratio(netExact, incomeExact, currency) ?? 0,
     daily: dayCount ? expense / dayCount : 0,
     forecast: dayCount ? (expense / dayCount) * days : 0,
   };

@@ -450,6 +450,7 @@ export type Database = {
         Row: {
           created_at: string
           currency: string
+          default_analysis_period: string
           financial_timezone: string | null
           id: string
           language: string
@@ -460,6 +461,7 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string
+          default_analysis_period?: string
           financial_timezone?: string | null
           id: string
           language?: string
@@ -470,6 +472,7 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string
+          default_analysis_period?: string
           financial_timezone?: string | null
           id?: string
           language?: string
@@ -1375,6 +1378,36 @@ export type Database = {
             referencedColumns: ["user_id", "id", "currency"]
           },
         ]
+      }
+      finance_daily_totals: {
+        Row: {
+          amount: string | null
+          category_id: string | null
+          currency: string | null
+          financial_date: string | null
+          month: string | null
+          transaction_count: number | null
+          type: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_owned_category_fkey"
+            columns: ["user_id", "category_id", "type"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["user_id", "id", "type"]
+          },
+        ]
+      }
+      finance_list_usage: {
+        Row: {
+          id: string | null
+          resource: string | null
+          transaction_count: number | null
+          user_id: string | null
+        }
+        Relationships: []
       }
       finance_monthly_totals: {
         Row: {

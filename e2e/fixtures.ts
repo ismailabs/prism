@@ -8,7 +8,7 @@ const encode = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('
 const accessToken = `${encode({ alg: 'none', typ: 'JWT' })}.${encode({ sub: userId, email: 'test@example.com', role: 'authenticated', aud: 'authenticated', aal: 'aal1', session_id: '22222222-2222-4222-8222-222222222222', exp: now + 3600 })}.fixture`;
 const user = { id: userId, email: 'test@example.com', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, identities: [], created_at: new Date().toISOString() };
 export const rows: Record<string, unknown[]> = {
-  profiles: [{ id:userId, username:'Test member', currency:'MYR', language:'en', theme:'light', mfa_enabled:false, financial_timezone:'Asia/Kuala_Lumpur', created_at:new Date().toISOString() }],
+  profiles: [{ id:userId, username:'Test member', currency:'MYR', language:'en', theme:'light', mfa_enabled:false, financial_timezone:'Asia/Kuala_Lumpur', default_analysis_period:'month', created_at:new Date().toISOString() }],
   categories: [], payment_methods: [],
   transactions: [{ id:'tx-1', user_id:userId, amount:'25.00', currency:'MYR', type:'expense', category_id:null, payment_method_id:null, account_id:'account-1', description:'Groceries', transaction_date:'2026-09-20T00:00:00Z', created_at:'2026-09-20T00:00:00Z' }],
   accounts: [{ id:'account-1', user_id:userId, name:'Everyday account', currency:'MYR', opening_balance:'100.00', archived:false, created_at:'2026-09-01T00:00:00Z' },{ id:'account-2', user_id:userId, name:'Empty account', currency:'USD', opening_balance:'50.00', archived:false, created_at:'2026-09-01T00:00:00Z' }],
@@ -38,9 +38,34 @@ async function handleSupabase(route: Route) {
   const resource=url.pathname.split('/').at(-1)??'';
   if(resource==='import_transactions')return route.fulfill({json:request.postDataJSON().p_rows.length});
   if(resource==='record_recurring_occurrence')return route.fulfill({json:'recorded-occurrence'});
-  if(resource==='transaction_page')return route.fulfill({json:{rows:rows.transactions,total:rows.transactions.length}});
+  if(resource==='transaction_page'){
+    const {p_filters:f,p_page:p}=request.postDataJSON();
+    const filtered=rows.transactions.filter(item=>{const t=item as Record<string,string|null>;const date=t.financial_date??new Date(new Date(String(t.transaction_date)).getTime()+8*3600000).toISOString().slice(0,10);return (!f.type||t.type===f.type)&&(!f.category||(f.category==='uncategorized'?t.category_id===null:t.category_id===f.category))&&(!f.from||date>=f.from)&&(!f.to||date<=f.to)&&(!f.activity||((t.activity_kind??'ordinary')===f.activity&&new Date(String(t.transaction_date))<=new Date()))&&(!f.search||String(t.description).toLowerCase().includes(f.search.toLowerCase()));});
+    return route.fulfill({json:{rows:filtered.slice((p-1)*15,p*15),total:filtered.length}});
+  }
+  if(resource==='finance_list_usage'){const counts=new Map<string,{user_id:string;resource:string;id:unknown;transaction_count:number}>();for(const tx of rows.transactions as Record<string,unknown>[])for(const [resource,key] of [['categories','category_id'],['payments','payment_method_id']]){if(!tx[key])continue;const entry=counts.get(resource+tx[key])??{user_id:userId,resource,id:tx[key],transaction_count:0};entry.transaction_count++;counts.set(resource+tx[key],entry);}return route.fulfill({json:[...counts.values()]});}
+  if(resource==='finance_daily_totals'){
+    const bounds=url.searchParams.getAll('financial_date');
+    const aggregated=new Map();
+    for(const item of rows.transactions){const tx=item as Record<string,unknown>;if((tx.activity_kind??'ordinary')!=='ordinary'||new Date(String(tx.transaction_date))>new Date())continue;const date=String(tx.financial_date??new Date(new Date(String(tx.transaction_date)).getTime()+8*3600000).toISOString().slice(0,10));if(bounds.some(b=>b.startsWith('gte.')&&date<b.slice(4)||b.startsWith('lte.')&&date>b.slice(4)))continue;const key=JSON.stringify([date,tx.currency,tx.type,tx.category_id]);const current=aggregated.get(key)??{user_id:userId,month:date.slice(0,7),financial_date:date,currency:tx.currency,type:tx.type,category_id:tx.category_id,minor:0n,transaction_count:0};current.minor+=BigInt(String(tx.amount).replace('.',''));current.transaction_count++;aggregated.set(key,current);}
+    const values=[...aggregated.values()].map(({minor,...row})=>({...row,amount:row.currency==='JPY'?String(minor):String(minor/100n)+'.'+String(minor%100n).padStart(2,'0')}));
+    const offset=Number(url.searchParams.get('offset')??0),limit=Number(url.searchParams.get('limit')??1000);return route.fulfill({json:values.slice(offset,offset+limit)});
+  }
   if(resource==='finance_monthly_totals')return route.fulfill({json:[{user_id:userId,month:'2026-09',currency:'MYR',type:'expense',category_id:null,amount:'25.00',transaction_count:1}]});
-  if(resource==='finance_net_flow')return route.fulfill({json:[{user_id:userId,currency:'MYR',amount:'-25.00'}]});
+  if(resource==='finance_net_flow') {
+    const sums=new Map<string,bigint>();
+    for(const tx of rows.transactions as Record<string,unknown>[]) {
+      if((tx.activity_kind??'ordinary')!=='ordinary'||new Date(String(tx.transaction_date))>new Date())continue;
+      const currency=String(tx.currency), digits=currency==='JPY'?0:2;
+      const [whole,fraction='']=String(tx.amount).split('.');
+      const minor=BigInt(whole)*10n**BigInt(digits)+BigInt(fraction.padEnd(digits,'0')||'0');
+      sums.set(currency,(sums.get(currency)??0n)+(tx.type==='income'?minor:-minor));
+    }
+    return route.fulfill({json:[...sums].map(([currency,value])=> {
+      const negative=value<0n, absolute=negative?-value:value;
+      return {user_id:userId,currency,amount:(negative?'-':'')+(currency==='JPY'?String(absolute):String(absolute/100n)+'.'+String(absolute%100n).padStart(2,'0'))};
+    })});
+  }
   const table=resource.replace(/^exact_/,'');
   if (!(table in rows)) return route.fulfill({ status:200, contentType:'application/json', body:'[]' });
   const singular = request.headers().accept?.includes('application/vnd.pgrst.object+json');
@@ -53,6 +78,6 @@ async function handleSupabase(route: Route) {
     rows[table][index]={...current,...body};
     return route.fulfill({ status:200, contentType:'application/json', body:JSON.stringify(singular ? rows[table][index] : [rows[table][index]]) });
   }
-  if (request.method() === 'DELETE') { const index=rows[table].findIndex(row=>(row as {id:string}).id===url.searchParams.get('id')?.replace('eq.',''));const deleted={id:(rows[table].splice(Math.max(0,index),1)[0] as {id:string}).id}; return route.fulfill({ status:200, contentType:'application/json', body:JSON.stringify(singular?deleted:[deleted]) }); }
+  if (request.method() === 'DELETE') { if(table==='categories'||table==='payment_methods'){const key=table==='categories'?'category_id':'payment_method_id',id=url.searchParams.get('id')?.replace('eq.','');for(const tx of rows.transactions as Record<string,unknown>[])if(tx[key]===id)tx[key]=null;} const index=rows[table].findIndex(row=>(row as {id:string}).id===url.searchParams.get('id')?.replace('eq.',''));const deleted={id:(rows[table].splice(Math.max(0,index),1)[0] as {id:string}).id}; return route.fulfill({ status:200, contentType:'application/json', body:JSON.stringify(singular?deleted:[deleted]) }); }
   const created={id:crypto.randomUUID(),user_id:userId,created_at:new Date().toISOString(),updated_at:new Date().toISOString(),...body};rows[table].push(created);return route.fulfill({status:201,json:singular?created:[created]});
 }

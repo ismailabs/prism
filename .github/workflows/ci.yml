@@ -18,6 +18,7 @@ jobs:
       - run: npm run test:db
       - run: npm run test:platform-db
       - run: npm run test:foundations-db
+      - run: npm run test:period-db
       - name: Install PostgREST test binary
         run: |
           curl -fsSL https://github.com/PostgREST/postgrest/releases/download/v16.4/postgrest-v16.4-linux-static-x86-64.tar.xz -o /tmp/postgrest.tar.xz

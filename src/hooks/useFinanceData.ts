@@ -11,7 +11,7 @@ interface OwnedRow { id: string; user_id: string; created_at: string }
 export type UpdateTransaction = Partial<NewTransaction> & { id: string };
 export type UpdateCategory = Partial<NewCategory> & { id: string };
 export type UpdatePaymentMethod = Partial<NewPaymentMethod> & { id: string };
-export type ProfileUpdate = Partial<Pick<Profile, 'username' | 'currency' | 'language' | 'theme' | 'financial_timezone'>>;
+export type ProfileUpdate = Partial<Pick<Profile, 'username' | 'currency' | 'language' | 'theme' | 'financial_timezone' | 'default_analysis_period'>>;
 interface MutationContext<T> { token: string; ledger: OptimisticLedger<T> }
 interface Repository<Row extends OwnedRow, Input extends object> {
   resource: Resource;
@@ -90,6 +90,23 @@ export function usePaymentMethods() {
         if (error) throw error;
         rows.push(...data);
         if (data.length < 1_000) return rows;
+      }
+    },
+  });
+}
+
+export function useListUsage() {
+  const { userId, allowed, pending } = useFinanceAccess();
+  return useQuery({
+    queryKey: [...financeKeys.all(userId), 'list-usage'], enabled: allowed && pending === 0, staleTime: 30_000,
+    queryFn: async ({signal}) => {
+      const id = requireUser(userId, allowed);
+      const rows: {id: string | null; resource: string | null; transaction_count: number | null}[] = [];
+      for (let offset = 0; ; offset += 1000) {
+        const response = await supabase.from('finance_list_usage').select('*').eq('user_id',id).order('resource').order('id').range(offset,offset+999).abortSignal(signal);
+        if(response.error) throw response.error;
+        rows.push(...response.data);
+        if(response.data.length < 1000) return rows;
       }
     },
   });

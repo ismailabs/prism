@@ -8,6 +8,7 @@ import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
+import { ActivityIcon } from '../ActivityIcon';
 import { Failure, money, useFinancialCopy } from "./shared";
 
 export function Transfers() {
@@ -91,7 +92,7 @@ export function Transfers() {
     <section className="card p-5 space-y-4">
       <div className="flex justify-between gap-3">
         <div>
-          <h2 className="font-semibold">{c("Transfers", "Pindahan")}</h2>
+          <h2 className="font-semibold flex items-center gap-2"><ActivityIcon kind="transfer"/>{c("Transfers", "Pindahan")}</h2>
           <p className="text-sm text-subtle">
             {c(
               "Move money between accounts. Transfers do not change income or expenses.",

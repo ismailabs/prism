@@ -20,3 +20,11 @@ Apply the baseline only to an empty non-production Supabase project after replay
 - `20260930141104_canonical_financial_transport.sql`: canonical native-currency text scale for every exact view, including historical JPY values with redundant zero decimals; no stored values are changed.
 
 All four replay after the immutable historical chain and were applied to the intended production project on 2026-09-30 under these matching remote versions. Apply only these forward changes to the existing production project. The harden-self-delete local version `20260928082016` is recorded remotely as `20260928082111`; preserve this history difference rather than replaying old migrations. Exact view reads preserve all historical monetary values; existing link classification assumptions are documented in the root README.
+
+## Period analytics and stabilization (2026-10-01)
+
+- The existing local `20261001033902_analytics_drilldown_filters.sql` was already recorded remotely as `20261001035741`. Preserve that history difference and do not replay it on production.
+- `20261001083346_period_analytics_preferences.sql` adds the validated profile default, its narrow column update grant, exact daily ordinary-activity totals, and complete category/payment usage counts. Both views use caller permissions and inherit ownership, session and MFA restrictions.
+- `20261001083350_present_financial_progress.sql` excludes future contributions and repayments from computed present progress, preserving stored amounts and existing view columns/grants.
+
+The two stabilization migrations were tested by replay, applied additively to production, and use matching local/remote versions. Financial record counts and checksums were unchanged. Database types were regenerated from the deployed schema. Continue applying only new forward migrations to the existing project; its historical baseline contract above still applies.

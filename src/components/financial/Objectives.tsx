@@ -189,7 +189,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
   );
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="feature-intro">
         <p className="text-sm text-subtle">
           {kind === "goal"
             ? L("Build toward meaningful financial objectives.")
@@ -223,7 +223,8 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
               return (
                 <button
                   key={o.id}
-                  className={`card block w-full p-5 text-left hover:border-primary ${selected === o.id ? "border-primary" : ""}`}
+                  aria-pressed={selected === o.id}
+                  className={`card selection-card block w-full p-5 text-left hover:border-primary ${selected === o.id ? "border-primary" : ""}`}
                   onClick={() => setSelected(o.id)}
                 >
                   <div className="flex items-start justify-between gap-2">

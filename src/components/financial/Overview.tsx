@@ -1,208 +1,39 @@
-import { financialDate } from "@/domain/dates";
-import {
-  accountBalance,
-  debtProgress,
-  objectiveProgress,
-} from "@/domain/progress";
-import { useTransactions } from "@/hooks/useFinanceData";
-import { usePlatformTable } from "@/hooks/usePlatformData";
-import { useAppStore } from "@/store/useAppStore";
-import { usePlatformText } from "./copy";
-import { Failure, money } from "./shared";
+import { financialDate } from '@/domain/dates';
+import { accountBalance, debtProgress, objectiveProgress } from '@/domain/progress';
+import { useTransactions } from '@/hooks/useFinanceData';
+import { usePlatformTable } from '@/hooks/usePlatformData';
+import { useAppStore } from '@/store/useAppStore';
+import { Target, HandCoins, ChevronRight } from 'lucide-react';
+import { Failure, money, ProgressBar, useFinancialCopy } from './shared';
+
 export function FinancialOverview() {
-  const L = usePlatformText();
-  const timezone = useAppStore((s) => s.financialTimezone);
-  const accounts = usePlatformTable("accounts");
-  const objectives = usePlatformTable("objectives");
-  const contributions = usePlatformTable("objective_contributions");
-  const debts = usePlatformTable("person_debts");
-  const repayments = usePlatformTable("debt_repayments");
+  const c = useFinancialCopy();
+  const timezone = useAppStore(s => s.financialTimezone);
+  const accounts = usePlatformTable('accounts');
+  const objectives = usePlatformTable('objectives');
+  const contributions = usePlatformTable('objective_contributions');
+  const debts = usePlatformTable('person_debts');
+  const repayments = usePlatformTable('debt_repayments');
   const transactions = useTransactions();
-  const { setActiveTab } = useAppStore();
-  if (
-    [accounts, objectives, contributions, debts, repayments, transactions].some(
-      (q) => q.isPending,
-    )
-  )
-    return (
-      <section className="card p-5" role="status">
-        {L("Loading financial progress…")}
-      </section>
-    );
-  const error = [
-    accounts,
-    objectives,
-    contributions,
-    debts,
-    repayments,
-    transactions,
-  ].find((q) => q.error);
-  if (error)
-    return (
-      <Failure
-        error={error.error}
-        retry={() =>
-          void Promise.all([
-            accounts.refetch(),
-            objectives.refetch(),
-            contributions.refetch(),
-            debts.refetch(),
-            repayments.refetch(),
-            transactions.refetch(),
-          ])
-        }
-      />
-    );
+  const { setActiveTab,personalization } = useAppStore();
+  const queries = [accounts, objectives, contributions, debts, repayments, transactions];
+  if (queries.some(q => q.isPending)) return <p className="text-sm text-subtle" role="status">{c('Loading financial progress…', 'Memuatkan kemajuan kewangan…')}</p>;
+  const error = queries.find(q => q.error);
+  if (error) return <Failure error={error.error} retry={() => void Promise.all(queries.map(q => q.refetch()))} />;
   const tx = transactions.data ?? [];
-  const activeDebts = (debts.data ?? []).filter(
-    (d) => !debtProgress(d, repayments.data ?? [], tx, timezone).settled,
-  );
-  const owe = activeDebts.filter((d) => d.direction === "i_owe");
-  const receivable = activeDebts.filter((d) => d.direction === "owed_to_me");
-  const activeGoals = (objectives.data ?? []).filter(
-    (o) =>
-      o.status !== "archived" &&
-      !objectiveProgress(o, contributions.data ?? [], tx).completed,
-  );
-  const next =
-    owe.find(
-      (d) => debtProgress(d, repayments.data ?? [], tx, timezone).overdue,
-    ) ??
-    owe.sort((a, b) =>
-      (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999"),
-    )[0];
-  const recent = [
-    ...(contributions.data ?? []).map((c) => ({
-      id: c.id,
-      date: c.contributed_at,
-      label:
-        (objectives.data ?? []).find((o) => o.id === c.objective_id)?.name ??
-        L("Goal"),
-      amount: c.effective_amount ?? c.amount ?? "0",
-      currency: c.currency,
-      kind: L("Contribution"),
-    })),
-    ...(repayments.data ?? []).map((r) => ({
-      id: r.id,
-      date: r.paid_at,
-      label:
-        (debts.data ?? []).find((d) => d.id === r.debt_id)?.counterparty ??
-        L("Debt"),
-      amount: r.effective_amount ?? r.amount ?? "0",
-      currency: r.currency,
-      kind: L("Repayment"),
-    })),
-  ]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 3);
-  return (
-    <section className="space-y-4" aria-label={L("Financial summary")}>
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <button
-          className="card p-5 text-left hover:border-primary"
-          onClick={() => setActiveTab("accounts")}
-        >
-          <span className="text-sm text-subtle">
-            {L("Linked account position")}
-          </span>
-          <strong className="mt-2 block text-2xl">
-            {(accounts.data ?? []).filter((a) => !a.archived).length}{" "}
-            {L("accounts")}
-          </strong>
-          <span className="mt-2 block text-xs text-subtle">
-            {(accounts.data ?? [])
-              .filter((a) => !a.archived)
-              .map(
-                (a) => `${a.name}: ${money(accountBalance(a, tx), a.currency)}`,
-              )
-              .join(" · ") || L("Add an account to track balances")}
-          </span>
-        </button>
-        <button
-          className="card p-5 text-left hover:border-primary"
-          onClick={() => setActiveTab("debts")}
-        >
-          <span className="text-sm text-subtle">{L("Money I owe")}</span>
-          <strong className="mt-2 block text-2xl">
-            {owe.length} {L("active")}
-          </strong>
-          <span className="mt-2 block text-xs text-subtle">
-            {owe
-              .map(
-                (d) =>
-                  `${money(debtProgress(d, repayments.data ?? [], tx, timezone).remaining, d.currency)} ${d.counterparty}`,
-              )
-              .join(" · ") || L("No active debts")}
-          </span>
-        </button>
-        <button
-          className="card p-5 text-left hover:border-primary"
-          onClick={() => setActiveTab("goals")}
-        >
-          <span className="text-sm text-subtle">{L("Goals & savings")}</span>
-          <strong className="mt-2 block text-2xl">
-            {activeGoals.length} {L("in progress")}
-          </strong>
-          <span className="mt-2 block text-xs text-subtle">
-            {activeGoals
-              .slice(0, 2)
-              .map(
-                (o) =>
-                  `${o.name} ${objectiveProgress(o, contributions.data ?? [], tx).percent.toFixed(0)}%`,
-              )
-              .join(" · ") || L("Set a meaningful target")}
-          </span>
-        </button>
-        <button
-          className="card p-5 text-left hover:border-primary"
-          onClick={() => setActiveTab("debts")}
-        >
-          <span className="text-sm text-subtle">{L("Owed to me")}</span>
-          <strong className="mt-2 block text-2xl">
-            {receivable.length} {L("active")}
-          </strong>
-          <span className="mt-2 block text-xs text-subtle">
-            {L("Receivables are separate from available cash.")}
-          </span>
-        </button>
-      </div>
-      {next && (
-        <button
-          className="warning-message block w-full text-left"
-          onClick={() => setActiveTab("debts")}
-        >
-          <strong>
-            {debtProgress(next, repayments.data ?? [], tx, timezone).overdue
-              ? L("Overdue debt")
-              : L("Next financial action")}
-            :
-          </strong>{" "}
-          {L("Record progress on")}{" "}
-          {money(
-            debtProgress(next, repayments.data ?? [], tx, timezone).remaining,
-            next.currency,
-          )}{" "}
-          {L("owed to")} {next.counterparty}
-          {next.due_date ? L(` · due ${next.due_date}`) : ""}.
-        </button>
-      )}
-      {recent.length > 0 && (
-        <div className="card p-5">
-          <h3 className="text-sm font-semibold">{L("Recent progress")}</h3>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-3">
-            {recent.map((item) => (
-              <li key={item.id} className="rounded-lg bg-muted p-3 text-xs">
-                <strong>
-                  {item.kind}: {money(item.amount, item.currency)}
-                </strong>
-                <span className="mt-1 block text-subtle">
-                  {item.label} · {financialDate(item.date, timezone)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </section>
-  );
+  const activeAccounts = (accounts.data ?? []).filter(a => !a.archived);
+  const activeGoals = (objectives.data ?? []).filter(o => o.status !== 'archived' && !objectiveProgress(o, contributions.data ?? [], tx).completed);
+  const activeDebts = (debts.data ?? []).filter(d => !debtProgress(d, repayments.data ?? [], tx, timezone).settled);
+  const owe = activeDebts.filter(d => d.direction === 'i_owe').sort((a, b) => (a.due_date ?? '9999').localeCompare(b.due_date ?? '9999'));
+  const receivables = activeDebts.filter(d => d.direction === 'owed_to_me');
+  const next = owe.find(d => debtProgress(d, repayments.data ?? [], tx, timezone).overdue) ?? owe[0];
+  const recent = [...(contributions.data ?? []).map(item => ({ id: item.id, date: item.contributed_at, label: (objectives.data ?? []).find(o => o.id === item.objective_id)?.name ?? c('Goal', 'Matlamat'), amount: item.effective_amount ?? item.amount ?? '0', currency: item.currency, kind: c('Contribution', 'Sumbangan') })), ...(repayments.data ?? []).map(item => ({ id: item.id, date: item.paid_at, label: (debts.data ?? []).find(d => d.id === item.debt_id)?.counterparty ?? c('Debt', 'Hutang'), amount: item.effective_amount ?? item.amount ?? '0', currency: item.currency, kind: c('Repayment', 'Bayaran balik') }))].sort((a,b) => b.date.localeCompare(a.date)).slice(0,3);
+  return <section className="space-y-5" aria-label={c('Financial summary', 'Ringkasan kewangan')}>
+    <div className="position-grid">
+      {personalization.showAccounts && <div className="position-section"><div className="position-heading"><h3>{c('Your accounts', 'Akaun anda')}</h3><button className="text-link" onClick={() => setActiveTab('accounts')}>{c('Manage', 'Urus')}<ChevronRight size={14} /></button></div>{activeAccounts.length ? <ul>{activeAccounts.slice(0,3).map(a => <li key={a.id} className="position-row"><div className="row-title"><span>{a.name}</span><strong>{money(accountBalance(a, tx), a.currency)}</strong></div><small>{a.currency}</small></li>)}</ul> : <p className="position-empty">{c('Add your first account to track available balances.', 'Tambah akaun pertama untuk menjejak baki tersedia.')}</p>}<p className="text-xs text-subtle">{activeAccounts.length} {c('active accounts', 'akaun aktif')}</p></div>}
+      {personalization.showGoals && <div className="position-section"><div className="position-heading"><h3 className="flex items-center gap-2 text-savings"><Target size={16}/>{c('Goals & savings', 'Matlamat dan simpanan')}</h3><button className="text-link" onClick={() => setActiveTab('plans')}>{c('View plans', 'Lihat pelan')}<ChevronRight size={14} /></button></div>{activeGoals.length ? <ul>{activeGoals.slice(0,2).map(o => { const p = objectiveProgress(o, contributions.data ?? [], tx); return <li key={o.id} className="position-row"><div className="row-title"><span>{o.name}</span><strong>{personalization.privacyMode?'•••':`${p.percent.toFixed(0)}%`}</strong></div><ProgressBar value={p.percent} /><small>{money(p.funded, o.currency)} {c('of', 'daripada')} {money(o.target_amount, o.currency)}</small></li>; })}</ul> : <p className="position-empty">{c('Set a target for something that matters to you.', 'Tetapkan sasaran untuk perkara yang penting kepada anda.')}</p>}</div>}
+      {personalization.showDebts && <div className="position-section"><div className="position-heading"><h3 className="flex items-center gap-2 text-debt"><HandCoins size={16}/>{c('Your commitments', 'Komitmen anda')}</h3><button className="text-link" onClick={() => setActiveTab('debts')}>{c('View debts', 'Lihat hutang')}<ChevronRight size={14} /></button></div>{next ? <button className={debtProgress(next, repayments.data ?? [], tx, timezone).overdue ? 'attention-row w-full text-left' : 'position-row block w-full text-left'} onClick={() => setActiveTab('debts')}><span className="block text-xs text-subtle">{c('Owed to', 'Terhutang kepada')} {next.counterparty}</span><strong className="my-1 block text-xl">{money(debtProgress(next, repayments.data ?? [], tx, timezone).remaining, next.currency)}</strong>{next.due_date && <small>{c('Due', 'Tarikh akhir')} {next.due_date}{debtProgress(next, repayments.data ?? [], tx, timezone).overdue ? c(' · Overdue', ' · Tertunggak') : ''}</small>}</button> : <p className="position-empty">{c('No active debts to repay.', 'Tiada hutang aktif untuk dibayar.')}</p>}<p className="mt-3 text-xs text-subtle">{receivables.length} {c('active receivables. Separate from available cash.', 'hutang aktif kepada anda. Berasingan daripada tunai tersedia.')}</p></div>}
+    </div>
+    {recent.length > 0 && <div className="border-t border-border pt-4"><h3 className="text-xs font-medium text-subtle">{c('Recent progress', 'Kemajuan terkini')}</h3><ul className="mt-3 grid gap-3 sm:grid-cols-3">{recent.map(item => <li key={item.id} className="text-xs"><strong>{item.kind}: {money(item.amount, item.currency)}</strong><span className="mt-1 block text-subtle">{item.label} · {financialDate(item.date, timezone)}</span></li>)}</ul></div>}
+  </section>;
 }

@@ -1,32 +1,56 @@
-import { dashboardFinancials,type FinancialReport } from '@/domain/dashboard';
+import { dashboardFinancials, type FinancialReport } from '@/domain/dashboard';
 import { formatCurrency } from '@/services/currency';
 import { useAppStore } from '@/store/useAppStore';
-import type { Category,PaymentMethod,Transaction } from '@/types';
-import { ArrowDownLeft,ArrowUpRight,ChartNoAxesCombined,ChevronRight,CircleDollarSign,ScanLine,TrendingUp,Wallet } from 'lucide-react';
-import { useMemo,type ReactNode } from 'react';
+import type { Category, PaymentMethod, Transaction } from '@/types';
+import { ArrowDownLeft, ArrowUpRight, ChartNoAxesCombined, ChevronRight, TrendingUp } from 'lucide-react';
+import { useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bar,BarChart,CartesianGrid,Cell,Pie,PieChart,ResponsiveContainer,Tooltip,XAxis,YAxis } from 'recharts';
+import { CashFlowChart } from './analytics/CashFlowChart';
+import { SpendingDonut } from './analytics/SpendingDonut';
+import { FinancialPulse } from './analytics/FinancialPulse';
+import { drillTransactions } from '@/lib/navigation';
+import { ratio } from '@/domain/analytics';
+import { resolveFinancialPeriod, type Period } from '@/domain/periods';
+import { financialDate } from '@/domain/dates';
 import { useFinancialCopy } from './financial/shared';
 import { TransactionTable } from './TransactionTable';
 
-export interface DashboardProps { transactions:Transaction[]; categories:Category[]; payments:PaymentMethod[]; month:string; onEdit:(tx:Transaction)=>void; onDelete:(tx:Transaction)=>void; accountSummary?:ReactNode; report?:FinancialReport }
-export function Dashboard({transactions,categories,payments,month,onEdit,onDelete,accountSummary,report}:DashboardProps) {
-  const {t}=useTranslation();const c=useFinancialCopy();const {currency,locale,exchangeRates,setActiveTab,financialTimezone}=useAppStore();
-  const data=useMemo(()=>dashboardFinancials(transactions,categories,month,currency,exchangeRates,financialTimezone,locale,t('uncategorized'),report),[transactions,categories,month,currency,exchangeRates,financialTimezone,locale,t,report]);
-  const money=(value:number|string)=>data.unavailable?'—':`${data.mixed?'≈ ':''}${formatCurrency(value,currency,locale)}`;
-  const metrics=[{label:'totalBalance',value:money(data.balanceExact),detail:'acrossAccounts',icon:Wallet,className:'blue',mini:'balance'},{label:'totalIncome',value:money(data.incomeExact),detail:'thisMonth',icon:ArrowDownLeft,className:'green',mini:'income'},{label:'totalExpenses',value:money(data.expenseExact),detail:'thisMonth',icon:ArrowUpRight,className:'orange',mini:'expense'},{label:'savingsRate',value:data.unavailable?'—':`${data.savingsRate.toFixed(1)}%`,detail:data.income?'ofIncome':'noIncome',icon:TrendingUp,className:'purple',mini:'savings'}];
-  const insights = data.unavailable ? [] : [
-    ...(data.income || data.expense ? [t(data.positiveFlow ? 'insightPositiveCashFlow' : 'insightNegativeCashFlow', { amount: money(data.netMagnitude) })] : []),
-    ...(data.breakdown.length ? [t('insightTopCategory', { category: data.breakdown[0].name, amount: money(data.breakdown[0].exact) })] : []),
-    ...(data.income ? [data.savingsRate >= 0 ? t('insightSavingsRate', { rate: data.savingsRate.toFixed(1) }) : t('insightOverspendingRate', { rate: (data.expense / data.income * 100).toFixed(1) })] : []),
-  ].slice(0, 3);
+export interface DashboardProps { transactions: Transaction[]; categories: Category[]; payments: PaymentMethod[]; month?: string; period?: Period; periodLabel?: string; onEdit: (tx: Transaction) => void; onDelete: (tx: Transaction) => void; accountSummary?: ReactNode; report?: FinancialReport; onAdd?: () => void }
+export function Dashboard({ transactions, categories, payments, month, period: selectedPeriod, periodLabel, onEdit, onDelete, accountSummary, report, onAdd }: DashboardProps) {
+  const { t } = useTranslation();
+  const c = useFinancialCopy();
+  const { currency, locale, exchangeRates, setActiveTab, financialTimezone, personalization } = useAppStore();
+  const period = selectedPeriod ?? resolveFinancialPeriod({type:'month',month:month ?? financialDate(new Date(),financialTimezone).slice(0,7)},financialTimezone);
+  const data = useMemo(() => dashboardFinancials(transactions, categories, period, currency, exchangeRates, financialTimezone, locale, t('uncategorized'), report), [transactions, categories, period, currency, exchangeRates, financialTimezone, locale, t, report]);
+  const money = (value: number | string) => data.unavailable ? '—' : `${data.mixed ? '≈ ' : ''}${formatCurrency(value, currency, locale)}`;
+  const drill = (id?: string|null) => drillTransactions({type:'expense',category:id===null?'uncategorized':id,from:period.from,to:period.to,activity:'ordinary'});
+  const modules: Record<string, ReactNode> = {
+    pulse: <FinancialPulse period={period}/>,
+    cashFlow: <CashFlowChart points={data.unavailable?[]:data.chart}/>,
+    spending: data.unavailable ? <section className="card p-6" aria-label={t('spending')}><h3>{t('spending')}</h3><p className="text-sm text-subtle mt-3" role="status">{t('ratesUnavailable')}</p><button className="text-link mt-4" onClick={()=>drill()}>{t('transactions')}<ChevronRight size={14}/></button></section> : <SpendingDonut key={`${period.from}-${period.to}`} total={data.expenseExact} items={data.breakdown.map(item=>({...item,percent:ratio(item.exact,data.expenseExact,currency) ?? 0}))} onDrill={drill}/>,
+    position: accountSummary,
+    recent: <section className="card min-w-0 overflow-hidden"><div className="card-heading"><div><h3>{t('recentTransactions')}</h3><p>{t('latestActivity')}</p></div><button className="text-link" onClick={() => setActiveTab('transactions')}>{t('viewAll')}<ChevronRight size={14}/></button></div><TransactionTable transactions={transactions.slice(0,5)} categories={categories} payments={payments} onEdit={onEdit} onDelete={onDelete} compact/></section>,
+  };
+  const metrics = [
+    { label: t('analyticsPeriodIncome'), value: money(data.incomeExact), detail: periodLabel ?? t('period'), icon: ArrowDownLeft },
+    { label: t('analyticsPeriodExpenses'), value: money(data.expenseExact), detail: periodLabel ?? t('period'), icon: ArrowUpRight },
+    { label: t('savingsRate'), value: personalization.privacyMode ? '•••' : data.unavailable ? '—' : data.income ? `${data.savingsRate.toFixed(1)}%` : '—', detail: t(data.income ? 'ofIncome' : 'noIncome'), icon: TrendingUp },
+  ];
   return <div className="space-y-6">
-    {data.unavailable&&<p role="status" className="warning-message">{t('ratesUnavailable')}</p>}
-    {data.mixed&&!data.unavailable&&<p className="text-xs text-subtle">≈ {c('Converted totals are estimates in','Jumlah ditukar ialah anggaran dalam')} {currency}; {c('transactions retain their original currency. Rate date:','transaksi mengekalkan mata wang asalnya. Tarikh kadar:')} {exchangeRates ? new Date(exchangeRates.updatedAt).toLocaleDateString(locale==='ms'?'ms-MY':'en-US') : c('unavailable','tidak tersedia')}.</p>}
-    <div className="metric-grid">{metrics.map(metric=><div className="metric-card" key={metric.label}><div className="flex items-center justify-between"><span className="text-[12px] font-medium text-subtle">{t(metric.label)}</span><div className={`metric-icon ${metric.className}`}><metric.icon size={16}/></div></div><div className="metric-value" title={metric.label==='totalBalance'?t('balanceNote'):undefined}>{metric.value}</div><div className="flex items-end justify-between gap-2"><span className="text-[11px] text-subtle">{t(metric.detail)}</span><span className={`metric-decoration ${metric.className}`} aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/></span></div></div>)}</div>
-    {accountSummary}<div className="sr-only"><table><caption>{c('Cash flow chart values; chart coordinates and conversions are approximate.','Nilai carta aliran tunai; koordinat carta dan penukaran ialah anggaran.')}</caption><thead><tr><th>{t('month')}</th><th>{t('income')}</th><th>{t('expenses')}</th></tr></thead><tbody>{data.chart.map(row=><tr key={row.name}><th>{row.name}</th><td>{money(row.income)}</td><td>{money(row.expense)}</td></tr>)}</tbody></table></div>
-    <div className="dashboard-chart-grid"><section className="card overflow-hidden"><div className="card-heading"><div><h3>{t('cashFlow')}</h3><p>{t('cashFlowDescription')}</p></div><div className="chart-legend"><span className="cash-flow-income"><i/>{t('income')}</span><span className="cash-flow-expense"><i/>{t('expenses')}</span></div></div><div className="relative h-[260px] px-3 pb-5"><ResponsiveContainer width="100%" height="100%"><BarChart data={data.unavailable?[]:data.chart} barGap={5} margin={{left:0,right:16,top:15,bottom:0}}><CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 5"/><XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill:'var(--subtle)',fontSize:11}} dy={8}/><YAxis axisLine={false} tickLine={false} tick={{fill:'var(--subtle)',fontSize:10}} width={53} tickFormatter={value=>new Intl.NumberFormat(locale,{notation:'compact',maximumFractionDigits:1}).format(Number(value))}/><Tooltip contentStyle={{background:'var(--card)',border:'1px solid var(--border)',borderRadius:10,fontSize:12}} formatter={(value,name)=>[money(Number(value)),name]} cursor={{fill:'var(--muted)'}}/><Bar dataKey="income" name={t('income')} fill="var(--cash-income)" radius={[4,4,0,0]} maxBarSize={22}/><Bar dataKey="expense" name={t('expenses')} fill="var(--cash-expense)" radius={[4,4,0,0]} maxBarSize={22}/></BarChart></ResponsiveContainer>{!transactions.length&&<div className="chart-empty-overlay"><div className="empty-icon small"><ChartNoAxesCombined size={22}/></div><strong>{t('noActivity')}</strong><span>{t('noActivityDescription')}</span></div>}</div><div className="chart-footer"><span><span className="live-dot"/>{t('financialClarity')}</span><span>{currency}</span></div></section>
-    <section className="card"><div className="card-heading"><div><h3>{t('spending')}</h3><p>{t('spendingDescription')}</p></div><ScanLine size={17} className="text-subtle"/></div>{data.breakdown.length&&!data.unavailable?<><div className="relative h-[195px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={data.breakdown} dataKey="value" innerRadius={62} outerRadius={82} paddingAngle={4} stroke="none">{data.breakdown.map((item,i)=><Cell key={`${item.name}-${i}`} fill={item.color}/>)}</Pie><Tooltip formatter={value=>money(Number(value))} contentStyle={{background:'var(--card)',border:'1px solid var(--border)',borderRadius:10,fontSize:12}}/></PieChart></ResponsiveContainer><div className="donut-label"><small>{t('expenses')}</small><strong>{money(data.expense)}</strong></div></div><div className="px-6 pb-5 space-y-3">{data.breakdown.map((item,i)=><div key={`${item.name}-${i}`} className="flex flex-wrap items-center justify-between gap-2 text-xs"><span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full" style={{background:item.color}}/>{item.name}</span><span className="font-medium">{money(item.exact)}</span></div>)}</div></>:<div className="spending-empty"><div className="empty-donut"><CircleDollarSign size={28} strokeWidth={1}/></div><strong>{t('noSpending')}</strong><p>{t('noSpendingDescription')}</p></div>}</section></div>
-    <div className="dashboard-bottom-grid"><section className="card min-w-0"><div className="card-heading"><div><h3>{t('recentTransactions')}</h3><p>{t('latestActivity')}</p></div><button className="text-link" onClick={()=>setActiveTab('transactions')}>{t('viewAll')}<ChevronRight size={14}/></button></div><TransactionTable transactions={transactions.slice(0,5)} categories={categories} payments={payments} onEdit={onEdit} onDelete={onDelete} compact/></section><div className="space-y-5"><section className="card p-5"><div className="mb-5 flex items-center gap-2"><ChartNoAxesCombined size={17} className="text-primary"/><h3 className="text-[13px] font-semibold">{t('spendingPulse')}</h3></div><div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2"><div><p className="text-[11px] text-subtle">{t('dailyAverage')}</p><p className="mt-2 text-lg font-semibold tracking-tight">{money(data.daily)}</p></div><div className="min-[400px]:border-l border-border min-[400px]:pl-4"><p className="text-[11px] text-subtle">{t('monthForecast')}</p><p className="mt-2 text-lg font-semibold tracking-tight">{money(data.forecast)}</p></div></div><p className="mt-4 text-[10px] leading-relaxed text-subtle">{t('pulseDescription')}</p></section><section className="card p-5"><h3 className="text-[13px] font-semibold">{t('financialInsights')}</h3><p className="mt-1 text-xs text-subtle">{t('financialInsightsDescription')}</p>{insights.length ? <ul className="mt-4 space-y-3 text-xs leading-relaxed">{insights.map(insight => <li key={insight} className="border-l-2 border-primary pl-3">{insight}</li>)}</ul> : <p className="mt-4 text-xs text-subtle">{t(data.unavailable ? 'ratesUnavailable' : 'financialInsightsEmpty')}</p>}</section></div></div>
+    {data.unavailable && <p role="status" className="warning-message">{t('ratesUnavailable')}</p>}
+    <div>
+      <section className="snapshot" aria-label={t('periodSnapshot')}>
+        <div className="snapshot-main">
+          <h2 className="snapshot-label"><ChartNoAxesCombined size={17} />{t('periodCashFlow')}</h2>
+          <p className="snapshot-value">{data.unavailable ? '—' : `${data.positiveFlow ? '' : '−'}${money(data.netMagnitude)}`}</p>
+          <p className="snapshot-note">{data.unavailable ? t('ratesUnavailable') : data.income || data.expense ? t(data.positiveFlow ? 'positivePeriodFlow' : 'negativePeriodFlow') : t('emptyPeriodFlow')}</p>
+        </div>
+        <div className="snapshot-metrics">{metrics.map(({ label, value, detail, icon: Icon }) => <div className={`snapshot-metric ${label===t('analyticsPeriodIncome')?'income':label===t('analyticsPeriodExpenses')?'expense':''}`} key={label}><span><Icon size={15} />{label}</span><strong>{value}</strong><small>{detail}</small></div>)}</div>
+      </section>
+      <div className="flow-note"><span title={t('balanceNote')}>{t('totalBalance')}: <strong>{money(data.balanceExact)}</strong> · {t('allTime')}</span><span>{c('Account balances shown separately below.', 'Baki akaun dipaparkan berasingan di bawah.')}</span></div>
+      {data.mixed && !data.unavailable && <p className="mt-2 text-xs text-subtle">≈ {c('Converted totals are estimates in', 'Jumlah ditukar ialah anggaran dalam')} {currency}. {c('Rate date:', 'Tarikh kadar:')} {exchangeRates ? new Date(exchangeRates.updatedAt).toLocaleDateString(locale === 'ms' ? 'ms-MY' : 'en-US') : c('unavailable', 'tidak tersedia')}.</p>}
+    </div>
+    {!transactions.length && <button className="text-link" onClick={onAdd}>{t('addFirst')}<ChevronRight size={14}/></button>}
+    <div className="dashboard-modules">{personalization.dashboardOrder.filter(module=>!personalization.hiddenModules.includes(module)).map(module=><div key={module} className={'dashboard-module module-'+module}>{modules[module]}</div>)}</div>
   </div>;
 }

@@ -28,7 +28,7 @@ export function Plans() {
   return (
     <div className="space-y-5">
       <nav
-        className="flex flex-wrap gap-2"
+        className="plan-tabs"
         aria-label={c("Plans", "Perancangan")}
       >
         {(["goal", "savings", "budgets", "recurring"] as const).map((v, i) => (

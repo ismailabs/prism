@@ -44,7 +44,7 @@ export function MfaChallenge() {
   }
 
   return <section className="card mx-auto w-full max-w-md space-y-5 p-7" aria-labelledby="mfa-challenge-title">
-    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-500"><ShieldCheck size={25} /></span>
+    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ShieldCheck size={25} /></span>
     <div className="space-y-2"><h2 id="mfa-challenge-title" className="text-2xl font-semibold tracking-tight">{copy.verifyTitle}</h2><p className="text-sm leading-relaxed text-muted-foreground">{copy.verifySubtitle}</p></div>
     {initializing ? <p role="status" className="text-sm text-muted-foreground">{copy.loading}</p> : factors.length === 0 ? <div className="space-y-3"><p className="text-sm">{copy.noFactor}</p><button className="btn-secondary" onClick={() => void refreshMfa().catch((cause: unknown) => setError(cause instanceof Error ? cause.message : copy.failed))}>{copy.retry}</button></div> : <form onSubmit={event => void verify(event)} className="space-y-4">
       {factors.length > 1 && <label className="form-field flex flex-col gap-2 text-sm" htmlFor="mfa-factor">{copy.authenticator}<select className="input" id="mfa-factor" value={factorId} onChange={event => setFactorId(event.target.value)}>{factors.map(factor => <option value={factor.id} key={factor.id}>{factor.friendlyName}</option>)}</select></label>}

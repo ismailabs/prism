@@ -1,15 +1,36 @@
+# Dependencies and build output
 node_modules/
 dist/
+*.tsbuildinfo
+
+# Local environment and deployment state
 .env
 .env.*
 !.env.example
 .vercel/
+
+# Test output and tool caches
 coverage/
 artifacts/
 playwright-report/
 test-results/
 .cache/
+.vite/
+.eslintcache
+.npm/
 supabase/.temp/
 supabase/.branches/
 supabase/.snapshots/
+
+# Logs, temporary files, and editor/OS state
 *.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -14,6 +14,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useFinancialCopy } from "./shared";
+import { PersonalizationSettings } from '../PersonalizationSettings';
 export function SettingsView({ profile }: { profile: Profile }) {
   const c = useFinancialCopy();
   const queryClient = useQueryClient();
@@ -94,9 +95,9 @@ export function SettingsView({ profile }: { profile: Profile }) {
     }
   }
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="settings-layout">
       <form
-        className="card space-y-5 p-6"
+        className="card settings-form space-y-5 p-6"
         onSubmit={(event) => void save(event)}
       >
         <h2 className="text-lg font-semibold">{t("profile")}</h2>
@@ -198,10 +199,9 @@ export function SettingsView({ profile }: { profile: Profile }) {
         </Button>
       </form>
       <div className="space-y-6">
+        <PersonalizationSettings />
         <section className="card p-6 space-y-3">
-          <h2>
-            {t("categories")} / {t("payments")}
-          </h2>
+          <h2 className="text-lg font-semibold">{c("Organize your activity", "Susun aktiviti anda")}</h2><p className="text-sm text-subtle">{c("Keep categories and payment methods easy to recognize.", "Pastikan kategori dan kaedah pembayaran mudah dikenal pasti.")}</p>
           <Button
             variant="outline"
             onClick={() => useAppStore.getState().setActiveTab("categories")}

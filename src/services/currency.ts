@@ -75,6 +75,7 @@ export function convertCurrency(amount: string | number, from: Currency, to: Cur
 }
 
 export function formatCurrency(amount: string | number, currency: Currency, locale: Locale = 'en'): string {
+  if (useAppStore.getState().personalization.privacyMode) return `${currency} ••••••`;
   if (typeof amount === 'number') {
     if (!Number.isFinite(amount)) throw new Error('The amount must be a finite number.');
     return new Intl.NumberFormat(locale === 'ms' ? 'ms-MY' : 'en-US', { style: 'currency', currency }).format(amount);

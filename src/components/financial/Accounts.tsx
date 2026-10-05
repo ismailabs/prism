@@ -98,8 +98,7 @@ export function AccountsPage() {
     );
   return (
     <div className="space-y-5">
-      <Transfers />
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="feature-intro">
         <p className="text-sm text-subtle">
           {L(
             "Balances use opening amounts, assigned cash transactions, transfers, and account-funded debt principal. Earmarks do not move cash.",
@@ -124,7 +123,7 @@ export function AccountsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {accounts.data.map((a) => (
-            <article key={a.id} className="card p-5">
+            <article key={a.id} className="card account-card p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h2 className="font-semibold">{a.name}</h2>
@@ -180,6 +179,7 @@ export function AccountsPage() {
           ))}
         </div>
       )}
+      <Transfers />
       <Modal
         open={open}
         onOpenChange={(value) => {

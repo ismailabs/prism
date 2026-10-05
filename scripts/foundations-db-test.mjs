@@ -66,6 +66,12 @@ export async function exercise(db) {
   const page=(await db.query('select public.transaction_page($1::jsonb,1) as page',[JSON.stringify({currency:'MYR',min:'90071992547409.92',max:'90071992547409.94'})])).rows[0].page;
   assert.equal(page.rows[0].amount,'90071992547409.93');assert.equal(page.total,1);
   await assert.rejects(db.query('select public.transaction_page($1::jsonb,1)',[JSON.stringify({min:'1.00'})]));
+  const ordinaryPage=(await db.query('select public.transaction_page($1::jsonb,1) as page',[JSON.stringify({activity:'ordinary',category:'uncategorized'})])).rows[0].page;
+  assert(ordinaryPage.rows.every(r=>r.activity_kind==='ordinary'&&r.category_id===null));
+  assert(!ordinaryPage.rows.some(r=>r.id===tx),'Savings allocation excluded from ordinary drilldown');
+  const categoryPage=(await db.query('select public.transaction_page($1::jsonb,1) as page',[JSON.stringify({activity:'ordinary',category,from:'2026-09-01',to:'2026-09-30'})])).rows[0].page;
+  assert.equal(categoryPage.total,1);assert.equal(categoryPage.rows[0].amount,'0.10');
+
   await identity(other,otherSession);
   for(const table of ['accounts','transfers','transactions','objectives','objective_contributions','objective_milestones','person_debts','debt_repayments'])assert.equal((await db.query(`select count(*)::int as count from public.exact_${table}`)).rows[0].count,0,table);
   await assert.rejects(createTransfer(a,b,'1','1'));

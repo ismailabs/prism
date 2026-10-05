@@ -22,28 +22,40 @@ export function usePlanningData() {
     queryKey: ["platform", id, "monthly_budgets"],
     enabled,
     queryFn: async ({ signal }) => {
+      const rows: MonthlyBudget[] = [];
+      for(let offset=0;;offset+=1000){
       const { data, error } = await supabase
         .from("exact_monthly_budgets")
         .select("*")
         .eq("user_id", verify())
         .order("month", { ascending: false })
+        .order('id')
+        .range(offset,offset+999)
         .abortSignal(signal);
       if (error) throw error;
-      return data;
+      rows.push(...data);
+      if(data.length<1000) return rows;
+      }
     },
   });
   const rules = useQuery({
     queryKey: ["platform", id, "recurring_rules"],
     enabled,
     queryFn: async ({ signal }) => {
+      const rows: RecurringRule[] = [];
+      for(let offset=0;;offset+=1000){
       const { data, error } = await supabase
         .from("exact_recurring_rules")
         .select("*")
         .eq("user_id", verify())
         .order("created_at")
+        .order('id')
+        .range(offset,offset+999)
         .abortSignal(signal);
       if (error) throw error;
-      return data;
+      rows.push(...data);
+      if(data.length<1000) return rows;
+      }
     },
   });
   const budget = useMutation({

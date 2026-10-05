@@ -2,8 +2,12 @@ import { browserTimezone } from '@/domain/dates';
 import type { Currency,ExchangeRates,Locale,Tab,Theme } from '@/types';
 import { create } from 'zustand';
 import { createJSONStorage,persist } from 'zustand/middleware';
+import { defaultPersonalization, sanitizePersonalization, type Personalization } from './personalization';
 
 export interface AppStore {
+  personalization: Personalization;
+  setPersonalization: (values: Partial<Personalization>) => void;
+  resetPersonalization: () => void;
   theme: Theme;
   locale: Locale;
   currency: Currency;
@@ -21,6 +25,9 @@ export interface AppStore {
 export const useAppStore = create<AppStore>()(
   persist(
     (set) => ({
+      personalization: sanitizePersonalization(defaultPersonalization),
+      setPersonalization: (values) => set(state => ({personalization: sanitizePersonalization({...state.personalization,...values})})),
+      resetPersonalization: () => set({personalization: sanitizePersonalization(defaultPersonalization)}),
       theme: 'system',
       locale: 'en',
       currency: 'USD',
@@ -38,12 +45,13 @@ export const useAppStore = create<AppStore>()(
       name: 'prism-preferences',
       version: 1,
       storage: createJSONStorage(() => localStorage),
-      partialize: ({ theme, locale, currency, exchangeRates }) => ({ theme, locale, currency, exchangeRates }),
+      partialize: ({ theme, locale, currency, exchangeRates, personalization }) => ({ theme, locale, currency, exchangeRates, personalization }),
       merge: (persisted, current) => {
         if (!persisted || typeof persisted !== 'object') return current;
         const saved = persisted as Record<string, unknown>;
         return {
           ...current,
+          personalization: sanitizePersonalization(saved.personalization),
           theme: saved.theme === 'light' || saved.theme === 'dark' || saved.theme === 'system' ? saved.theme : current.theme,
           locale: saved.locale === 'en' || saved.locale === 'ms' ? saved.locale : current.locale,
           currency: saved.currency === 'USD' || saved.currency === 'EUR' || saved.currency === 'JPY' || saved.currency === 'MYR' ? saved.currency : current.currency,

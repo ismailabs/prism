@@ -7,6 +7,8 @@ import type { Currency } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 import { financeKeys, useProfile } from "./useFinanceData";
+import type { MonthlyTotal } from "@/types";
+import type { Period } from "@/domain/analytics";
 export interface TransactionFilters {
   search?: string;
   type?: string;
@@ -18,6 +20,56 @@ export interface TransactionFilters {
   max?: string;
   from?: string;
   to?: string;
+  activity?: string;
+}
+async function dailyTotals(
+  userId: string,
+  from: string,
+  to: string,
+  signal: AbortSignal,
+) {
+  const rows: MonthlyTotal[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    let query = supabase
+      .from("finance_daily_totals")
+      .select("*")
+      .eq("user_id", userId)
+      .order("financial_date")
+      .order("currency")
+      .order("type")
+      .order("category_id")
+      .range(offset, offset + 999)
+      .abortSignal(signal);
+    if (from) query = query.gte('financial_date', from);
+    if (to) query = query.lte('financial_date', to);
+    const { data, error } = await query;
+    if (error) throw error;
+    rows.push(...data);
+    if (data.length < 1000) return rows;
+  }
+}
+export function useAnalyticsReport(period: Period, enabled = true) {
+  const { user, loading, requiresMfa } = useAuth();
+  const timezone = useProfile().data?.financial_timezone;
+  return useQuery({
+    queryKey: [
+      ...financeKeys.all(user?.id),
+      "analytics",
+      period.comparison === false ? period.from : period.previousFrom,
+      period.to,
+      timezone,
+    ],
+    enabled: enabled && !!user && !loading && !requiresMfa && !!timezone,
+    queryFn: async ({ signal }) => {
+      if (!user) throw new Error("Sign in first.");
+      return dailyTotals(
+        user.id,
+        period.comparison === false ? period.from : period.previousFrom,
+        period.to,
+        signal,
+      );
+    },
+  });
 }
 export function useTransactionPage(filters: TransactionFilters, page: number) {
   const { user, loading, requiresMfa } = useAuth();
@@ -46,37 +98,28 @@ export function useTransactionPage(filters: TransactionFilters, page: number) {
     },
   });
 }
-export function useFinancialReport(month: string) {
+export function useFinancialReport(period: Period, enabled = true) {
   const { user, loading, requiresMfa } = useAuth();
-  const profile=useProfile();
-  const timezone=profile.data?.financial_timezone;
-  const start = new Date(`${month}-01T00:00:00Z`);
-  start.setUTCMonth(start.getUTCMonth() - 5);
-  const from = start.toISOString().slice(0, 7);
-  return useQuery({
-    queryKey: [...financeKeys.all(user?.id), "report", month, timezone],
-    enabled: !!user && !loading && !requiresMfa && !!timezone,
+  const profile = useProfile();
+  const timezone = profile.data?.financial_timezone;
+  const totals = useAnalyticsReport(period, enabled);
+  const net = useQuery({
+    queryKey: [...financeKeys.all(user?.id), "net-flow", timezone],
+    enabled: enabled && !!user && !loading && !requiresMfa && !!timezone,
     queryFn: async ({ signal }) => {
       if (!user) throw new Error("Sign in first.");
-      const [monthly, net] = await Promise.all([
-        supabase
-          .from("finance_monthly_totals")
-          .select("*")
-          .eq("user_id", user.id)
-          .gte("month", from)
-          .lte("month", month)
-          .abortSignal(signal),
-        supabase
+      const response = await supabase
           .from("finance_net_flow")
           .select("*")
           .eq("user_id", user.id)
-          .abortSignal(signal),
-      ]);
-      if (monthly.error) throw monthly.error;
-      if (net.error) throw net.error;
-      return { monthly: monthly.data, net: net.data };
+          .abortSignal(signal);
+      if (response.error) throw response.error;
+      return response.data;
     },
   });
+  return { data: totals.data && net.data ? { monthly: totals.data, net: net.data } : undefined,
+    isPending: totals.isPending || net.isPending, error: totals.error ?? net.error,
+    refetch: () => Promise.all([totals.refetch(), net.refetch()]) };
 }
 export function nativeBound(value: string, currency: Currency) {
   return decimalMoney(parseMoney(value, currency), currency);

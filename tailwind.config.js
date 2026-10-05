@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: { sans: ['Inter', 'sans-serif'] },
-      colors: { background: 'var(--background)', foreground: 'var(--foreground)', card: 'var(--card)', border: 'var(--border)', muted: 'var(--muted)', primary: '#365cf5' },
+      colors: { background: 'var(--background)', foreground: 'var(--foreground)', card: 'var(--card)', border: 'var(--border)', muted: 'var(--muted)', primary: 'rgb(var(--primary-rgb) / <alpha-value>)' },
       borderRadius: { lg: '0.85rem' }
     }
   },

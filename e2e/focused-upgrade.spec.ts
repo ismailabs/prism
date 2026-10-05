@@ -1,17 +1,17 @@
 import {expect,test} from '@playwright/test';
-import {mockSignedInApp} from './fixtures';
+import {mockSignedInApp, supabaseUrl} from './fixtures';
 test.beforeEach(async ({ page }) => { await mockSignedInApp(page); });
 
 test('dashboard hierarchy, semantic cash-flow colors, transaction accounts, and mobile drawer', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByText('Tracked net flow')).toBeVisible();
-  await expect(page.getByText('Linked account position')).toBeVisible();
+  await expect(page.getByText('Tracked net flow', {exact:false})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Your accounts'})).toBeVisible();
   await expect(page.getByText('YOUR DIRECTION')).toHaveCount(0);
   await expect(page.getByRole('heading', { name:'Financial progress' })).toHaveCount(0);
-  const order = await page.locator('.app-main').evaluate(main => ({ kpi:main.querySelector('.metric-grid')?.getBoundingClientRect().top, summary:main.querySelector('[aria-label="Financial summary"]')?.getBoundingClientRect().top, chart:main.querySelector('.dashboard-chart-grid')?.getBoundingClientRect().top }));
-  expect(order.kpi).toBeLessThan(order.summary!); expect(order.summary).toBeLessThan(order.chart!);
-  await expect(page.locator('.cash-flow-income')).toHaveCSS('color','rgb(4, 120, 87)');
-  await expect(page.locator('.cash-flow-expense')).toHaveCSS('color','rgb(220, 38, 38)');
+  const order = await page.locator('.app-main').evaluate(main => ({ kpi:main.querySelector('.snapshot')?.getBoundingClientRect().top, summary:main.querySelector('[aria-label="Financial summary"]')?.getBoundingClientRect().top, chart:main.querySelector('.module-cashFlow')?.getBoundingClientRect().top }));
+  expect(order.kpi).toBeLessThan(order.chart!); expect(order.chart).toBeLessThan(order.summary!);
+  await expect(page.locator('.cash-flow-income i')).toHaveCSS('background-color','rgb(8, 119, 95)');
+  await expect(page.locator('.cash-flow-expense i')).toHaveCSS('background-color','rgb(180, 66, 66)');
   await page.getByRole('link',{name:'Transactions'}).click();
   await expect(page.getByRole('heading',{name:'Accounts'})).toBeVisible();
   await expect(page.getByText('Everyday account')).toBeVisible();
@@ -36,7 +36,7 @@ test('account editing and all focused delete confirmations use real mutations', 
   await page.getByLabel('Opening balance').fill('125.00');
   await page.getByRole('button',{name:'Save account'}).click();
   await expect(page.getByText('Account saved')).toBeVisible();
-  expect(requests.some(item=>item.includes('PATCH https://fixture.supabase.co/rest/v1/accounts')&&item.includes('125.00'))).toBeTruthy();
+  expect(requests.some(item=>item.includes(`PATCH ${supabaseUrl}/rest/v1/accounts`)&&item.includes('125.00'))).toBeTruthy();
   await page.getByRole('button',{name:'Delete Daily spending'}).click();
   await expect(page.getByRole('alert').filter({hasText:'1 linked financial record'})).toBeVisible();
   await expect(page.getByRole('button',{name:'Delete account'})).toBeDisabled();

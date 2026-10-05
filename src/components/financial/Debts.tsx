@@ -127,7 +127,7 @@ export function DebtsPage() {
     transactions.isPending;
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="feature-intro">
         <p className="text-sm text-subtle">
           {L(
             "Track money between people in both directions. Amounts owed to you are receivables, not available cash.",
@@ -162,7 +162,8 @@ export function DebtsPage() {
               return (
                 <button
                   key={d.id}
-                  className={`card block w-full p-5 text-left hover:border-primary ${selected === d.id ? "border-primary" : ""}`}
+                  aria-pressed={selected === d.id}
+                  className={`card selection-card block w-full p-5 text-left hover:border-primary ${selected === d.id ? "border-primary" : ""}`}
                   onClick={() => setSelected(d.id)}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -190,7 +191,7 @@ export function DebtsPage() {
                     <strong>{money(p.remaining, d.currency)}</strong>
                   </div>
                   <div className="mt-4">
-                    <ProgressBar value={p.percent} />
+                    <ProgressBar value={p.percent} tone="debt" />
                   </div>
                   <p className="mt-2 text-xs text-subtle">
                     {p.percent.toFixed(1)}
@@ -258,7 +259,7 @@ export function DebtsPage() {
                       {L("· Repaid")} {money(p.paid, current.currency)}
                     </p>
                     <div className="mt-4">
-                      <ProgressBar value={p.percent} />
+                      <ProgressBar value={p.percent} tone="debt" />
                     </div>
                   </>
                 );

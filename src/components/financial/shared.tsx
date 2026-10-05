@@ -4,6 +4,7 @@ import { formatCurrency } from "@/services/currency";
 import { useAppStore } from "@/store/useAppStore";
 import type { Currency } from "@/types";
 import { Button } from "../ui/button";
+import { useTranslation } from 'react-i18next';
 export const currencies: Currency[] = ["MYR", "USD", "EUR", "JPY"];
 export function useFinancialCopy() {
   const locale = useAppStore((s) => s.locale);
@@ -42,21 +43,27 @@ export function Failure({
     </div>
   );
 }
-export function ProgressBar({ value }: { value: number }) {
+export function ProgressBar({ value, tone = "savings" }: { value: number; tone?: "savings" | "debt" }) {
   const c = useFinancialCopy();
+  const { t }=useTranslation();
+  const percent = Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0));
+  const milestone=[100,75,50,25].find(m=>percent>=m);
   return (
+    <div className="progress-with-milestone">
     <div
-      className="h-2.5 overflow-hidden rounded-full bg-muted"
+      className="progress-track"
       role="progressbar"
       aria-label={c("Progress", "Kemajuan")}
-      aria-valuenow={value}
+      aria-valuenow={percent}
       aria-valuemin={0}
       aria-valuemax={100}
     >
       <div
-        className="h-full rounded-full bg-primary"
-        style={{ width: `${value}%` }}
+        className={`h-full rounded-full progress-fill progress-${tone}`}
+        style={{ width: `${percent}%` }}
       />
+    </div>
+    {milestone && <small className="milestone-note">{t(milestone===100?'milestoneComplete':'milestone',{percent:milestone})}</small>}
     </div>
   );
 }

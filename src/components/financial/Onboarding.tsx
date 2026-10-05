@@ -84,7 +84,7 @@ export function Onboarding({ profile }: { profile: Profile }) {
     return null;
   return (
     <section
-      className="card p-5 space-y-4 mb-5"
+      className="card onboarding p-5 space-y-4 mb-5"
       aria-label={c("Quick setup", "Persediaan ringkas")}
     >
       <h2 className="font-semibold">
@@ -93,6 +93,7 @@ export function Onboarding({ profile }: { profile: Profile }) {
           "Mulakan asas kewangan anda",
         )}
       </h2>
+      <p className="text-xs text-subtle">{c("Choose your currency, confirm your timezone, then add an account. You can adjust these later in settings.", "Pilih mata wang, sahkan zon waktu, kemudian tambah akaun. Anda boleh melaraskannya dalam tetapan kemudian.")}</p>
       <form
         className="grid sm:grid-cols-2 gap-3"
         onSubmit={(e) => void save(e)}

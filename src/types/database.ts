@@ -15,7 +15,7 @@ type Tables={ [K in keyof GeneratedTable]:K extends keyof Models ? {
  Update:Columns<GeneratedTable[K]['Update'],Models[K]>;
  Relationships:GeneratedTable[K]['Relationships'];
 }:GeneratedTable[K] };
-type ViewModels={exact_accounts:Account;exact_debt_repayments:DebtRepayment;exact_monthly_budgets:MonthlyBudget;exact_objectives:Objective;exact_objective_contributions:ObjectiveContribution;exact_objective_milestones:ObjectiveMilestone;exact_person_debts:PersonDebt;exact_recurring_rules:RecurringRule;exact_transactions:Transaction;exact_transfers:Transfer;finance_monthly_totals:MonthlyTotal;finance_net_flow:{user_id:string;currency:Account['currency'];amount:string}};
+type ViewModels={exact_accounts:Account;exact_debt_repayments:DebtRepayment;exact_monthly_budgets:MonthlyBudget;exact_objectives:Objective;exact_objective_contributions:ObjectiveContribution;exact_objective_milestones:ObjectiveMilestone;exact_person_debts:PersonDebt;exact_recurring_rules:RecurringRule;exact_transactions:Transaction;exact_transfers:Transfer;finance_daily_totals:MonthlyTotal;finance_monthly_totals:MonthlyTotal;finance_net_flow:{user_id:string;currency:Account['currency'];amount:string}};
 type GeneratedView=Generated['public']['Views'];
 type Views={ [K in keyof GeneratedView]:K extends keyof ViewModels ? {Row:Columns<GeneratedView[K]['Row'],ViewModels[K]>;Relationships:GeneratedView[K]['Relationships']}:GeneratedView[K] };
 export type Database=Omit<Generated,'public'> & {public:Omit<Generated['public'],'Tables'|'Views'> & {Tables:Tables;Views:Views}};

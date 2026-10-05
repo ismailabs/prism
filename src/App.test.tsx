@@ -24,11 +24,12 @@ vi.mock('./hooks/usePlatformData', () => ({
   usePlatformTable: (table: string) => ({ data: fixture.platform[table] ?? [], isPending: false, error: null, refetch: vi.fn() }),
   usePlatformMutation: () => ({ create: { isPending: false }, update: { isPending: false }, remove: { isPending: false } }),
 }));
-vi.mock('./hooks/useFinancialReports',()=>({useFinancialReport:()=>({data:undefined,isPending:false,error:null}),useTransactionPage:()=>({data:{rows:[{id:'tx-1',user_id:'test-user',description:'Coffee',amount:'7.00',currency:'USD',type:'expense',category_id:null,payment_method_id:null,transaction_date:'2026-09-19T10:00:00Z',created_at:''}],total:1},isPending:false,error:null})}));
+vi.mock('./hooks/useFinancialReports',()=>({useAnalyticsReport:()=>({data:[],isPending:false,error:null}),useFinancialReport:()=>({data:undefined,isPending:false,error:null}),useTransactionPage:()=>({data:{rows:[{id:'tx-1',user_id:'test-user',description:'Coffee',amount:'7.00',currency:'USD',type:'expense',category_id:null,payment_method_id:null,transaction_date:'2026-09-19T10:00:00Z',created_at:''}],total:1},isPending:false,error:null})}));
 vi.mock('./hooks/usePlanningData',()=>({usePlanningData:()=>({budgets:{data:[],isPending:false,error:null},rules:{data:[],isPending:false,error:null},importRows:{isPending:false}})}));
 vi.mock('./lib/supabase', () => ({ supabase: { auth: {} } }));
 vi.mock('./hooks/useFinanceData', () => ({
   useTransactions: () => ({ data: [{ id: 'tx-1', description: 'Coffee', amount: '7.00', currency: 'USD', type: 'expense', transaction_date: '2026-09-19T10:00:00Z' }], isPending: false, error: fixture.error }),
+  useListUsage: () => ({data:[],isPending:false}),
   useCategories: () => ({ data: [], isPending: false }),
   usePaymentMethods: () => ({ data: [], isPending: false }),
   useProfile: () => ({ data: fixture.profile, isPending: false }),
@@ -110,8 +111,9 @@ describe('application auth and view integration', () => {
     useAppStore.setState({ activeTab: 'debts' });
     expect(render()).toContain('Jo');
     const overview = renderToString(<QueryClientProvider client={new QueryClient()}><FinancialOverview /></QueryClientProvider>);
-    expect(overview).toContain('Money I owe');
-    expect(overview).toContain('Owed to me');
+    expect(overview).toContain('Your commitments');
+    expect(overview).toContain('$30.00');
+    expect(overview).toContain('active receivables. Separate from available cash.');
     expect(overview).not.toContain('YOUR DIRECTION');
     expect(overview).not.toContain('Financial progress');
   });
@@ -126,23 +128,24 @@ describe('dashboard financial insights', () => {
     useAppStore.setState({ currency: 'MYR', locale: 'en', exchangeRates: null });
     const html = renderDashboard([transaction('income', '575.00', 'income', '2026-09-10'), transaction('expense', '29.70', 'expense', '2026-09-11'), transaction('other-month', '1000.00', 'expense', '2026-08-11')]);
     expect(html).toContain('545.30');
-    expect(html).toContain('Investment is your highest spending category');
+    expect(html).toContain('Investment');
+    expect(html).toContain('MYR 29.70');
     expect(html).toContain('94.8%');
     expect(html).not.toContain('1,000.00 after expenses');
     expect(html).toContain('cash-flow-income');
     expect(html).toContain('cash-flow-expense');
   });
 
-  it('places the financial account summary immediately after the KPI grid', () => {
+  it('prioritizes the monthly snapshot and cash flow before account commitments', () => {
     useAppStore.setState({ currency: 'MYR', locale: 'en', exchangeRates: null });
     const html = renderToString(<Dashboard transactions={[]} categories={[]} payments={[]} month="2026-09" onEdit={() => {}} onDelete={() => {}} accountSummary={<section>ACCOUNT SUMMARY MARKER</section>} />);
-    expect(html.indexOf('metric-grid')).toBeLessThan(html.indexOf('ACCOUNT SUMMARY MARKER'));
-    expect(html.indexOf('ACCOUNT SUMMARY MARKER')).toBeLessThan(html.indexOf('dashboard-chart-grid'));
+    expect(html.indexOf('snapshot')).toBeLessThan(html.indexOf('dashboard-modules'));
+    expect(html.indexOf('dashboard-chart-grid')).toBeLessThan(html.indexOf('ACCOUNT SUMMARY MARKER'));
   });
 
   it('shows a simple empty state when the selected month has no transactions', () => {
     useAppStore.setState({ currency: 'MYR', locale: 'en', exchangeRates: null });
-    expect(renderDashboard([transaction('other-month', '100.00', 'income', '2026-08-11')])).toContain('No financial activity this month yet.');
+    expect(renderDashboard([transaction('other-month', '100.00', 'income', '2026-08-11')])).toContain('Record income and spending to see this period take shape.');
   });
 
   it('excludes future-dated transactions from the balance and selected-month metrics', () => {
