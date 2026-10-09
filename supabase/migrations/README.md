@@ -28,3 +28,22 @@ All four replay after the immutable historical chain and were applied to the int
 - `20261001083350_present_financial_progress.sql` excludes future contributions and repayments from computed present progress, preserving stored amounts and existing view columns/grants.
 
 The two stabilization migrations were tested by replay, applied additively to production, and use matching local/remote versions. Financial record counts and checksums were unchanged. Database types were regenerated from the deployed schema. Continue applying only new forward migrations to the existing project; its historical baseline contract above still applies.
+
+## Phase 1 local proposal (2026-10-10; unapplied)
+
+`20261009162324_protect_debt_repayment_history.sql` adds a private invoker trigger
+that rejects authenticated parent-debt deletion while any repayment exists. It
+changes no rows, money, public columns, grants or RLS policies. Empty debt removal
+and the existing privileged, confirmed whole-account erasure remain available.
+Full synthetic replay and native concurrency/HTTP tests are recorded in
+[Phase 1 evidence](../../docs/phase1-stabilization.md).
+
+This file has **not** been applied remotely. Rehearse only this forward addition
+on an authorized staging copy after resolving historical migration differences,
+reviewing the Auth deletion overload, and verifying backup/restore. Do not replay
+the baseline, repair timestamps, or run a production reset. If rollback is needed,
+review a new forward file with `drop trigger protect_debt_repayment_history on
+public.person_debts; drop function prism_private.protect_debt_repayment_history();`
+in a transaction. That removes protection; it does not restore subsequently
+deleted history. No rollback is needed for data from this proposal because it
+does not mutate data. Deployment and database application each require approval.

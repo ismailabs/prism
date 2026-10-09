@@ -2,6 +2,8 @@
 
 PRISM is a personal finance tracker with accounts, transactions, transfers, goals, savings, debts, CSV import/export, category budgets, and explicitly recorded recurring activity. It supports English/Malay, password and Google sign-in, TOTP MFA, and password recovery.
 
+Current local stabilization and Phase 2 gates: [Phase 1 evidence](docs/phase1-stabilization.md). Historical deployment reports below describe earlier releases.
+
 ## Architecture
 
 React 19, TypeScript, Vite, TanStack Query, Zustand, Zod, Radix UI, and Recharts form the client. Supabase Auth identifies users; PostgreSQL constraints, locking, grants, and RLS enforce financial integrity. Vercel hosts the SPA and server-only exchange-rate endpoint. Feature modules live in `src/components/financial`; financial and calendar utilities live in `src/domain`.
@@ -12,7 +14,7 @@ React 19, TypeScript, Vite, TanStack Query, Zustand, Zod, Radix UI, and Recharts
 - A transfer is one atomic row with two owned accounts and two exact native amounts. Same-currency amounts match. Cross-currency amounts are explicitly entered; current rates never rewrite history. Referenced accounts cannot be deleted; archive them to preserve history.
 - Savings contributions earmark amounts without moving cash. An optional account identifies the earmark. Link an actual transfer to its destination to represent physical funding; allocation does not debit cash again.
 - Repayments reduce outstanding principal. With an account, `i_owe` debits cash and `owed_to_me` credits cash. Without an account, they record principal progress only. Principal and allocations never enter ordinary income, spending, savings rate, or budgets. Interest/fees can be recorded separately as ordinary transactions.
-- Deleting transfers/repayments reverses their balance effects. Deleting a debt removes repayments and their cash effects; its confirmation removes that recorded history. Deleting a goal removes allocations but preserves transfers and legacy transactions.
+- Deleting transfers/repayments removes their balance effects; these are mutable records, without an immutable reversal journal. Local debt deletion now checks repayment history and blocks removal of a parent with repayments. The proposed database guard remains unapplied to production; it closes concurrent deletion races when applied. Empty debts remain deletable. Confirmed whole-account erasure remains available. Deleting a goal removes allocations but preserves transfers and legacy transactions.
 
 Existing transaction-linked contributions/repayments remain intact. Exact views classify those transactions as `savings_allocation`/`debt_principal`, excluding them from ordinary analytics while preserving cash effects. This assumes the historical link represents the entire transaction, including any fees previously bundled into it. No historical amounts, timestamps, or links are backfilled. Removing a legacy relationship returns its transaction to ordinary analytics.
 
