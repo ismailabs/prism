@@ -44,6 +44,15 @@ describe("financial foundations transport and reporting", () => {
       transactionTransport.parse({ ...tx, amount: "1.001" }),
     ).toThrow();
   });
+  it('fails closed on non-positive, out-of-range and non-native transaction amounts', () => {
+    for (const currency of ['MYR', 'USD', 'EUR', 'JPY'] as const) {
+      const amount = currency === 'JPY' ? '9999999999999999' : '9999999999999999.99';
+      expect(transactionTransport.parse({ ...tx, currency, amount }).amount).toBe(amount);
+      for (const invalid of ['0', '-1', '10000000000000000', 'NaN', 'Infinity', '1e3'])
+        expect(transactionTransport.safeParse({ ...tx, currency, amount: invalid }).success).toBe(false);
+      expect(transactionTransport.safeParse({ ...tx, currency, amount: currency === 'JPY' ? '1.01' : '1.001' }).success).toBe(false);
+    }
+  });
   it("sums native dashboard amounts exactly and excludes legacy principal/allocations", () => {
     vi.useFakeTimers().setSystemTime("2026-09-30T12:00:00Z");
     const result = dashboardFinancials(

@@ -1,4 +1,5 @@
 import { browserTimezone } from '@/domain/dates';
+import { transactionTransport } from '@/domain/transport';
 import { useAuth } from '@/hooks/useAuth';
 import { OptimisticLedger } from '@/lib/finance';
 import { supabase } from '@/lib/supabase';
@@ -33,8 +34,7 @@ const ledgers = new WeakMap<QueryClient, Map<string, unknown>>();
 
 /** Fail closed if an exact view ever returns a JSON number. */
 function normalizeTransaction(row: Transaction): Transaction {
-  if (typeof row.amount !== 'string') throw new Error('The exact-money API returned a non-text amount.');
-  return row;
+  return transactionTransport.parse(row);
 }
 
 function requireUser(userId: string | undefined, allowed: boolean): string {

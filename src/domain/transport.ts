@@ -21,7 +21,8 @@ export const transactionTransport = z
   })
   .superRefine((row, ctx) => {
     try {
-      parseMoney(row.amount, row.currency);
+      if (parseMoney(row.amount, row.currency) <= 0n)
+        throw new Error("Transaction amounts must be positive.");
     } catch {
       ctx.addIssue({
         code: "custom",

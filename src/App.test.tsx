@@ -21,7 +21,7 @@ vi.mock('./store/useAppStore', async () => {
 });
 vi.mock('./hooks/useAuth', () => ({ useAuth: () => fixture.auth }));
 vi.mock('./hooks/usePlatformData', () => ({
-  usePlatformTable: (table: string) => ({ data: fixture.platform[table] ?? [], isPending: false, error: null, refetch: vi.fn() }),
+  usePlatformTable: (table: string) => ({ data: fixture.platform[table] ?? [], dataUpdatedAt: Date.parse('2026-10-09T00:00:00Z'), isPending: false, error: null, refetch: vi.fn() }),
   usePlatformMutation: () => ({ create: { isPending: false }, update: { isPending: false }, remove: { isPending: false } }),
 }));
 vi.mock('./hooks/useFinancialReports',()=>({useAnalyticsReport:()=>({data:[],isPending:false,error:null}),useFinancialReport:()=>({data:undefined,isPending:false,error:null}),useTransactionPage:()=>({data:{rows:[{id:'tx-1',user_id:'test-user',description:'Coffee',amount:'7.00',currency:'USD',type:'expense',category_id:null,payment_method_id:null,transaction_date:'2026-09-19T10:00:00Z',created_at:''}],total:1},isPending:false,error:null})}));
@@ -120,6 +120,18 @@ describe('application auth and view integration', () => {
 });
 
 describe('dashboard financial insights', () => {
+  it('shows only posted contributions and repayments in Recent progress', () => {
+    const renderProgress = () => renderToString(<QueryClientProvider client={new QueryClient()}><FinancialOverview /></QueryClientProvider>);
+    fixture.platform.objective_contributions = [{ id: 'future-allocation', objective_id: 'g', contributed_at: '2099-01-01T00:00:00Z', amount: '10.00', currency: 'USD', transaction_id: null }];
+    fixture.platform.debt_repayments = [{ id: 'future-repayment', debt_id: 'd', paid_at: '2099-01-01T00:00:00Z', amount: '20.00', currency: 'USD', transaction_id: null }];
+    expect(renderProgress()).not.toContain('Recent progress');
+    fixture.platform.objective_contributions.push({ id: 'posted-allocation', objective_id: 'g', contributed_at: '2000-01-01T00:00:00Z', amount: '1.23', currency: 'USD', transaction_id: null });
+    const html = renderProgress();
+    expect(html).toContain('Recent progress');
+    expect(html).toContain('$1.23');
+    expect(html).not.toContain('$10.00');
+    expect(html).not.toContain('$20.00');
+  });
   const category: Category = { id: 'category-1', user_id: 'test-user', name: 'Investment', type: 'expense', color: '#4265ee', created_at: '' };
   const transaction = (id: string, amount: string, type: Transaction['type'], date: string): Transaction => ({ id, user_id: 'test-user', amount, currency: 'MYR', type, category_id: type === 'expense' ? category.id : null, payment_method_id: null, description: id, transaction_date: date, created_at: '' });
   const renderDashboard = (transactions: Transaction[]) => renderToString(<Dashboard transactions={transactions} categories={[category]} payments={[]} month="2026-09" onEdit={() => {}} onDelete={() => {}} />);
