@@ -331,6 +331,10 @@
 @keyframes prism-reveal { from { opacity:0; transform:translateY(5px); clip-path:polygon(0 0,100% 0,100% 96%,0 100%); } to { opacity:1; transform:translateY(0); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); } }
 @keyframes drawer-reveal { from { transform:translateX(-100%); } to { transform:translateX(0); } }
 .page-heading,.dashboard-module,.analytics-metrics { animation:prism-reveal 180ms ease-out both; }
+/* Keep financial labels readable throughout the entrance, including the moment
+   an accessibility scan samples the animation. Motion must not fade contrast. */
+@keyframes prism-metrics-reveal { from { transform:translateY(5px); } to { transform:translateY(0); } }
+.analytics-metrics { animation-name:prism-metrics-reveal; }
 .mobile-nav-panel { animation:drawer-reveal 190ms ease-out; }
 button,a { transition:background-color 120ms ease,color 120ms ease,border-color 120ms ease; }
 [data-motion=reduced] *,[data-motion=reduced] *::before,[data-motion=reduced] *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }

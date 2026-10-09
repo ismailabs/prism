@@ -5,7 +5,12 @@ import { fileURLToPath, URL } from 'node:url';
 export default defineConfig({
   plugins: [react()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  server: { port: 5173, strictPort: true },
+  server: {
+    port: 5173, strictPort: true,
+    // Test binaries and reports are generated while local QA runs. On Windows,
+    // trying to watch a locked executable can terminate the development server.
+    watch: { ignored: ['**/.cache/**', '**/artifacts/**', '**/test-results/**'] },
+  },
   build: {
     rolldownOptions: {
       output: {

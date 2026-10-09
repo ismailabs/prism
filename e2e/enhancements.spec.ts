@@ -346,7 +346,11 @@ test("mobile edge gesture opens drawer; left gesture and Escape close it; scroll
   await page.goto("/transactions");
   await expect(page.locator("main h1")).toBeVisible();
   const cdp = await page.context().newCDPSession(page);
-  async function swipe(x: number, y: number, endX: number, endY: number) {
+  let gestureTime = Date.parse("2026-10-01T04:00:00Z");
+  async function swipe(x: number, y: number, endX: number, endY: number, duration = 200) {
+    // CDP transport latency is not gesture duration. Control Date only; CSS and
+    // timers still run normally, and the actual 700 ms product guard is retained.
+    await page.clock.setFixedTime(gestureTime);
     await cdp.send("Input.dispatchTouchEvent", {
       type: "touchStart",
       touchPoints: [{ x, y }],
@@ -355,14 +359,18 @@ test("mobile edge gesture opens drawer; left gesture and Escape close it; scroll
       type: "touchMove",
       touchPoints: [{ x: endX, y: endY }],
     });
+    await page.clock.setFixedTime(gestureTime + duration);
     await cdp.send("Input.dispatchTouchEvent", {
       type: "touchEnd",
       touchPoints: [],
     });
+    gestureTime += duration + 1000;
   }
   await swipe(8, 300, 24, 170);
   await expect(page.locator(".mobile-nav-panel")).toHaveCount(0);
   await swipe(100, 300, 230, 305);
+  await expect(page.locator(".mobile-nav-panel")).toHaveCount(0);
+  await swipe(8, 300, 125, 309, 700);
   await expect(page.locator(".mobile-nav-panel")).toHaveCount(0);
   await swipe(8, 300, 125, 309);
   await expect(page.locator(".mobile-nav-panel")).toBeVisible();
@@ -439,10 +447,38 @@ test("favicon vector matches the PRISM logo", () => {
   );
 });
 
+test("analytics text retains contrast during its entrance animation", async ({ page }) => {
+  test.setTimeout(120000);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await realistic(page);
+  Object.assign(rows.profiles[0] as object, { language: "ms", theme: "dark" });
+  await page.goto("/analytics");
+  const metrics = page.locator(".analytics-metrics");
+  await expect(metrics).toBeVisible({ timeout: 20_000 });
+  // Reproduce the partially faded colors reported by CI, independently of CPU
+  // speed or the instant at which axe happens to sample the page.
+  const animationCount = await metrics.evaluate((element) => {
+    const animations = element.getAnimations();
+    for (const animation of animations) {
+      animation.pause();
+      animation.currentTime = 45;
+    }
+    return animations.length;
+  });
+  expect(animationCount).toBeGreaterThan(0);
+  const result = await new AxeBuilder({ page })
+    .include(".analytics-metrics")
+    .withRules(["color-contrast"])
+    .analyze();
+  expect(result.violations).toEqual([]);
+});
+
 test("new surfaces, palette, and drawer pass WCAG AA accessibility scans", async ({
   page,
 }) => {
-  test.setTimeout(120000);
+  // Eight axe scans plus locale/theme navigation need a complete-workflow
+  // deadline on small Windows hosts; all original accessibility assertions stay.
+  test.setTimeout(240000);
   await realistic(page);
   for (const [locale, theme] of [
     ["en", "light"],
@@ -452,7 +488,7 @@ test("new surfaces, palette, and drawer pass WCAG AA accessibility scans", async
     for (const route of ["/analytics", "/settings", "/transactions"]) {
       await page.goto(route);
       await expect(page.locator("main h1")).toBeVisible();
-      await expect(page.locator(".card").first()).toBeVisible();
+      await expect(page.locator(".card").first()).toBeVisible({ timeout: 20_000 });
       const result = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
         .analyze();

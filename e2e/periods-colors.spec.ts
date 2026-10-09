@@ -38,6 +38,9 @@ test('all seven periods stay coherent across Overview, Analytics, custom validat
   await expect(page.locator('.finance-table tbody tr')).toHaveCount(1);
 });
 test('profile default persists on reload, fresh device and safe sign-out/in with no initial month flicker',async({page,context,browser})=>{
+  // This covers several reloads plus a fresh browser context, rather than one
+  // interaction. Keep per-assertion deadlines; allow the complete workflow.
+  test.slow();
   await setup(page);await page.goto('/settings');
   await page.getByLabel('Default analysis period',{exact:true}).selectOption('last-6-months');
   await expect.poll(()=> (rows.profiles[0] as Record<string,unknown>).default_analysis_period).toBe('last-6-months');
@@ -56,6 +59,8 @@ test('profile default persists on reload, fresh device and safe sign-out/in with
   expect(await context.storageState()).toBeTruthy();
 });
 test('category color create/edit/delete uses current identity on every chart, legend, card and transaction',async({page})=>{
+  // Includes both themes, reloads, failed/successful deletion and every surface.
+  test.slow();
   await setup(page);await page.goto('/');
   await expect(page.locator('.snapshot')).toBeVisible({timeout:30_000});
   await expect(page.locator('.donut-segment').first()).toHaveAttribute('stroke','#00ffff');
@@ -65,7 +70,9 @@ test('category color create/edit/delete uses current identity on every chart, le
   await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.locator('article').filter({hasText:'Investment'}).locator('.list-item-icon')).toHaveCSS('color','rgb(168, 85, 247)');
   await page.getByRole('link',{name:'Overview',exact:true}).click();
   const verify=async()=>{
-    await expect(page.locator(new URL(page.url()).pathname==='/analytics'?'.analytics-metric.expense':'.snapshot-metric.expense')).toBeVisible();
+    // Lazy analytics can still show its loading state after the navigation and
+    // theme save finish. Wait for this route's data, as the other setup checks do.
+    await expect(page.locator(new URL(page.url()).pathname==='/analytics'?'.analytics-metric.expense':'.snapshot-metric.expense')).toBeVisible({timeout:20_000});
     await expect(page.locator('.donut-segment').first()).toHaveAttribute('stroke','#a855f7');
     await expect(page.locator('.category-key').first()).toHaveCSS('border-color','rgb(168, 85, 247)');
   };
@@ -79,7 +86,7 @@ test('category color create/edit/delete uses current identity on every chart, le
     await page.goto('/settings');await page.getByRole('button',{name:theme==='dark'?'Dark':'Light',exact:true}).click();await page.getByRole('button',{name:'Save changes',exact:true}).click();
     await page.getByRole('link',{name:'Analytics',exact:true}).click();await page.getByLabel('Period',{exact:true}).selectOption('all-time');await verify();
   }
-  await page.goto('/transactions');await expect(page.locator('.category-badge').filter({hasText:'Investment'}).first().locator('span').first()).toHaveCSS('background-color','rgb(168, 85, 247)');
+  await page.goto('/transactions');await expect(page.locator('.category-badge').filter({hasText:'Investment'}).first().locator('span').first()).toHaveCSS('background-color','rgb(168, 85, 247)',{timeout:20_000});
   await page.goto('/categories');await page.getByRole('button',{name:'Add category',exact:true}).click();await page.getByLabel('Name',{exact:true}).fill('Temporary QA');await page.getByRole('dialog').locator('input[pattern]').fill('#000000');await page.getByRole('dialog').getByRole('button',{name:'Create',exact:true}).click();
   await page.getByRole('button',{name:'Delete Temporary QA',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'Delete',exact:true}).click();await expect(page.getByText('Temporary QA',{exact:true})).toHaveCount(0);
   await page.route(supabaseUrl+'/rest/v1/categories*',route=>route.request().method()==='DELETE'?route.fulfill({status:409,json:{code:'23503',message:'foreign key violation'}}):route.fallback());
@@ -88,7 +95,7 @@ test('category color create/edit/delete uses current identity on every chart, le
   await page.getByRole('button',{name:'Delete Investment',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'Delete',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Investment',exact:true})).toHaveCount(0);
   await page.goto('/analytics');await page.getByLabel('Period',{exact:true}).selectOption('all-time');
-  await expect(page.locator('.analytics-metric.expense')).toContainText('75.10');
+  await expect(page.locator('.analytics-metric.expense')).toContainText('75.10',{timeout:20_000});
   await expect(page.getByRole('region',{name:'Spending breakdown',exact:true}).getByRole('button',{name:'Select Uncategorized',exact:true})).toBeVisible();
 });
 test('custom controls are accessible and reflow at every requested viewport in English/light and Malay/dark',async({page})=>{
