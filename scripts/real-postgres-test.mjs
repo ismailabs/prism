@@ -43,6 +43,26 @@ try {
  const overpay=b.query("insert into public.debt_repayments(user_id,debt_id,currency,amount) values(auth.uid(),$1,'MYR','40.00')",[debt]).then(()=>({ok:true}),error=>({ok:false,error}));
  await a.query('commit');assert.equal((await overpay).ok,false);
  console.log('PASS real PostgreSQL: independent connections block cross-table transaction reuse and concurrent overpayment');
+ // A deletion started against an empty debt must see a repayment that commits
+ // while DELETE waits for its parent lock, rather than cascade it away.
+ const guarded=(await admin.query("insert into public.person_debts(user_id,direction,counterparty,currency,original_amount) values($1,'i_owe','Delete race','MYR','50.00') returning id",[user])).rows[0].id;
+ const waitForLock=async()=>{for(let i=0;i<100;i++){if((await admin.query('select wait_event_type from pg_stat_activity where pid=$1',[b.processID])).rows[0]?.wait_event_type==='Lock')return;await new Promise(resolve=>setTimeout(resolve,20));}assert.fail('Second request must wait for a database lock');};
+ await a.query('begin');await a.query("insert into public.debt_repayments(user_id,debt_id,currency,amount) values(auth.uid(),$1,'MYR','1.00')",[guarded]);
+ const deleting=b.query('delete from public.person_debts where id=$1',[guarded]).then(()=>({ok:true}),error=>({ok:false,error}));
+ await waitForLock();await a.query('commit');const guardedResult=await deleting;assert.equal(guardedResult.ok,false);assert.match(guardedResult.error.message,/repayment history/);
+ assert.equal((await admin.query('select count(*)::int as n from public.debt_repayments where debt_id=$1',[guarded])).rows[0].n,1);
+ assert.equal((await admin.query('select count(*)::int as n from public.person_debts where id=$1',[guarded])).rows[0].n,1);
+ // Existing request identities must remain idempotent under concurrent retry.
+ await admin.query("update public.profiles set financial_timezone='UTC' where id=$1",[user]);
+ const batch=randomUUID(),payload=JSON.stringify([{date:'2000-01-01',amount:'0.10',currency:'MYR',type:'expense',description:'Concurrent retry'}]);
+ await a.query('begin');assert.equal((await a.query('select public.import_transactions($1::jsonb,$2,false) as n',[payload,batch])).rows[0].n,1);
+ const retry=b.query('select public.import_transactions($1::jsonb,$2,false) as n',[payload,batch]);await waitForLock();await a.query('commit');assert.equal((await retry).rows[0].n,0);
+ assert.equal((await admin.query("select count(*)::int as n from public.transactions where user_id=$1 and description='Concurrent retry'",[user])).rows[0].n,1);
+ const recurringRule=(await admin.query("insert into public.recurring_rules(user_id,description,amount,currency,type,start_date,frequency) values($1,'Concurrent occurrence','0.01','MYR','expense','2000-01-01','monthly') returning id",[user])).rows[0].id;
+ await a.query('begin');const occurrence=(await a.query("select public.record_recurring_occurrence($1,0,'2000-01-01') as id",[recurringRule])).rows[0].id;
+ const repeat=b.query("select public.record_recurring_occurrence($1,0,'2000-01-01') as id",[recurringRule]);await waitForLock();await a.query('commit');assert.equal((await repeat).rows[0].id,occurrence);
+ assert.equal((await admin.query('select next_index from public.recurring_rules where id=$1',[recurringRule])).rows[0].next_index,1);
+ console.log('PASS real PostgreSQL: debt deletion waits and preserves committed history; concurrent CSV and occurrence retries produce one event');
  // Verify actual PostgREST serialization, rather than equating SQL text with an
  // HTTP round trip. CI provides the platform binary through PGRST_TEST_BINARY.
  const binary=process.env.PGRST_TEST_BINARY??'.cache/postgrest/postgrest.exe';
@@ -83,6 +103,15 @@ try {
  console.log('PASS actual PostgREST HTTP write/read: 90071992547409.93 survives JSON as text; anonymous access denied');
  console.log('PASS actual PostgREST HTTP: every money-bearing entity round-trips exact text; excess decimal precision rejected');
  console.log('PASS actual PostgREST HTTP: legacy JPY redundant fractional zeros become canonical integer text without changing value');
+ for(const currency of ['USD','EUR']){
+   const id=await post('transactions',{currency,amount:'9999999999999999.99',type:'income'});
+   const response=await fetch(`${apiUrl}/exact_transactions?id=eq.${id}&select=amount`,{headers});assert.equal(response.status,200);assert.deepEqual(await response.json(),[{amount:'9999999999999999.99'}]);
+ }
+ const protectedDelete=await fetch(`${apiUrl}/person_debts?id=eq.${person}`,{method:'DELETE',headers});assert.equal(protectedDelete.status,400);assert.match(await protectedDelete.text(),/repayment history/);
+ assert.equal((await admin.query('select count(*)::int as n from public.debt_repayments where id=$1',[repayment])).rows[0].n,1);
+ const emptyDebt=await post('person_debts',{direction:'i_owe',counterparty:'Empty HTTP debt',currency:'MYR',original_amount:'1.00'});
+ const emptyDelete=await fetch(`${apiUrl}/person_debts?id=eq.${emptyDebt}`,{method:'DELETE',headers});assert([200,204].includes(emptyDelete.status));
+ console.log('PASS actual PostgREST HTTP: four native currencies retain exact strings; parent history deletion rejected and empty debt deletion allowed');
  const deleted=await fetch(`${apiUrl}/rpc/delete_own_account`,{method:'POST',headers,body:JSON.stringify({confirmation:'DELETE'})});assert([200,204].includes(deleted.status),await deleted.text());
  assert.equal((await admin.query('select count(*)::int as n from auth.users where id=$1',[user])).rows[0].n,0);
  for(const table of ['accounts','transfers','transactions','objectives','objective_contributions','objective_milestones','person_debts','debt_repayments','monthly_budgets','recurring_rules'])assert.equal((await admin.query(`select count(*)::int as n from public.${table} where user_id=$1`,[user])).rows[0].n,0,table);

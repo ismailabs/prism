@@ -2,6 +2,7 @@ import { PGlite } from '@electric-sql/pglite';
 import { readFile, readdir } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { exercisePhase1Integrity } from './phase1-integrity-test.mjs';
 
 export async function replay(db) {
   await db.exec(await readFile('supabase/tests/auth-fixture.sql','utf8'));
@@ -80,6 +81,7 @@ export async function exercise(db) {
   await assert.rejects(createTransfer(a,b,'1','1'));await identity(user,session,'aal2');
   assert.equal((await db.query('select count(*)::int as count from public.exact_transfers')).rows[0].count,1);
   await db.query('delete from public.debt_repayments where id=$1',[repayment]);
+  await exercisePhase1Integrity(db);
   console.log('PASS exact text views, transfers/net worth, savings earmarks, principal cash/overpayment, timezone, RLS/MFA, atomic/idempotent CSV, category budget, recurrence clamping/idempotency and numeric pagination');
 }
 if(process.argv[1]?.endsWith('foundations-db-test.mjs')) { const db=await PGlite.create();try {await replay(db);await exercise(db);}catch(error){console.error(error.message,error.detail);process.exitCode=1;}finally{await db.close();} }

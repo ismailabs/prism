@@ -35,6 +35,8 @@ export function DebtsPage() {
   const [notes, setNotes] = useState("");
   const [link, setLink] = useState("");
   const current = (debts.data ?? []).find((d) => d.id === selected) ?? null;
+  const deletionHasHistory = !!deleting &&
+    (repayments.data ?? []).some((r) => r.debt_id === deleting.id);
   function begin(d?: PersonDebt) {
     setEditing(d ?? null);
     setDirection(d?.direction ?? "i_owe");
@@ -512,7 +514,7 @@ export function DebtsPage() {
         }}
         title={L("Delete personal debt")}
         description={L(
-          "This permanently removes the debt record and its repayment history.",
+          "Only debts with no repayment history can be deleted.",
         )}
       >
         {deleting && (
@@ -524,9 +526,11 @@ export function DebtsPage() {
               </strong>{" "}
               {L("record for")} <strong>{deleting.counterparty}</strong>?
             </p>
-            <p className="mt-3 text-sm text-subtle">
+            <p className="mt-3 text-sm text-subtle" role={deletionHasHistory ? "alert" : undefined}>
               {L(
-                "Recorded repayments and their account cash effects will be removed. Legacy linked transactions remain in your transaction history.",
+                deletionHasHistory
+                  ? "This debt has repayments. Keep its history and cash effects until reversal support is available."
+                  : "No repayments are recorded for this debt. Deleting the empty record cannot be undone.",
               )}
             </p>
             <div className="modal-actions mt-6">
@@ -539,7 +543,7 @@ export function DebtsPage() {
               </Button>
               <Button
                 variant="destructive"
-                disabled={debtMutations.remove.isPending}
+                disabled={debtMutations.remove.isPending || deletionHasHistory}
                 onClick={() => void removeDebt()}
               >
                 {debtMutations.remove.isPending

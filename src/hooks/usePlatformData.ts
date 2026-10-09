@@ -258,6 +258,13 @@ const repositories: { [K in TableName]: Repository<Rows[K]> } = {
       if (error) throw error;
     },
     remove: async (userId, id) => {
+      // Check complete server history, rather than trusting a possibly stale UI
+      // cache. The forward migration closes the INSERT/DELETE race at the DB.
+      const history = await supabase.from("debt_repayments").select("id")
+        .eq("user_id", userId).eq("debt_id", id).limit(1);
+      if (history.error) throw history.error;
+      if (history.data.length)
+        throw new Error("Debt has repayment history. Keep this record until reversal support is available.");
       const { error } = await supabase
         .from("person_debts")
         .delete()

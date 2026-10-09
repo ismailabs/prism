@@ -25,6 +25,19 @@ export async function mockSignedInApp(page: Page) {
     localStorage.setItem(storageKey, JSON.stringify({ access_token:token, refresh_token:'fixture-refresh', expires_at:Math.floor(Date.now()/1000)+3600, expires_in:3600, token_type:'bearer', user:authUser }));
   }, { token:accessToken, authUser:user, storageKey:authStorageKey });
   await page.route(supabaseUrl+'/**', async route => handleSupabase(route));
+  // HTTP routing does not intercept WebSockets. Keep synthetic Realtime local
+  // instead of repeatedly attempting DNS/connections to the fixture hostname.
+  await page.routeWebSocket(supabaseUrl.replace(/^http/, 'ws')+'/realtime/v1/**', socket => {
+    socket.onMessage(message => {
+      if (typeof message !== 'string') return;
+      const [joinRef, ref, topic, event, payload] = JSON.parse(message);
+      if (!['phx_join', 'phx_leave', 'heartbeat'].includes(event)) return;
+      const response = event === 'phx_join' ? {
+        postgres_changes: (payload.config?.postgres_changes ?? []).map((binding: Record<string, unknown>, index: number) => ({...binding, id:String(index+1)})),
+      } : {};
+      socket.send(JSON.stringify([joinRef, ref, topic, 'phx_reply', {status:'ok', response}]));
+    });
+  });
 }
 
 async function handleSupabase(route: Route) {
@@ -70,7 +83,13 @@ async function handleSupabase(route: Route) {
   if (!(table in rows)) return route.fulfill({ status:200, contentType:'application/json', body:'[]' });
   const singular = request.headers().accept?.includes('application/vnd.pgrst.object+json');
   if(resource==='exact_accounts'){for(const account of rows.accounts as {id:string;opening_balance:string;balance?:string}[]){const minor=(value:unknown)=>BigInt(String(value).replace('.',''));let total=minor(account.opening_balance);for(const tx of rows.transactions as {account_id:string;type:string;amount:string}[])if(tx.account_id===account.id)total+=(tx.type==='income'?1n:-1n)*minor(tx.amount);for(const transfer of rows.transfers as {source_account_id:string;destination_account_id:string;source_amount:string;destination_amount:string}[]){if(transfer.source_account_id===account.id)total-=minor(transfer.source_amount);if(transfer.destination_account_id===account.id)total+=minor(transfer.destination_amount);}account.balance=`${total/100n}.${String(total%100n).padStart(2,'0')}`;}}
-  if (request.method() === 'GET') return route.fulfill({ status:200, contentType:'application/json', headers:{'content-range':`0-${Math.max(0,rows[table].length-1)}/${rows[table].length}`}, body:JSON.stringify(singular ? rows[table].find(row=>!url.searchParams.get('id')||(row as {id:string}).id===url.searchParams.get('id')?.replace('eq.',''))??null : rows[table]) });
+  if (request.method() === 'GET') {
+    const selected = rows[table].filter(row => [...url.searchParams].every(([key, value]) =>
+      !['id', 'debt_id'].includes(key) || !value.startsWith('eq.') || String((row as Record<string, unknown>)[key]) === value.slice(3)));
+    const offset = Number(url.searchParams.get('offset') ?? 0);
+    const limit = Number(url.searchParams.get('limit') ?? selected.length);
+    return route.fulfill({ status:200, contentType:'application/json', headers:{'content-range':`0-${Math.max(0,selected.length-1)}/${selected.length}`}, body:JSON.stringify(singular ? selected[0] ?? null : selected.slice(offset, offset + limit)) });
+  }
   const body = request.postDataJSON?.() as Record<string, unknown> | undefined;
   if (request.method() === 'PATCH') {
     const selected=rows[table].findIndex(row=>(row as {id:string}).id===url.searchParams.get('id')?.replace('eq.',''));

@@ -1,6 +1,31 @@
 import {expect,test} from '@playwright/test';
-import {mockSignedInApp, supabaseUrl} from './fixtures';
+import {mockSignedInApp, rows, supabaseUrl} from './fixtures';
 test.beforeEach(async ({ page }) => { await mockSignedInApp(page); });
+
+for (const language of ['en', 'ms']) test(`debt history blocks parent deletion in ${language}`, async ({page}) => {
+  (rows.profiles[0] as {language:string}).language=language;
+  rows.debt_repayments=[{id:'repayment-1',debt_id:'debt-1',currency:'MYR',amount:'20.10',account_id:'account-1',transaction_id:null,paid_at:'2000-01-01T00:00:00Z',note:'',created_at:''}];
+  const deletions:string[]=[];
+  page.on('request',request=>{if(request.method()==='DELETE')deletions.push(request.url());});
+  await page.goto('/debts');
+  await page.getByRole('button',{name:/Alex/}).first().click();
+  await page.getByRole('button',{name:/^(Delete|Padam) debt with Alex$/}).click();
+  await expect(page.getByRole('alert').filter({hasText:language==='en'?'This debt has repayments':'Hutang ini mempunyai bayaran balik'})).toBeVisible();
+  await expect(page.getByRole('button',{name:language==='en'?'Delete permanently':'Padam kekal'})).toBeDisabled();
+  expect(deletions).toEqual([]);
+  expect(rows.person_debts).toHaveLength(1);expect(rows.debt_repayments).toHaveLength(1);
+});
+
+test('debt deletion checks server history when the cached list is empty',async({page})=>{
+  await page.route(supabaseUrl+'/rest/v1/debt_repayments?**',route=>route.fulfill({json:[{id:'new-repayment'}]}));
+  const deletions:string[]=[];
+  page.on('request',request=>{if(request.method()==='DELETE')deletions.push(request.url());});
+  await page.goto('/debts');await page.getByRole('button',{name:/Alex/}).first().click();
+  await page.getByRole('button',{name:'Delete debt with Alex'}).click();
+  await page.getByRole('button',{name:'Delete permanently'}).click();
+  await expect(page.getByText('Debt has repayment history. Keep this record until reversal support is available.')).toBeVisible();
+  expect(deletions).toEqual([]);expect(rows.person_debts).toHaveLength(1);
+});
 
 test('dashboard hierarchy, semantic cash-flow colors, transaction accounts, and mobile drawer', async ({ page }) => {
   await page.goto('/');
@@ -43,7 +68,10 @@ test('account editing and all focused delete confirmations use real mutations', 
   await page.keyboard.press('Escape');
 
   for (const [path, row, label] of [['/goals','Emergency fund','Delete Emergency fund'],['/savings','Travel fund','Delete Travel fund'],['/debts','Alex','Delete debt with Alex']] as const) {
-    await page.goto(path); await page.getByRole('button',{name:new RegExp(row)}).first().click(); await page.getByRole('button',{name:label}).click(); await page.getByRole('button',{name:'Delete permanently'}).click();
+    await page.goto(path); await page.getByRole('button',{name:new RegExp(row)}).first().click(); await page.getByRole('button',{name:label}).click();
+    const beforeDelete=requests.filter(item=>item.startsWith('DELETE')).length;
+    await page.getByRole('button',{name:'Delete permanently'}).click();
+    await expect.poll(()=>requests.filter(item=>item.startsWith('DELETE')).length).toBe(beforeDelete+1);
   }
   expect(requests.filter(item=>item.startsWith('DELETE')).length).toBeGreaterThanOrEqual(3);
 });
