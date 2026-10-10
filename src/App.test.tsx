@@ -169,7 +169,7 @@ describe('dashboard financial insights', () => {
   });
   const category: Category = { id: 'category-1', user_id: 'test-user', name: 'Investment', type: 'expense', color: '#4265ee', created_at: '' };
   const transaction = (id: string, amount: string, type: Transaction['type'], date: string): Transaction => ({ id, user_id: 'test-user', amount, currency: 'MYR', type, category_id: type === 'expense' ? category.id : null, payment_method_id: null, description: id, transaction_date: date, created_at: '' });
-  const renderDashboard = (transactions: Transaction[]) => renderToString(<Dashboard transactions={transactions} categories={[category]} payments={[]} month="2026-09" onEdit={() => {}} onDelete={() => {}} />);
+  const renderDashboard = (transactions: Transaction[]) => renderToString(<QueryClientProvider client={new QueryClient()}><Dashboard transactions={transactions} categories={[category]} payments={[]} month="2026-09" onEdit={() => {}} onDelete={() => {}} /></QueryClientProvider>);
 
   it('uses selected-month transaction totals and categories', () => {
     useAppStore.setState({ currency: 'MYR', locale: 'en', exchangeRates: null });
@@ -185,7 +185,7 @@ describe('dashboard financial insights', () => {
 
   it('prioritizes the monthly snapshot and cash flow before account commitments', () => {
     useAppStore.setState({ currency: 'MYR', locale: 'en', exchangeRates: null });
-    const html = renderToString(<Dashboard transactions={[]} categories={[]} payments={[]} month="2026-09" onEdit={() => {}} onDelete={() => {}} accountSummary={<section>ACCOUNT SUMMARY MARKER</section>} />);
+    const html = renderToString(<QueryClientProvider client={new QueryClient()}><Dashboard transactions={[]} categories={[]} payments={[]} month="2026-09" onEdit={() => {}} onDelete={() => {}} accountSummary={<section>ACCOUNT SUMMARY MARKER</section>} /></QueryClientProvider>);
     expect(html.indexOf('snapshot')).toBeLessThan(html.indexOf('dashboard-modules'));
     expect(html.indexOf('dashboard-chart-grid')).toBeLessThan(html.indexOf('ACCOUNT SUMMARY MARKER'));
   });

@@ -361,3 +361,17 @@ button,a { transition:background-color 120ms ease,color 120ms ease,border-color 
 .period-year { max-width: 130px; }
 .page-heading > div { min-width: 0; }
 @media (max-width: 639px) { .period-selector { width: 100%; } .page-heading > div:last-child { width: 100%; } }
+
+/* Exact tables retain their own scroll area at narrow widths. */
+.intelligence-center { min-width: 0; }
+.intelligence-center h3, .intelligence-center h4 { font-weight: 600; }
+.intelligence-center p, .intelligence-center a, .intelligence-center details { overflow-wrap: anywhere; }
+.intelligence-center summary { cursor: pointer; }
+.intelligence-table { overflow-x: auto; max-width: 100%; }
+.intelligence-table table { width: 100%; min-width: 32rem; border-collapse: collapse; text-align: left; font-size: .875rem; overflow-wrap: normal; }
+.intelligence-table a { overflow-wrap: normal; }
+.intelligence-table .intelligence-amount, .intelligence-table th[scope=row] { white-space: nowrap; }
+.intelligence-table .intelligence-amount small { white-space: normal; }
+.intelligence-table:focus-visible { outline: 2px solid rgb(var(--primary-rgb)); outline-offset: 2px; }
+.intelligence-table caption { text-align: left; padding-bottom: .75rem; }
+.intelligence-table th, .intelligence-table td { padding: .75rem; border-bottom: 1px solid var(--border); vertical-align: top; }

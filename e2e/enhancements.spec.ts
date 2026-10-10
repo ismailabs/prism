@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { mockSignedInApp, rows, supabaseUrl } from "./fixtures";
+import { mockSignedInApp, rows, supabaseUrl, userId } from "./fixtures";
 import AxeBuilder from "@axe-core/playwright";
 import { readFileSync } from "node:fs";
 // Desktop Edge interprets synthetic middle swipes as browser history navigation.
@@ -80,6 +80,7 @@ async function realistic(page: Parameters<typeof mockSignedInApp>[0]) {
     route.fulfill({
       json: [
         {
+          user_id: userId,
           month: "2026-09", financial_date: "2026-09-20",
           currency: "MYR",
           type: "income",
@@ -88,6 +89,7 @@ async function realistic(page: Parameters<typeof mockSignedInApp>[0]) {
           transaction_count: 1,
         },
         {
+          user_id: userId,
           month: "2026-09", financial_date: "2026-09-20",
           currency: "MYR",
           type: "expense",
@@ -96,6 +98,7 @@ async function realistic(page: Parameters<typeof mockSignedInApp>[0]) {
           transaction_count: 1,
         },
         {
+          user_id: userId,
           month: "2026-09", financial_date: "2026-09-20",
           currency: "MYR",
           type: "expense",
@@ -104,6 +107,7 @@ async function realistic(page: Parameters<typeof mockSignedInApp>[0]) {
           transaction_count: 1,
         },
         {
+          user_id: userId,
           month: "2026-09", financial_date: "2026-09-20",
           currency: "MYR",
           type: "expense",
@@ -112,6 +116,7 @@ async function realistic(page: Parameters<typeof mockSignedInApp>[0]) {
           transaction_count: 1,
         },
         {
+          user_id: userId,
           month: "2026-08", financial_date: "2026-08-20",
           currency: "MYR",
           type: "income",
@@ -120,6 +125,7 @@ async function realistic(page: Parameters<typeof mockSignedInApp>[0]) {
           transaction_count: 1,
         },
         {
+          user_id: userId,
           month: "2026-08", financial_date: "2026-08-20",
           currency: "MYR",
           type: "expense",
@@ -144,6 +150,7 @@ test("analytics includes every server aggregate beyond the API row limit", async
       );
       calls.push(offset);
       const aggregate = {
+        user_id: userId,
         month: "2026-09", financial_date: "2026-09-20",
         currency: "MYR",
         type: "expense",
@@ -404,6 +411,7 @@ test(`new analytics and settings reflow with large amounts: ${locale}/${theme}/$
   await page.route(supabaseUrl + "/rest/v1/finance_daily_totals*", (route) =>
     route.fulfill({
       json: rows.categories.map((c, i) => ({
+        user_id: userId,
         month: "2026-09", financial_date: "2026-09-20",
         currency: "MYR",
         type: "expense",

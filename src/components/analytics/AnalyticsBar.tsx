@@ -60,13 +60,13 @@ export function AnalyticsBar({
         </strong>
       </button>
       <button onClick={() => s.setActiveTab("analytics")}>
-        <span>{t("savingsRate")}</span>
+        <span>{t("surplusRate")}</span>
         <strong>
           {s.personalization.privacyMode
             ? "•••"
-            : !data || data.unavailable || !data.income
+            : !data || data.unavailable || data.surplusRate === null
               ? "—"
-              : `${data.savingsRate.toFixed(1)}%`}
+              : `${data.surplusRate.toFixed(1)}%`}
         </strong>
       </button>
     </aside>

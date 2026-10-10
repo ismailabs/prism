@@ -1,4 +1,5 @@
 import { financialInstant } from "@/domain/dates";
+import { validateDailyTotal } from '@/domain/intelligence';
 import { decimalMoney, parseMoney } from "@/domain/money";
 import { transactionPageTransport } from "@/domain/transport";
 import { supabase } from "@/lib/supabase";
@@ -44,7 +45,7 @@ async function dailyTotals(
     if (to) query = query.lte('financial_date', to);
     const { data, error } = await query;
     if (error) throw error;
-    rows.push(...data);
+    rows.push(...data.map(row => validateDailyTotal(row, userId)));
     if (data.length < 1000) return rows;
   }
 }

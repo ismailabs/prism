@@ -13,10 +13,11 @@ const auth = `export const useAuth = () => ({ user: { id: 'qa-user', email: 'lon
 const finance = `
 const language = localStorage.getItem('qa-locale') || 'en';
 const theme = localStorage.getItem('qa-theme') || 'light';
-const category = { id: 'cat-1', name: 'VeryLongCategoryName'.repeat(4), type: 'expense', color: '#4265ee' };
+const category = { user_id: 'qa-user', id: 'cat-1', name: 'VeryLongCategoryName'.repeat(4), type: 'expense', color: '#4265ee' };
 const payment = { id: 'pay-1', name: 'VeryLongPaymentMethod'.repeat(4), type: 'credit_card' };
 const transaction = { id: 'tx-1', description: 'LongUnbrokenDescription'.repeat(12), amount: '999999999999.00', currency: 'MYR', type: 'expense', category_id: 'cat-1', payment_method_id: 'pay-1', transaction_date: '2026-09-19T12:00:00Z' };
-const result = data => ({ data, isPending: false, error: null, refetch: async () => {} });
+export const financeKeys = {all:id=>['finance',id]};
+const result = data => ({ data, dataUpdatedAt: Date.now(), isPending: false, error: null, refetch: async () => {} });
 const mutation = { isPending: false, mutateAsync: async () => {} };
 export const useTransactions = () => result([transaction, { ...transaction, id: 'tx-2', type: 'income', description: 'Salary', amount: '5000.00' }]);
 export const useListUsage = () => result([]);
@@ -31,7 +32,7 @@ export const useUpdateProfile = () => mutation;
 `;
 await context.route('**/src/hooks/useAuth.tsx*', route => route.fulfill({ contentType: 'application/javascript', body: auth }));
 await context.route('**/src/hooks/useFinanceData.ts*', route => route.fulfill({ contentType: 'application/javascript', body: finance }));
-const platform = `const result=data=>({data,isPending:false,error:null,refetch:async()=>{}});const mutation={isPending:false,mutateAsync:async()=>{}};export const usePlatformTable=()=>result([]);export const usePlatformMutation=()=>({create:mutation,update:mutation,remove:mutation});`;
+const platform = `const result=data=>({data,dataUpdatedAt:Date.now(),isPending:false,error:null,refetch:async()=>{}});const mutation={isPending:false,mutateAsync:async()=>{}};export const usePlatformTable=()=>result([]);export const usePlatformMutation=()=>({create:mutation,update:mutation,remove:mutation});`;
 await context.route('**/src/hooks/usePlatformData.ts*',route=>route.fulfill({contentType:'application/javascript',body:platform}));
 await context.route('**/src/hooks/useFinancialReports.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const useAnalyticsReport = () => ({data:[],isPending:false,error:null}); export const useFinancialReport=()=>({data:undefined,isPending:false,error:null});export const useTransactionPage=()=>({data:{rows:[{id:'tx-1',user_id:'qa-user',amount:'25.00',currency:'MYR',type:'expense',category_id:null,payment_method_id:null,description:'Purchase',transaction_date:'2026-09-19T12:00:00Z',created_at:''}],total:1},isPending:false,error:null});`}));
 await context.route('**/src/hooks/usePlanningData.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const usePlanningData=()=>({budgets:{data:[],error:null},rules:{data:[],error:null},importRows:{isPending:false}});`}));

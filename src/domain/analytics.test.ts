@@ -72,10 +72,12 @@ describe("analytics period and exact aggregation", () => {
       null,
       "None",
     );
-    expect(data.savingsRate).toBeNull();
+    expect(data.surplusRate).toBeNull();
     expect(data.count).toBe(0);
     expect(data.spending).toEqual([]);
     expect(ratio("20", "0", "MYR")).toBeNull();
+    const dashboard = dashboardFinancials([], [], '2026-09', 'MYR', null, 'Asia/Kuala_Lumpur', 'en', 'None');
+    expect(dashboard.surplusRate).toBeNull();
   });
   it("excludes savings/debt legacy transactions and future transactions from ordinary analytics", () => {
     const tx = (

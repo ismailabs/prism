@@ -18,7 +18,7 @@ import { FinancialOverview } from "../financial/Overview";
 import { LoadingState } from "../LoadingState";
 import { SpendingDonut } from "./SpendingDonut";
 import { CashFlowChart, cashPoints } from "./CashFlowChart";
-import { FinancialPulse } from "./FinancialPulse";
+import { IntelligenceCenter } from './IntelligenceCenter';
 import { MoneyText } from "../MoneyText";
 export function Analytics({
   period,
@@ -149,22 +149,22 @@ export function Analytics({
                 );
               })}
               <div className="card analytics-metric">
-                <span>{t("savingsRate")}</span>
+                <span>{t("surplusRate")}</span>
                 <strong>
                   {personalization.privacyMode
                     ? "•••"
-                    : result.data.savingsRate === null
+                    : result.data.surplusRate === null
                       ? "—"
-                      : `${result.data.savingsRate.toFixed(1)}%`}
+                      : `${result.data.surplusRate.toFixed(1)}%`}
                 </strong>
                 <small>{t("ofIncome")}</small>
                 <small>
                   {period.comparison !== false && <>{t("previousPeriod")}: {" "}
                   {personalization.privacyMode
                     ? "•••"
-                    : result.data.previousSavingsRate === null
+                    : result.data.previousSurplusRate === null
                       ? "—"
-                      : `${result.data.previousSavingsRate.toFixed(1)}%`}</>}
+                      : `${result.data.previousSurplusRate.toFixed(1)}%`}</>}
                 </small>
               </div>
             </section>
@@ -189,11 +189,11 @@ export function Analytics({
                 onDrill={(id) => drill("income", id)}
               />
             </div>
-            {result.data.mixed && <p className="text-xs text-subtle">≈ {t('conversionEstimate', { currency, date: exchangeRates ? new Date(exchangeRates.updatedAt).toLocaleDateString(locale === 'ms' ? 'ms-MY' : 'en-US') : '—' })}</p>}
-            <FinancialPulse period={period} />
+            {result.data.mixed && <p className="text-xs text-subtle">≈ {t('conversionEstimate', { currency, date: exchangeRates ? new Date(exchangeRates.updatedAt).toISOString() : '—' })} · {exchangeRates?.source ?? '—'}</p>}
           </>
         )
       )}
+      <IntelligenceCenter period={period} />
       <p className="text-xs text-subtle">
         {t("progressSeparate")} {t("noHistoricalBalances")}
       </p>

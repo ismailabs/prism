@@ -49,7 +49,7 @@ describe('financial aggregation', () => {
     expect(summary.expense).toBe(600);
     expect(summary.balance).toBe(400);
     expect(summary.monthlyExpense).toBe(200);
-    expect(summary.savingsRate).toBe(80);
+    expect(summary.surplusRate).toBe(80);
     expect(summary.projectedMonthlyExpense).toBe(400);
     expect(summary.spendingChangePercent).toBe(-50);
   });
@@ -79,7 +79,7 @@ describe('financial aggregation', () => {
   it('handles an empty account and a month without income without NaN or Infinity', () => {
     const summary = summarizeTransactions([], 'USD', null, new Date(timestamp));
     expect(summary.balance).toBe(0);
-    expect(summary.savingsRate).toBe(0);
+    expect(summary.surplusRate).toBeNull();
     expect(summary.projectedMonthlyExpense).toBe(0);
     expect(summary.spendingChangePercent).toBeNull();
   });

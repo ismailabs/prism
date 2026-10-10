@@ -170,7 +170,7 @@ export function dashboardFinancials(
     breakdown,
     unavailable,
     mixed: [...rows, ...net].some((r) => r.currency !== currency),
-    savingsRate: ratio(netExact, incomeExact, currency) ?? 0,
+    surplusRate: ratio(netExact, incomeExact, currency),
     daily: dayCount ? expense / dayCount : 0,
     forecast: dayCount ? (expense / dayCount) * days : 0,
   };

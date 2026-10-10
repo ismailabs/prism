@@ -30,7 +30,11 @@
     "test:goal-actions-db": "node scripts/goal-actions-db-test.mjs",
     "test:actions-db": "node scripts/actions-db-test.mjs",
     "test:actions-native": "node scripts/actions-native-test.mjs",
-    "test:actions-review": "node scripts/phase5-review-probes.mjs"
+    "test:actions-review": "node scripts/phase5-review-probes.mjs",
+    "test:intelligence-db": "node scripts/intelligence-db-test.mjs",
+    "test:intelligence-native": "node scripts/intelligence-db-test.mjs --native",
+    "test:ledger-review": "node scripts/phase2-review-probes.mjs",
+    "test:intelligence-review": "node scripts/phase6-review-probes.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "5.3.0",

@@ -2,7 +2,7 @@ import {browserTimezone,financialDate} from '@/domain/dates';
 import {decimalMoney,parseMoney} from '@/domain/money';
 import {convertCurrency} from '@/services/currency';
 import type {Category,Currency,ExchangeRates,Transaction} from '@/types';
-export interface FinanceSummary {income:number;expense:number;balance:number;savingsRate:number;monthlyIncome:number;monthlyExpense:number;dailySpending:number;projectedMonthlyExpense:number;previousMonthlyExpense:number;spendingChangePercent:number|null}
+export interface FinanceSummary {income:number;expense:number;balance:number;surplusRate:number|null;monthlyIncome:number;monthlyExpense:number;dailySpending:number;projectedMonthlyExpense:number;previousMonthlyExpense:number;spendingChangePercent:number|null}
 export interface MonthlyCashFlow {key:string;month:string;income:number;expense:number}
 export interface CategoryBreakdown {id:string;name:string;color:string;value:number}
 const monthKey=(date:Date,zone:string)=>financialDate(date,zone).slice(0,7);
@@ -15,7 +15,7 @@ export function summarizeTransactions(transactions:Transaction[],currency:Curren
  const sum=(type:string,month?:string)=>displaySum(rows.filter(t=>t.type===type&&(!month||monthKey(new Date(t.transaction_date),timezone)===month)),currency,rates);
  const income=sum('income'),expense=sum('expense'),monthlyIncome=sum('income',currentMonth),monthlyExpense=sum('expense',currentMonth),previousMonthlyExpense=sum('expense',previousMonth);
  const today=financialDate(now,timezone);const day=Number(today.slice(8));const [year,index]=currentMonth.split('-').map(Number);const days=new Date(Date.UTC(year,index,0)).getUTCDate();const dailySpending=monthlyExpense/day;
- return {income,expense,balance:income-expense,savingsRate:monthlyIncome?((monthlyIncome-monthlyExpense)/monthlyIncome)*100:0,monthlyIncome,monthlyExpense,dailySpending,projectedMonthlyExpense:dailySpending*days,previousMonthlyExpense,spendingChangePercent:previousMonthlyExpense?((monthlyExpense-previousMonthlyExpense)/previousMonthlyExpense)*100:null};
+ return {income,expense,balance:income-expense,surplusRate:monthlyIncome>0?((monthlyIncome-monthlyExpense)/monthlyIncome)*100:null,monthlyIncome,monthlyExpense,dailySpending,projectedMonthlyExpense:dailySpending*days,previousMonthlyExpense,spendingChangePercent:previousMonthlyExpense?((monthlyExpense-previousMonthlyExpense)/previousMonthlyExpense)*100:null};
 }
 export function getMonthlyCashFlow(transactions:Transaction[],currency:Currency,rates:ExchangeRates|null,months=6,now=new Date(),locale='en',timezone=browserTimezone()):MonthlyCashFlow[]{
  if(!Number.isInteger(months)||months<1||months>120)throw new Error('Month count must be between 1 and 120.');const [year,month]=monthKey(now,timezone).split('-').map(Number);const rows=ordinary(transactions,now);

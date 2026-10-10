@@ -1,4 +1,4 @@
-import { financialDate, validTimezone } from './dates';
+import { financialDate, validTimezone } from './dates.ts';
 
 export const defaultPeriodTypes = ['month', 'last-3-months', 'last-6-months', 'last-12-months', 'year-to-date', 'all-time'] as const;
 export type DefaultPeriod = typeof defaultPeriodTypes[number];

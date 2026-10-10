@@ -34,7 +34,7 @@ export function Dashboard({ transactions, categories, payments, month, period: s
   const metrics = [
     { label: t('analyticsPeriodIncome'), value: money(data.incomeExact), detail: periodLabel ?? t('period'), icon: ArrowDownLeft },
     { label: t('analyticsPeriodExpenses'), value: money(data.expenseExact), detail: periodLabel ?? t('period'), icon: ArrowUpRight },
-    { label: t('savingsRate'), value: personalization.privacyMode ? '•••' : data.unavailable ? '—' : data.income ? `${data.savingsRate.toFixed(1)}%` : '—', detail: data.income ? c('Income less spending; not actual savings', 'Pendapatan tolak belanja; bukan simpanan sebenar') : t('noIncome'), icon: TrendingUp },
+    { label: t('surplusRate'), value: personalization.privacyMode ? '•••' : data.unavailable || data.surplusRate === null ? '—' : `${data.surplusRate.toFixed(1)}%`, detail: data.surplusRate !== null ? c('Income less spending; not actual savings', 'Pendapatan tolak belanja; bukan simpanan sebenar') : t('noIncome'), icon: TrendingUp },
   ];
   return <div className="space-y-6">
     {data.unavailable && <p role="status" className="warning-message">{t('ratesUnavailable')}</p>}
@@ -48,7 +48,7 @@ export function Dashboard({ transactions, categories, payments, month, period: s
         <div className="snapshot-metrics">{metrics.map(({ label, value, detail, icon: Icon }) => <div className={`snapshot-metric ${label===t('analyticsPeriodIncome')?'income':label===t('analyticsPeriodExpenses')?'expense':''}`} key={label}><span><Icon size={15} />{label}</span><strong>{value}</strong><small>{detail}</small></div>)}</div>
       </section>
       <div className="flow-note"><span title={t('balanceNote')}>{t('totalBalance')}: <strong>{money(data.balanceExact)}</strong> · {t('allTime')}</span><span>{c('Account balances shown separately below.', 'Baki akaun dipaparkan berasingan di bawah.')}</span></div>
-      {data.mixed && !data.unavailable && <p className="mt-2 text-xs text-subtle">≈ {c('Converted totals are estimates in', 'Jumlah ditukar ialah anggaran dalam')} {currency}. {c('Rate date:', 'Tarikh kadar:')} {exchangeRates ? new Date(exchangeRates.updatedAt).toLocaleDateString(locale === 'ms' ? 'ms-MY' : 'en-US') : c('unavailable', 'tidak tersedia')}.</p>}
+      {data.mixed && !data.unavailable && <p className="mt-2 text-xs text-subtle">≈ {c('Converted totals are estimates in', 'Jumlah ditukar ialah anggaran dalam')} {currency}. {c('Rate date:', 'Tarikh kadar:')} {exchangeRates ? new Date(exchangeRates.updatedAt).toISOString() : c('unavailable', 'tidak tersedia')} · {c('Source:', 'Sumber:')} {exchangeRates?.source ?? '—'}.</p>}
     </div>
     {!transactions.length && <button className="text-link" onClick={onAdd}>{t('addFirst')}<ChevronRight size={14}/></button>}
     <div className="dashboard-modules">{personalization.dashboardOrder.filter(module=>!personalization.hiddenModules.includes(module)).map(module=><div key={module} className={'dashboard-module module-'+module}>{modules[module]}</div>)}</div>
