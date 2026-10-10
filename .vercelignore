@@ -2,7 +2,21 @@
 docs/
 artifacts/
 scripts/
-supabase/
+e2e/
+.github/
+dist/
+coverage/
+test-results/
+playwright-report/
+.cache/
+.vite/
+*.tsbuildinfo
+# Only the explicitly synthetic fixture is a frontend build input.
+# Keep SQL, migrations, local database state and all other test fixtures private.
+supabase/*
+!supabase/tests
+supabase/tests/*
+!supabase/tests/ledger-history.synthetic.json
 AGENTS.md
 .env*
 !.env.example

@@ -113,5 +113,8 @@ See the [integration handoff](docs/phases1-4-integration-handoff.md),
 Run `npm run test:integration-db` for isolated native installation, Phase 1
 upgrade, migration recovery, reconciliation and concurrency checks, and
 `npm run test:integration-review` for the independent rollover oracle.
-Integration results remain uncommitted; local acceptance does not authorize
-publication, deployment or hosted migrations.
+The [local checkpoint handoff](docs/phases1-4-local-checkpoint.md) records the
+authorized integration commits. See its complete committed inventory, local
+PR draft and remote/staging prerequisites before any separately authorized
+publication or Phase 5 work. Local acceptance does not authorize publication,
+deployment or hosted migrations.

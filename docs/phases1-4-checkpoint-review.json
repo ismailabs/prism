@@ -1,0 +1,200 @@
+{
+  "recordedAtUtc": "2026-10-10T05:51:26.3501018Z",
+  "authorization": "User explicit local integration checkpoint authorization; no remote publication or hosted mutation authorized",
+  "branch": "codex/phases1-4-integration",
+  "acceptedPhase1": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+  "implementationCommit": "78505b5bacc17a1b41c7b96c56e33c2d964e2a89",
+  "implementationTree": "b9d9acb35c70a3527dd39a5199f48ef4fddff280",
+  "acceptedSnapshot": {
+    "files": 86,
+    "fullPatchSha256": "290E59A0AAF41C940712333C20C434D50473854EB2F69E10F136449895EAA457",
+    "currentAndStagedAndCommittedDiffMatched": true,
+    "allManifestAndEvidenceHashesMatched": true,
+    "materialMismatches": []
+  },
+  "originalWorktrees": [
+    {
+      "phase": "phase1",
+      "branch": "codex/phase1-stabilization",
+      "head": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+      "files": 25,
+      "clean": true,
+      "allHashesMatched": true
+    },
+    {
+      "phase": "phase2",
+      "branch": "codex/phase2-ledger",
+      "head": "5f07fe20062623d429a0e4fda4fb1ee759a4e063",
+      "files": 26,
+      "clean": true,
+      "allHashesMatched": true
+    },
+    {
+      "phase": "phase3",
+      "branch": "codex/phase3-finance-ux",
+      "head": "1c0c5fa98925dd29df3bc0ae9a7ecba4bcf0c068",
+      "files": 29,
+      "clean": true,
+      "allHashesMatched": true
+    },
+    {
+      "phase": "phase4",
+      "branch": "codex/phase4-budgeting-debt",
+      "head": "ba98330e50ca87afb03f58d1fd4bfca92dbc0e78",
+      "files": 25,
+      "clean": true,
+      "allHashesMatched": true
+    }
+  ],
+  "preservedOriginalSourceFiles": 105,
+  "finalReviewCommitScope": [
+    ".github/workflows/ci.yml",
+    ".vercelignore",
+    "README.md",
+    "docs/phases1-4-local-checkpoint.md",
+    "docs/phases1-4-pr-description.md",
+    "docs/phases1-4-remote-readiness.md",
+    "docs/phases1-4-checkpoint-review.json",
+    "docs/phases1-4-committed-inventory.json"
+  ],
+  "applicationSqlFixtureTestAndDependencyBlobsUnchangedFromImplementationCommit": true,
+  "phase2P1Remediations": {
+    "authorization": "Both privileged ledger functions require session_allowed() IS TRUE; NULL/FALSE denied",
+    "timestamps": "Exact decimal epoch microseconds, canonical six-digit timestamps, inclusive native cutoff",
+    "presentInAcceptedCommittedSnapshot": true
+  },
+  "financialAuthority": "Legacy reads/balances remain authoritative; shadow/synthetic accounting and debt split previews do not post authoritative splits",
+  "migrationChain": {
+    "orderedMigrations": 16,
+    "nativeCleanAndUpgradeAccepted": true,
+    "rollbackAndRetryProbes": 3,
+    "populatedLegacyTablesPreserved": 13,
+    "historicalComparisons": 23,
+    "historicalNonzeroDifferences": 0,
+    "hashesUnchanged": true
+  },
+  "verification": {
+    "originalEvidence": "docs/phases1-4-verification.json",
+    "unitTests": 127,
+    "unitFiles": 13,
+    "unitRerunAfterImplementationCommit": "PASS",
+    "typecheckRerun": "PASS",
+    "lintRerun": "PASS",
+    "fullBrowserTests": 102,
+    "expandedIntegrationBrowserTests": 6,
+    "responsiveChecks": 361,
+    "nativePostgresAndPostgrestSecurityConcurrency": "PASS",
+    "independentOracleCases": 100,
+    "priorGatesApplyToCommittedCode": true,
+    "reason": "Implementation binary diff matches the accepted patch exactly. Follow-up commit changes only CI/ignore/README/checkpoint documents; no application/SQL/test/dependency input changes.",
+    "remoteUbuntuChromiumRun": "Not performed; future separately authorized CI required"
+  },
+  "ci": {
+    "actionlintVersion": "1.7.12",
+    "actionlintExitCode": 0,
+    "failingProcessExitPreserved": 7,
+    "successfulProcessExitPreserved": 0,
+    "failureUploadCondition": "always()",
+    "artifactRetentionDays": 7,
+    "hiddenFilesIncluded": false,
+    "fixtureOnly": true,
+    "hostedOptInForbidden": true,
+    "permissions": "contents: read",
+    "checkoutCredentialsPersisted": false,
+    "actualRemoteUpload": "Not performed",
+    "actionPins": {
+      "checkout": "11d5960a326750d5838078e36cf38b85af677262",
+      "setupNode": "49933ea5288caeca8642d1e84afbd3f7d6820020",
+      "uploadArtifact": "ea165f8d65b6e75b540449e92b4886f43607fa02"
+    }
+  },
+  "sourcePackaging": {
+    "cli": "Vercel 59.23.2, --dry --format=json",
+    "noUploadOrDeployment": true,
+    "syntheticFixtureIncluded": true,
+    "supabaseSqlAndOtherFixturesExcluded": true,
+    "privateAndGeneratedMaterialExcluded": true,
+    "manifestOnlyIsolatedBuildExitCode": 0,
+    "fixtureProviderConfigurationOnly": true,
+    "applicationInputBlobsUnchanged": true
+  },
+  "vercelReadOnly": {
+    "projectId": "prj_cxW7kDXZK6AxnJ954ZvB54eRZ8kr",
+    "projectName": "prism",
+    "teamId": "team_y1FMLs1LWgVb2dOvegEGYVkf",
+    "repository": "ismailabs/prism-finance-tracker",
+    "productionBranch": "main",
+    "gitDeployments": "enabled",
+    "ignoreBuildCommand": null,
+    "deploymentChecks": null,
+    "autoAssignCustomDomains": true,
+    "hostedConfigurationChanged": false,
+    "publicationRisk": "Future branch push may trigger a preview independently of CI; suppression/isolation or explicit preview authorization required"
+  },
+  "dependencyRisks": {
+    "versionsUnchanged": true,
+    "lockUnchanged": true,
+    "runtimeAdvisories": 0,
+    "developmentBuildAdvisories": 8,
+    "high": 6,
+    "moderate": 2,
+    "notDependencySecurityCertification": true
+  },
+  "evidenceFiles": [
+    {
+      "path": "artifacts/integration/checkpoint-typecheck.log",
+      "sha256": "3437D8B80FB3D05E44D58BF15F10B255B2FF2BD2BD1134CFED0C5BC61CFB532D"
+    },
+    {
+      "path": "artifacts/integration/checkpoint-lint.log",
+      "sha256": "5EBB13F7B95648B8B0A17C1EECB6A66C5FE7F35D1C4FC1436884B18EC65ACD4F"
+    },
+    {
+      "path": "artifacts/integration/checkpoint-unit.log",
+      "sha256": "E3FCC890023284F78C2A83E42DDB0284D282098D9230BB6150B32175C00C684B"
+    },
+    {
+      "path": "artifacts/integration/checkpoint-actionlint.log",
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "artifacts/integration/checkpoint-pipefail.log",
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "artifacts/integration/checkpoint-pipeline-success.log",
+      "sha256": "0B098D9D2499349EC0C3B9A06ED034C7201B1485DA131019D163B17C7331D010"
+    },
+    {
+      "path": "artifacts/integration/checkpoint-packaged-build.log",
+      "sha256": "DF2AF32AFE43FE6D34340C1446A41FBA4F731A2B364FA72FFE9157EAAE4FCD7F"
+    },
+    {
+      "path": "artifacts/integration/vercel-source-validation.json",
+      "sha256": "36F96C014213E67AA1CEF91EEE373CA7D0E6F6BF17B63CA0058570F7485E3BCD"
+    },
+    {
+      "path": "artifacts/integration/vercel-trigger-review.json",
+      "sha256": "9A663F58F7A2529472B16180ABBF49A39052DFB8D1FF78737CF4A6996295E298"
+    },
+    {
+      "path": "artifacts/integration/accepted-baseline-commit.json",
+      "sha256": "41612B80C4905C893C8E6C3DFAA07EA39C038EA6B861D5E4A2619BFA0F7729AF"
+    },
+    {
+      "path": "artifacts/integration/checkpoint-precommit-audit.json",
+      "sha256": "9A0A1B2492CB29CB45CF87540A45F2561B66D76358612D553C0A2FB626ECFB07"
+    }
+  ],
+  "finalHeadReceipt": "artifacts/integration/local-commits.json; written after final local commit; not staged as a generated artifact",
+  "unresolvedLocalBlockers": [],
+  "knownFinancialSecurityP0P1": [],
+  "phase5StartingPoint": "GO for separately authorized local Phase 5 work",
+  "phase5Started": false,
+  "hostedReleaseDecision": "NO-GO/unverified",
+  "remotePushPerformed": false,
+  "remotePrOpened": false,
+  "protectedBranchMerged": false,
+  "hostedMigrationApplied": false,
+  "productionDataCopied": false
+}

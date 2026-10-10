@@ -5,36 +5,71 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Prepare local-only verification logs
+        run: |
+          mkdir -p artifacts/ci
+          node --input-type=module -e 'for (const name of ["PRISM_E2E_BASE_URL", "PRISM_E2E_STORAGE_STATE"]) { if (process.env[name]) throw new Error("Hosted browser opt-in is forbidden in this fixture-only job"); }' 2>&1 | tee artifacts/ci/local-only.log
+          git rev-parse HEAD | tee artifacts/ci/commit.log
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm run test
-      - run: npm run test:db
-      - run: npm run test:platform-db
-      - run: npm run test:foundations-db
-      - run: npm run test:period-db
-      - run: npm run test:ledger-db
-      - run: npm run ledger:dry-run
-      - run: npm run test:planning-db
-      - run: npm run test:integration-db
-      - run: npm run test:integration-review
+      # Bash pipefail preserves each failing command's exit status through tee.
+      - run: npm ci 2>&1 | tee artifacts/ci/install.log
+      - run: npm run typecheck 2>&1 | tee artifacts/ci/typecheck.log
+      - run: npm run lint 2>&1 | tee artifacts/ci/lint.log
+      - run: npm run test 2>&1 | tee artifacts/ci/unit.log
+      - run: npm run test:db 2>&1 | tee artifacts/ci/finance-db.log
+      - run: npm run test:platform-db 2>&1 | tee artifacts/ci/platform-db.log
+      - run: npm run test:foundations-db 2>&1 | tee artifacts/ci/foundations-db.log
+      - run: npm run test:period-db 2>&1 | tee artifacts/ci/period-db.log
+      - run: npm run test:ledger-db 2>&1 | tee artifacts/ci/ledger-db.log
+      - run: npm run ledger:dry-run 2>&1 | tee artifacts/ci/ledger-dry-run.log
+      - run: node scripts/phase2-review-probes.mjs 2>&1 | tee artifacts/ci/phase2-review.log
+      - run: npm run test:planning-db 2>&1 | tee artifacts/ci/planning-db.log
+      - run: npm run test:integration-db 2>&1 | tee artifacts/ci/integration-db.log
+      - run: npm run test:integration-review 2>&1 | tee artifacts/ci/integration-review.log
       - name: Install PostgREST test binary
         run: |
           curl -fsSL https://github.com/PostgREST/postgrest/releases/download/v16.4/postgrest-v16.4-linux-static-x86-64.tar.xz -o /tmp/postgrest.tar.xz
           tar -xf /tmp/postgrest.tar.xz -C /tmp
           echo "PGRST_TEST_BINARY=/tmp/postgrest" >> "$GITHUB_ENV"
-      - run: npm run test:postgres
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:ledger-preview
-      - run: npm run test:e2e
-      - run: npm run test:responsive
-      - run: npm run build
+      - run: npm run test:postgres 2>&1 | tee artifacts/ci/native-http.log
+      - run: npx playwright install --with-deps chromium 2>&1 | tee artifacts/ci/browser-install.log
+      - run: npm run test:ledger-preview 2>&1 | tee artifacts/ci/ledger-preview.log
+      - run: npm run test:e2e 2>&1 | tee artifacts/ci/browser.log
+      - run: npm run test:responsive 2>&1 | tee artifacts/ci/responsive.log
+      - run: npm run build 2>&1 | tee artifacts/ci/build.log
         env:
           VITE_SUPABASE_URL: https://fixture.supabase.co
           VITE_SUPABASE_ANON_KEY: fixture-anon-key
+      # Only this local fixture job may upload traces. Never reuse this allowlist
+      # for hosted authenticated tests or add env files, database dirs or state.
+      - name: Preserve synthetic verification evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: prism-local-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 7
+          if-no-files-found: warn
+          include-hidden-files: false
+          path: |
+            artifacts/ci/*.log
+            artifacts/integration/migration-verification.json
+            artifacts/integration/adversarial-rollover.json
+            artifacts/integration/budget-*.png
+            artifacts/integration/accounting-*.png
+            artifacts/phase2/final-review-probes.json
+            artifacts/phase2/reconciliation.json
+            artifacts/responsive-checks.json
+            artifacts/qa-failure.png
+            test-results/
+            playwright-report/
