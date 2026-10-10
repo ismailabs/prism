@@ -3,6 +3,7 @@ import type { Session,User } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import { errorMessage } from '@/lib/utils';
 
 export interface AuthContextValue {
   user: User | null;
@@ -49,7 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       if (mounted.current && expectedRevision === revision.current) {
         setSession(nextSession); setRequiresMfa(true);
-        setAuthError(error instanceof Error ? error.message : 'Unable to verify your session. Please sign in again.');
+        setAuthError(errorMessage(error));
       }
     } finally {
       if (mounted.current && expectedRevision === revision.current) setLoading(false);

@@ -36,6 +36,7 @@ jobs:
       - run: node scripts/phase2-review-probes.mjs 2>&1 | tee artifacts/ci/phase2-review.log
       - run: npm run test:actions-review 2>&1 | tee artifacts/ci/actions-review.log
       - run: npm run test:actions-db 2>&1 | tee artifacts/ci/actions-db.log
+      - run: npm run test:goal-actions-db 2>&1 | tee artifacts/ci/goal-actions-db.log
       - run: npm run test:planning-db 2>&1 | tee artifacts/ci/planning-db.log
       - run: npm run test:integration-db 2>&1 | tee artifacts/ci/integration-db.log
       - run: npm run test:integration-review 2>&1 | tee artifacts/ci/integration-review.log
@@ -45,10 +46,18 @@ jobs:
           tar -xf /tmp/postgrest.tar.xz -C /tmp
           echo "PGRST_TEST_BINARY=/tmp/postgrest" >> "$GITHUB_ENV"
       - run: npm run test:actions-native 2>&1 | tee artifacts/ci/actions-native.log
+      - run: npm run test:intelligence-db 2>&1 | tee artifacts/ci/intelligence-db.log
+      - run: npm run test:intelligence-native 2>&1 | tee artifacts/ci/intelligence-native.log
+      - run: npm run test:intelligence-review 2>&1 | tee artifacts/ci/intelligence-review.log
       - run: npm run test:postgres 2>&1 | tee artifacts/ci/native-http.log
       - run: npx playwright install --with-deps chromium 2>&1 | tee artifacts/ci/browser-install.log
       - run: npm run test:ledger-preview 2>&1 | tee artifacts/ci/ledger-preview.log
       - run: npm run test:e2e 2>&1 | tee artifacts/ci/browser.log
+      - run: npm run test:pwa-review 2>&1 | tee artifacts/ci/pwa-review.log
+      - run: npm run test:release-package 2>&1 | tee artifacts/ci/source-package.log
+      - run: npm run test:pwa 2>&1 | tee artifacts/ci/pwa-browser.log
+      - run: node scripts/phase7-restore-test.mjs 2>&1 | tee artifacts/ci/restore.log
+      - run: npm run test:localization 2>&1 | tee artifacts/ci/localization.log
       - run: npm run test:responsive 2>&1 | tee artifacts/ci/responsive.log
       - run: npm run build 2>&1 | tee artifacts/ci/build.log
         env:
@@ -76,6 +85,12 @@ jobs:
             artifacts/phase5/*-review.json
             artifacts/phase5/*.png
             artifacts/responsive-checks.json
+            artifacts/phase7/*-review.json
+            artifacts/phase7/pwa-cache-inventory.json
+            artifacts/phase7/restore-rehearsal.json
+            artifacts/phase7/localization-literals.json
+            artifacts/phase7/*.png
+            artifacts/phase7/pwa-results-*/
             artifacts/qa-failure.png
             test-results/
             playwright-report/

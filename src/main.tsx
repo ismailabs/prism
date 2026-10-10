@@ -1,5 +1,9 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AuthProvider } from '@/hooks/useAuth';
+import { queryDefaults } from '@/lib/connectivity';
+import { startPwa } from '@/lib/pwa';
+import { clearPrivateQueries } from '@/lib/privateCache';
+import { PwaStatus } from '@/components/PwaStatus';
 import '@fontsource/inter/latin-400.css';
 import '@fontsource/inter/latin-500.css';
 import '@fontsource/inter/latin-600.css';
@@ -13,5 +17,7 @@ import './i18n';
 import './styles.css';
 import './components/public/public.css';
 
-const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: true }, mutations: { retry: false } } });
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><QueryClientProvider client={queryClient}><AuthProvider><ErrorBoundary><App/></ErrorBoundary><Toaster richColors position="bottom-right" closeButton/></AuthProvider></QueryClientProvider></React.StrictMode>);
+const queryClient = new QueryClient({ defaultOptions: queryDefaults });
+window.addEventListener('offline', () => clearPrivateQueries(queryClient));
+startPwa();
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><QueryClientProvider client={queryClient}><AuthProvider><ErrorBoundary><App/><PwaStatus/></ErrorBoundary><Toaster richColors position="bottom-right" closeButton/></AuthProvider></QueryClientProvider></React.StrictMode>);

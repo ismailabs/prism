@@ -8,10 +8,13 @@ import { PublicHome } from '@/components/public/PublicHome';
 import { useAuth } from '@/hooks/useAuth';
 import { loginPath, navigatePath, pathTab, safeDestination } from '@/lib/routes';
 import { useAppStore } from '@/store/useAppStore';
+import { useOnline } from '@/lib/connectivity';
+import { OfflineScreen } from '@/components/PwaStatus';
 
 const Workspace = lazy(() => import('@/components/Workspace'));
 
 export default function App() {
+  const online = useOnline();
   const { user, loading, requiresMfa, authError, recovery, completeRecovery } = useAuth();
   const { t, i18n } = useTranslation();
   const { theme, locale, activeTab, setActiveTab, personalization } = useAppStore();
@@ -68,6 +71,7 @@ export default function App() {
     document.title = publicPage ? (locale === 'ms' ? 'PRISM · Kejelasan kewangan, mengikut cara anda' : 'PRISM · Financial clarity, on your terms') : `P.R.I.S.M. · ${location.path === '/login' ? t('signIn') : t(activeTab)}`;
   }, [activeTab, locale, location.path, publicPage, t]);
 
+  if (!online) return <OfflineScreen />;
   if (!known) return <main className="grid min-h-screen place-items-center p-6"><div className="text-center"><h1 className="text-2xl font-semibold">{t('notFound')}</h1><a className="text-link mt-4" href="/">{t('backHome')}</a></div></main>;
   if (publicPage) return <PublicHome demoOnly={location.path === '/demo'} />;
   if (loading) return <main className="grid min-h-screen place-items-center"><div className="w-full max-w-4xl p-6"><LoadingState /></div></main>;

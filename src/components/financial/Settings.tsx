@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useFinancialCopy } from "./shared";
 import { PersonalizationSettings } from '../PersonalizationSettings';
+import { PwaStatus } from '../PwaStatus';
 export function SettingsView({ profile }: { profile: Profile }) {
   const c = useFinancialCopy();
   const queryClient = useQueryClient();
@@ -215,6 +216,7 @@ export function SettingsView({ profile }: { profile: Profile }) {
             {t("payments")}
           </Button>
         </section>
+        <PwaStatus settings />
         <section className="card space-y-6 p-6">
           <h2 className="text-lg font-semibold">{t("security")}</h2>
           <p className="text-sm text-subtle">{t("securityDescription")}</p>

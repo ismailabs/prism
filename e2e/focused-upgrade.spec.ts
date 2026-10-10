@@ -9,21 +9,23 @@ for (const language of ['en', 'ms']) test(`debt history blocks parent deletion i
   page.on('request',request=>{if(request.method()==='DELETE')deletions.push(request.url());});
   await page.goto('/debts');
   await page.locator('button.selection-card').filter({has:page.getByRole('heading',{name:'Alex',exact:true})}).click();
-  await expect(page.getByRole('button',{name:/^(Delete|Padam) debt with Alex$/})).toBeDisabled();
+  await expect(page.getByRole('button',{name:language==='en'?'Delete debt with Alex':'Padam hutang dengan Alex',exact:true})).toBeDisabled();
   await expect(page.getByRole('alert').filter({hasText:language==='en'?'This debt has repayments':'Hutang ini mempunyai bayaran balik'})).toBeVisible();
   await expect(page.getByRole('button',{name:language==='en'?'Delete permanently':'Padam kekal'})).toHaveCount(0);
   expect(deletions).toEqual([]);
   expect(rows.person_debts).toHaveLength(1);expect(rows.debt_repayments).toHaveLength(1);
 });
 
-test('debt deletion checks server history when the cached list is empty',async({page})=>{
+for (const language of ['en', 'ms']) test(`debt deletion checks server history when the cached list is empty in ${language}`,async({page})=>{
+  rows.profiles[0].language=language;
   await page.route(supabaseUrl+'/rest/v1/debt_repayments?**',route=>route.fulfill({json:[{id:'new-repayment'}]}));
   const deletions:string[]=[];
   page.on('request',request=>{if(request.method()==='DELETE')deletions.push(request.url());});
-  await page.goto('/debts');await page.getByRole('button',{name:/Alex/}).first().click();
-  await page.getByRole('button',{name:'Delete debt with Alex'}).click();
-  await page.getByRole('button',{name:'Delete permanently'}).click();
-  await expect(page.getByText('Debt has repayment history. Keep this record until reversal support is available.')).toBeVisible();
+  await page.goto('/debts');await page.locator('button.selection-card').filter({has:page.getByRole('heading',{name:'Alex',exact:true})}).click();
+  await page.getByRole('button',{name:language==='en'?'Delete debt with Alex':'Padam hutang dengan Alex',exact:true}).click();
+  const checked=page.waitForResponse(response=>response.url().startsWith(supabaseUrl+'/rest/v1/debt_repayments?')&&response.status()===200);
+  await page.getByRole('button',{name:language==='en'?'Delete permanently':'Padam kekal',exact:true}).click();await checked;
+  await expect(page.getByText(language==='en'?'Debt has repayment history. Keep this record until reversal support is available.':'Hutang mempunyai sejarah bayaran balik. Kekalkan rekod ini sehingga sokongan pembalikan tersedia.',{exact:true})).toBeVisible();
   expect(deletions).toEqual([]);expect(rows.person_debts).toHaveLength(1);
 });
 

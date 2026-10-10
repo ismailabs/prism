@@ -335,7 +335,7 @@ export function CsvImport({
                 <ul className="text-sm error-message" role="alert">
                   {preview.errors.map((e, i) => (
                     <li key={i}>
-                      {c("Row", "Baris")} {e.row}: {e.message}
+                      {c("Row", "Baris")} {e.row}: {errorMessage({ message: e.message })}
                     </li>
                   ))}
                 </ul>

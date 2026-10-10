@@ -375,3 +375,5 @@ button,a { transition:background-color 120ms ease,color 120ms ease,border-color 
 .intelligence-table:focus-visible { outline: 2px solid rgb(var(--primary-rgb)); outline-offset: 2px; }
 .intelligence-table caption { text-align: left; padding-bottom: .75rem; }
 .intelligence-table th, .intelligence-table td { padding: .75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+/* Installation notices remain usable at narrow widths and safe-area insets. */
+.pwa-notice{position:fixed;z-index:45;bottom:max(1rem,env(safe-area-inset-bottom));right:max(1rem,env(safe-area-inset-right));max-width:min(24rem,calc(100vw - 2rem));max-height:70vh;overflow:auto}

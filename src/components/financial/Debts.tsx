@@ -228,7 +228,7 @@ export function DebtsPage() {
                   <Button
                     size="icon"
                     variant="ghost"
-                    aria-label={L(`Delete debt with ${current.counterparty}`)}
+                    aria-label={`${L('Delete debt with')} ${current.counterparty}`}
                     disabled={(repayments.data??[]).some(r=>r.debt_id===current.id)}
                     onClick={() => setDeleting(current)}
                   >

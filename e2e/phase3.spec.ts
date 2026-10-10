@@ -154,7 +154,8 @@ test('partial starter-category failure stays reviewable and retry does not dupli
   await setup.getByLabel('First account').fill('Retry account');
   await setup.getByLabel('Add starter categories').check();
   await setup.getByRole('button', { name: 'Save setup' }).click();
-  await expect(setup.getByRole('alert')).toContainText('Synthetic category failure');
+  await expect(setup.getByRole('alert')).toContainText('The request could not be completed.');
+  await expect(setup.getByRole('alert')).not.toContainText('Synthetic category failure');
   expect(rows.categories).toHaveLength(1);
   expect(rows.accounts).toEqual([]);
   await setup.getByRole('button', { name: 'Save setup' }).click();

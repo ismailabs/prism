@@ -1,3 +1,4 @@
+import { errorMessage } from '@/lib/utils';
 import { useAppStore } from '@/store/useAppStore';
 import { ArrowRight,Eye,EyeOff,LoaderCircle,LockKeyhole } from 'lucide-react';
 import { useState,type FormEvent } from 'react';
@@ -41,7 +42,7 @@ export function AuthScreen() {
         const { error: authError } = await supabase.auth.signInWithPassword({ email: result.data.email, password: result.data.password });
         if (authError) throw authError;
       }
-    } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); }
+    } catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(false); }
   }
 
@@ -50,7 +51,7 @@ export function AuthScreen() {
     try {
       const { error: authError } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: authCallback() } });
       if (authError) throw authError;
-    } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); setBusy(false); }
+    } catch (cause) { setError(errorMessage(cause)); setBusy(false); }
   }
 
   if(forgot)return <PasswordRecovery reset={false} onBack={()=>setForgot(false)}/>;

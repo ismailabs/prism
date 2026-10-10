@@ -1,5 +1,8 @@
 import { useAppStore } from "@/store/useAppStore";
 const ms: Record<string, string> = {
+  'Delete debt with': 'Padam hutang dengan',
+  'Delete goal': 'Padam matlamat',
+  'Delete savings target': 'Padam sasaran simpanan',
   'Linked transfer':'Pindahan berpaut',
   'Notional earmark':'Peruntukan andaian',
   'The allocation uses the exact transfer destination amount. Unlink the contribution before correcting or removing the transfer; posted journal corrections preserve history.':'Peruntukan menggunakan amaun destinasi pindahan tepat. Buang pautan sumbangan sebelum membetulkan atau membuang pindahan; pembetulan jurnal direkodkan mengekalkan sejarah.',
@@ -217,7 +220,7 @@ export function usePlatformText() {
   return (text: string) => {
     if (locale !== "ms") return text;
     return (
-      ms[text] ??
+      (Object.hasOwn(ms, text) ? ms[text] : undefined) ??
       text
         .replace(/^Delete /, "Padam ")
         .replace(/^Contribute to /, "Sumbang kepada ")

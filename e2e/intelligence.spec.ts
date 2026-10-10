@@ -94,8 +94,11 @@ test('numeric transport and server denial remain visible failures, never fabrica
   await seed(page);
   await page.route(supabaseUrl + '/rest/v1/finance_daily_totals*', route => route.fulfill({ json: [{ user_id: userId, currency: 'MYR', type: 'income', month: '2026-10', financial_date: '2026-10-01', category_id: null, amount: Number('90071992547409.93'), transaction_count: 1 }] }));
   await page.goto('/analytics'); await expect(page.getByRole('alert').filter({ hasText: 'Invalid exact financial report.' })).toBeVisible();
-  await page.route(supabaseUrl + '/rest/v1/finance_daily_totals*', route => route.fulfill({ status: 403, json: { message: 'Synthetic authorization denied' } }));
-  await page.reload(); await expect(page.getByRole('alert').filter({ hasText: 'Synthetic authorization denied' })).toBeVisible();
+  await page.route(supabaseUrl + '/rest/v1/finance_daily_totals*', route => route.fulfill({ status: 403, json: { message: 'Synthetic authorization denied PRIVATE_ACCOUNT_SENTINEL', code: '42501' } }));
+  const denied = page.waitForResponse(response => response.url().startsWith(supabaseUrl + '/rest/v1/finance_daily_totals') && response.status() === 403);
+  await page.reload(); await denied;
+  await expect(page.getByRole('alert').filter({ hasText: 'This request is not authorized.' })).toBeVisible();
+  await expect(page.getByText(/PRIVATE_ACCOUNT_SENTINEL|Synthetic authorization denied/)).toHaveCount(0);
 });
 test('a plan mutation refreshes the forecast and logout hides private sources', async ({ page }) => {
   await seed(page); await page.goto('/analytics');

@@ -110,11 +110,16 @@ describe('application auth and view integration', () => {
     expect(html).toContain('aria-label="Open navigation"');
     expect(html).toContain('Accounts');
   });
-  it('renders real query errors instead of treating a failed read as an empty account', () => {
+  it('renders a safe error state instead of treating a failed read as an empty account', () => {
     fixture.auth.user = { id: 'test-user' } as AuthContextValue['user'];
-    fixture.error = new Error('Permission denied');
-    expect(render()).toContain('Permission denied');
-    expect(render()).not.toContain('Coffee');
+    fixture.error = new Error('Permission denied: PRIVATE_ACCOUNT_SENTINEL');
+    const html = render();
+    expect(html).toContain('role="alert"');
+    expect(html).toContain('We couldn’t load your data');
+    expect(html).toContain('check your records first');
+    expect(html).not.toContain('PRIVATE_ACCOUNT_SENTINEL');
+    expect(html).not.toContain('Permission denied');
+    expect(html).not.toContain('Coffee');
   });
   it('connects saved profile values to the settings form', () => {
     fixture.auth.user = { id: 'test-user', email: 'test@example.invalid' } as AuthContextValue['user'];

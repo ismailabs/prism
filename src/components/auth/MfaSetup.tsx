@@ -1,3 +1,4 @@
+import { errorMessage } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Check,LoaderCircle,Plus,ShieldCheck,Smartphone,X } from 'lucide-react';
 import { useEffect,useRef,useState,type FormEvent } from 'react';
@@ -36,7 +37,7 @@ export function MfaSetup() {
   async function start() {
     setOpen(true); setError(''); setNotice(''); setBusy(true);
     try { await loadFactors(); }
-    catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); }
+    catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(false); }
   }
 
@@ -55,7 +56,7 @@ export function MfaSetup() {
       if (enrollError) throw enrollError;
       const qrCode = data.totp.qr_code.startsWith('data:image/') ? data.totp.qr_code : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(data.totp.qr_code)}`;
       setPending({ id: data.id, qrCode, secret: data.totp.secret });
-    } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); }
+    } catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(false); }
   }
 
@@ -69,7 +70,7 @@ export function MfaSetup() {
       setPending(null); setCode(''); setNotice(copy.enabled);
       await refreshMfa(); await loadFactors();
       await queryClient.invalidateQueries({ queryKey: ['finance'] });
-    } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); }
+    } catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(false); }
   }
 
@@ -83,7 +84,7 @@ export function MfaSetup() {
       await supabase.auth.refreshSession();
       await refreshMfa(); await loadFactors();
       await queryClient.invalidateQueries({ queryKey: ['finance'] });
-    } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); }
+    } catch (cause) { setError(errorMessage(cause)); }
     finally { setBusy(false); }
   }
 
@@ -95,7 +96,7 @@ export function MfaSetup() {
         const { error: cleanupError } = await supabase.auth.mfa.unenroll({ factorId: pending.id });
         if (cleanupError) throw cleanupError;
         setPending(null); setCode('');
-      } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); setBusy(false); return; }
+      } catch (cause) { setError(errorMessage(cause)); setBusy(false); return; }
       setBusy(false);
     }
     setRemoving(null); setOpen(false);

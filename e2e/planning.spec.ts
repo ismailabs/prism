@@ -287,12 +287,15 @@ test("planning errors are actionable and retry is available", async ({
   page,
 }) => {
   await page.route(supabaseUrl + "/rest/v1/exact_reserve_plans*", (r) =>
-    r.fulfill({ status: 403, json: { message: "Fixture permission denied" } }),
+    r.fulfill({ status: 403, json: { message: "Fixture permission denied PRIVATE_ACCOUNT_SENTINEL", code: '42501' } }),
   );
+  const denied = page.waitForResponse(response => response.url().includes('/rest/v1/exact_reserve_plans') && response.status() === 403);
   await page.goto("/plans");
   await page.getByRole("button", { name: "Budgets", exact: true }).click();
+  await denied;
   await expect(
-    page.getByRole("alert").filter({ hasText: "Fixture permission denied" }),
+    page.getByRole("alert").filter({ hasText: "This request is not authorized." }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  await expect(page.getByText(/PRIVATE_ACCOUNT_SENTINEL|Fixture permission denied/)).toHaveCount(0);
 });

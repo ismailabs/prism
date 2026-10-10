@@ -1,6 +1,10 @@
 {
   "name": "PRISM — Personal finance",
   "short_name": "PRISM",
+  "id": "/",
+  "scope": "/",
+  "lang": "en-MY",
+  "description": "Personal finance in English and Bahasa Melayu. An internet connection is required for your finances.",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#146556",

@@ -110,7 +110,8 @@ test('private note pagination and read errors preserve context without fabricati
  await page.goto('/notes');await expect(page.getByRole('heading',{name:'Context 0',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Context 25',exact:true})).toHaveCount(0);
  await page.getByRole('navigation',{name:'Notes pagination',exact:true}).getByRole('button',{name:'Next',exact:true}).click();await expect(page.getByRole('heading',{name:'Context 25',exact:true})).toBeVisible();
  await page.route('**/rest/v1/financial_notes*',route=>route.fulfill({status:403,json:{message:'Synthetic note access denied',code:'42501'}}));
- await page.goto('/notes');await expect(page.getByRole('alert').filter({hasText:'Synthetic note access denied'})).toBeVisible();await expect(page.getByText('No notes match this view.',{exact:true})).toHaveCount(0);
+ const denied=page.waitForResponse(response=>response.url().includes('/rest/v1/financial_notes')&&response.status()===403);
+ await page.goto('/notes');await denied;await expect(page.getByRole('alert').filter({hasText:'This request is not authorized.'})).toBeVisible();await expect(page.getByText('No notes match this view.',{exact:true})).toHaveCount(0);await expect(page.getByText('Synthetic note access denied')).toHaveCount(0);
  await page.unroute('**/rest/v1/financial_notes*');await page.getByRole('button',{name:'Try again',exact:true}).click();await expect(page.getByRole('heading',{name:'Context 0',exact:true})).toBeVisible();
 });
 
