@@ -1,0 +1,222 @@
+{
+  "baseHead": "3eb8ee4572d84b458426e8a3a0e8f92f0d0fad74",
+  "branch": "codex/phase6-analytics",
+  "worktree": "C:\\Users\\moham\\.codex\\worktrees\\phase6-analytics\\prism-finance-baseline",
+  "normalization": "UTF-8; CRLF normalized to LF; self hash intentionally null",
+  "count": 29,
+  "lockSha256": "87684e891ebdec9518e3ffdae0acb1421d26af1ff160351f76a4b3be41cd1eda",
+  "files": [
+    {
+      "path": "docs/phase6-changed-files.json",
+      "status": "added",
+      "group": "documentation",
+      "baselineBlob": null,
+      "normalizedSha256": null
+    },
+    {
+      "path": "docs/phase6-local-acceptance.md",
+      "status": "added",
+      "group": "documentation",
+      "baselineBlob": null,
+      "normalizedSha256": "532c337a0d22fb256e07a4511be6df86d64d12ed3789a6217ab88acc2b8ca0e2"
+    },
+    {
+      "path": "docs/phase6-metric-contracts.md",
+      "status": "added",
+      "group": "documentation",
+      "baselineBlob": null,
+      "normalizedSha256": "426c9157f26fc54f5b290c5ce1a2a2b614ab7c3a05b43911d3f63ab0b1a67538"
+    },
+    {
+      "path": "docs/phase6-review.md",
+      "status": "added",
+      "group": "documentation",
+      "baselineBlob": null,
+      "normalizedSha256": "a6d4679b04b7ac675e5695beeedb73d7c52fc54df7963a833c9c6e3ecf8beb54"
+    },
+    {
+      "path": "e2e/enhancements.spec.ts",
+      "status": "modified",
+      "group": "tests/tooling",
+      "baselineBlob": "1bac64c3099073933d48030c94095282f52725c2",
+      "normalizedSha256": "948509a68bb93b62c15c3539b9f4928c38a957996494aef9f75762d76ef84dec"
+    },
+    {
+      "path": "e2e/intelligence.spec.ts",
+      "status": "added",
+      "group": "tests/tooling",
+      "baselineBlob": null,
+      "normalizedSha256": "c7fc19e38c4b83636d1b6219e8fb841d600d2700e5677222ec2fa46ea64f77d5"
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "group": "tests/tooling",
+      "baselineBlob": "a24d4cadabb6bfc4ef33af8922339a450dc68624",
+      "normalizedSha256": "e754830a53f89515949b0be82860ca026030eb102701e6eeea891ef509b77900"
+    },
+    {
+      "path": "scripts/intelligence-db-test.mjs",
+      "status": "added",
+      "group": "tests/tooling",
+      "baselineBlob": null,
+      "normalizedSha256": "bc6ae27d060e9371e21aff86ee75193c5d25cc96268f1e3cab6636faea7d5cb2"
+    },
+    {
+      "path": "scripts/phase6-local-acceptance.mjs",
+      "status": "added",
+      "group": "tests/tooling",
+      "baselineBlob": null,
+      "normalizedSha256": "c3a711458397b2010e3002994f4d1bbbdd6afc07e694832041e3a4c5376448d0"
+    },
+    {
+      "path": "scripts/phase6-review-probes.mjs",
+      "status": "added",
+      "group": "tests/tooling",
+      "baselineBlob": null,
+      "normalizedSha256": "50816d9408b5b742779000fec7e6433c910387eb8dfa333f97782cdd2eb7a342"
+    },
+    {
+      "path": "scripts/verify-responsive.mjs",
+      "status": "modified",
+      "group": "tests/tooling",
+      "baselineBlob": "d4345d7ef08cec6c782733ff86c519bac71631ee",
+      "normalizedSha256": "1caf41c47664feb12e6031151ba069645686a27732e2bb0d2ba74111f839468d"
+    },
+    {
+      "path": "src/App.test.tsx",
+      "status": "modified",
+      "group": "tests/tooling",
+      "baselineBlob": "f6e6ac60ce46dadccda61e2e4899a8a0098c858d",
+      "normalizedSha256": "028a0ecf3bd89497960da96437192ed1f7c3812827894fb5217ac4c2c919b62d"
+    },
+    {
+      "path": "src/components/Dashboard.tsx",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "8e5a34458a9abb8bae1ab3ff25193aa7ccb94df9",
+      "normalizedSha256": "357b78d3bfb3ffb4c8608baa716c037c43478192697ecbfe0b16db82213da863"
+    },
+    {
+      "path": "src/components/analytics/Analytics.tsx",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "afa91fd34b85a0e900c3cce10653f7211e37afd0",
+      "normalizedSha256": "f1e6868404455a42b1fe9ffc10e706fb871748d0cfe7dc1965dda8adfdccb39e"
+    },
+    {
+      "path": "src/components/analytics/AnalyticsBar.tsx",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "1e6e297ea5e182fb47b1ab5b74589ffc997c6702",
+      "normalizedSha256": "a2d2ab5221688efa2771b377bf00830ac8bef6b25c100aa16fc7da67391a42c5"
+    },
+    {
+      "path": "src/components/analytics/FinancialPulse.tsx",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "831cbeda5473b591d9a042a7f490dcab991bdf22",
+      "normalizedSha256": "bfcb9c9c4e81cad36a7164cfdecba7de7f615cc47d04b05cad393c965a730dc9"
+    },
+    {
+      "path": "src/components/analytics/IntelligenceCenter.tsx",
+      "status": "added",
+      "group": "implementation",
+      "baselineBlob": null,
+      "normalizedSha256": "429758c4e2ac5bde29c6ce4d22083df8edbb943a02d053acd2088e3cfca4c549"
+    },
+    {
+      "path": "src/domain/analytics.test.ts",
+      "status": "modified",
+      "group": "tests/tooling",
+      "baselineBlob": "d7c66069e739280722ad6561294bccfca4ef7289",
+      "normalizedSha256": "448d196d7f82c6c2137e1da4dd74f54de2d9d3e42ed4c3987c14161fa056043a"
+    },
+    {
+      "path": "src/domain/analytics.ts",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "683288e6820ff9db5413f5f05d9bc718a791204c",
+      "normalizedSha256": "23b896440b238c223e17108645aa790eeb0226a97faa1c492f5c781a3736d456"
+    },
+    {
+      "path": "src/domain/dashboard.ts",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "ecfe96181445038eecaa35bfc4356085fe9819b4",
+      "normalizedSha256": "3cfc57212f6baaefb4b772fb7b41a9a1e32adbb374dc936adba45b764648b18b"
+    },
+    {
+      "path": "src/domain/intelligence.test.ts",
+      "status": "added",
+      "group": "tests/tooling",
+      "baselineBlob": null,
+      "normalizedSha256": "33a4934c48aa2cae244fad2151ef029a8753ea25873c1246945aec60add000be"
+    },
+    {
+      "path": "src/domain/intelligence.ts",
+      "status": "added",
+      "group": "implementation",
+      "baselineBlob": null,
+      "normalizedSha256": "e22af9a37c30cdc26d3bc4fb48ac8a1be398ac9aa25375dcdfe03684b9556b08"
+    },
+    {
+      "path": "src/domain/periods.ts",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "5626b2d6a9bda9e4297365f72ac0146f88a75f4f",
+      "normalizedSha256": "bc5b443420dcc2a570fe8adc2d596463d87d67aad3a6cf956478c50149d7a150"
+    },
+    {
+      "path": "src/hooks/useFinancialReports.ts",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "7a8ef3b4966fa8b5825296a1e87b778530b664c9",
+      "normalizedSha256": "ac641ecff846aad8596964fd2003ce91efcde193fbfde3f502b3ab6f72d5e0b7"
+    },
+    {
+      "path": "src/hooks/useIntelligenceData.ts",
+      "status": "added",
+      "group": "implementation",
+      "baselineBlob": null,
+      "normalizedSha256": "532e42fe1e7031b3b4d1a0908bdc6ed8f75aa9063b59f534d19b493acfa56465"
+    },
+    {
+      "path": "src/i18n.ts",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "32b6a56b11a7d211d4a9c8298d15ff112904b1d1",
+      "normalizedSha256": "c1c0b8e449d0f10c187be4d98bc6437e7637a5aabce39ee91e40a899143613a6"
+    },
+    {
+      "path": "src/lib/finance.test.ts",
+      "status": "modified",
+      "group": "tests/tooling",
+      "baselineBlob": "52cdbac665d5bac25aae831bc9da14c42dd5172a",
+      "normalizedSha256": "0fb869bc4ef825c1476ef6e33c5a74850ccd6dbeb97f04ab0629574fdfb21fea"
+    },
+    {
+      "path": "src/lib/finance.ts",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "4ee1ba4d027b31781dab7a341c5e8679e0d53cfd",
+      "normalizedSha256": "c2428310223cd41ca74e70c3c5c1f9a29dde5a2fa9cd3fb22b7b30db949b8096"
+    },
+    {
+      "path": "src/styles.css",
+      "status": "modified",
+      "group": "implementation",
+      "baselineBlob": "c57ce3ad9aaa5e9bfdc9a9459e868a32aee77dce",
+      "normalizedSha256": "cfcb267bc2cc008ae105bd932c821646d9f434a1bbe61381f7381df9f17c09fb"
+    }
+  ],
+  "checkpoint": {
+    "implementationHead": "698f6425ceb561e935502229189fd186e34707d4",
+    "finalHead": "following local documentation commit on codex/phase6-analytics; resolved full hash in checkpoint receipt and final response",
+    "receipt": "artifacts/phase6/checkpoint/final-report.json",
+    "reviewedEngineeringFilesUnchanged": 25,
+    "testedEngineeringInputs": 227,
+    "phase7LocalStartingPoint": "GO when final receipt reports PASS and clean tree",
+    "release": "NO-GO; separate external acceptance and authorization"
+  }
+}
