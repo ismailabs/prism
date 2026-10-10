@@ -28,6 +28,13 @@
   ::selection { background:var(--accent-soft); }
 }
 @layer components {
+  .workspace-nav-group { margin-bottom:14px; }
+  .workspace-nav-group > .eyebrow { padding:10px 16px 5px; margin-bottom:0; }
+  .sidebar-compact .workspace-nav-group > .eyebrow { display:none; }
+  .desktop-sidebar .sidebar-links { overflow-y:auto; min-height:0; }
+  .onboarding fieldset { min-width:0; }
+  .onboarding legend { font-size:12px; font-weight:600; padding-block:12px; }
+  .onboarding-note { max-width:680px; color:var(--subtle); font-size:12px; line-height:1.8; }
   .app-shell { width:100%; min-height:100dvh; }
   .app-main,.card,.form-field,.search-field { min-width:0; overflow-wrap:anywhere; }
   .app-main .grid > *, .modal-content .grid > * { min-width:0; }

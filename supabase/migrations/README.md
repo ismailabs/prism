@@ -1,5 +1,29 @@
 # Active migration baseline
 
+## Phase 3 local proposal (2026-10-10; unapplied)
+
+`20261010021500_malaysia_profile_defaults.sql` changes only defaults for future
+profiles: MYR and `Asia/Kuala_Lumpur`, including profiles created through OAuth.
+It does not update existing preferences, native amounts, history, grants or RLS.
+Both defaults remain user-selectable. The existing signup trigger uses these
+column defaults. Its restricted function also accepts the supported signup
+language metadata (`ms`, otherwise `en`), preserving username truncation,
+identity ownership, conflict handling, privileges and its empty search path.
+The trigger binding and Auth-provider settings are unchanged.
+
+The disposable replay checks snapshots from a pre-existing profile, account and
+transaction before/after the addition, new OAuth-style profile defaults and
+explicit preference changes in PGlite and native PostgreSQL. See
+[Phase 3 evidence](../../docs/phase3-finance-ux.md).
+
+This file is **not applied remotely**. Rehearse just the approved forward additions
+on a verified staging target after resolving historical migration differences
+and the inherited Phase 1 proposal. Do not replay the baseline or backfill users.
+If a rollback is approved, a new forward migration can restore currency default
+`'USD'`, drop the timezone default and restore the prior profile-creation function
+from `20260928000200_initial_finance_tracker.sql`. That affects future profiles only; it must
+not overwrite preferences chosen by users. Applying or reverting requires approval.
+
 `20260928000200_initial_finance_tracker.sql` is the empty-project baseline. It creates Profiles, Categories, Payment Methods, and Transactions with ownership RLS and MFA-aware session checks.
 
 `20260928031516_personal_finance_platform.sql` is the additive production migration applied to the existing P.R.I.S.M. Supabase project on 2026-09-28. The remote migration history records this version. It adds Accounts, Objectives (Goals and Savings), Milestones, Contributions, Person Debts, and Repayments. It preserves all existing rows and adds an optional account reference to Transactions.
@@ -47,3 +71,27 @@ public.person_debts; drop function prism_private.protect_debt_repayment_history(
 in a transaction. That removes protection; it does not restore subsequently
 deleted history. No rollback is needed for data from this proposal because it
 does not mutate data. Deployment and database application each require approval.
+
+## Phase 2 local shadow ledger (2026-10-10; unapplied)
+
+`20261009220402_shadow_double_entry_ledger.sql` was created by the Supabase CLI.
+It adds separate ledger accounts, financial events, journals, exact journal lines
+and goal allocations with owner/currency constraints, immutable posting,
+transactional request identity, inverse reversals and session/MFA RLS. Public
+invoker wrappers call reviewed private definer write functions; clients receive
+SELECT only on ledger tables and exact-text views. Legacy rows/views remain
+unchanged; nothing automatically posts to this shadow ledger.
+
+It is **unapplied remotely**. Full synthetic replay and native/HTTP evidence are
+recorded in [Phase 02](../../docs/phase2-accounting.md). FX postings and historical
+guesses are rejected. Review the [ADR](../../docs/adr/0002-shadow-ledger.md) and
+[recovery runbook](../../docs/phase2-ledger-recovery.md) before any staging request.
+Do not baseline/reset/normalize production migration history. After financial
+writes change, recovery includes immutable receipts and accepted commands; a
+code rollback or table drop is not a financial data recovery plan.
+
+## Phase 4 planning (local, unapplied)
+
+`20261010024257_phase4_planning.sql` adds budget rollover/threshold options, owner-scoped reserve and debt assumption tables, exact security-invoker views, and guards preserving existing debt repayment history. It introduces no financial posting RPC, counter, backfill or accrual. The authenticated app role cannot delete/rewrite repayments or recast a debt with repayment history; confirmed privileged account erasure is preserved. Review these semantics before rollout.
+
+See `../../docs/phase4-budgeting-debt.md` for the entry decision (Phase 2 absent), synthetic replay/HTTP verification, file manifest, acceptance boundaries and release/recovery plan. **Not applied to hosted Supabase.** Reconcile historical versions first and apply only this new forward file after separate approval, backup/restore verification and a disposable staging rehearsal. Deploy the matching client only after the schema is present.

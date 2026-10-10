@@ -12,6 +12,7 @@ import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
 import { usePlatformText } from "./copy";
 import { Failure, ProgressBar, currencies, money, positive } from "./shared";
+import { DebtPlanner } from './DebtPlanner';
 export function DebtsPage() {
   const L = usePlatformText();
   const timezone = useAppStore((s) => s.financialTimezone);
@@ -228,12 +229,14 @@ export function DebtsPage() {
                     size="icon"
                     variant="ghost"
                     aria-label={L(`Delete debt with ${current.counterparty}`)}
+                    disabled={(repayments.data??[]).some(r=>r.debt_id===current.id)}
                     onClick={() => setDeleting(current)}
                   >
                     <Trash2 size={16} className="text-red-600" />
                   </Button>
                 </div>
               </div>
+              {(repayments.data ?? []).some(r => r.debt_id === current.id) && <p role="alert" className="mt-3 text-sm text-subtle">{L('This debt has repayments. Keep its history and cash effects until reversal support is available.')}</p>}
               {(() => {
                 const p = debtProgress(
                   current,
@@ -310,16 +313,7 @@ export function DebtsPage() {
                               : L("Manual")}
                           </p>
                         </div>
-                        <button
-                          className="text-link"
-                          onClick={() =>
-                            void repaymentMutations.remove
-                              .mutateAsync(r.id)
-                              .catch((e) => toast.error(errorMessage(e)))
-                          }
-                        >
-                          {L("Remove")}
-                        </button>
+                        <span className="text-xs text-subtle">{L('History preserved')}</span>
                       </li>
                     ))}
                   {!(repayments.data ?? []).some(
@@ -330,6 +324,7 @@ export function DebtsPage() {
                     </li>
                   )}
                 </ul>
+                <p className="mt-3 text-xs text-subtle">{L('Repayment history is preserved. Corrections require an audited reversal after ledger integration.')}</p>
               </div>
             </section>
           ) : (
@@ -340,6 +335,7 @@ export function DebtsPage() {
           )}
         </div>
       )}
+      {!busy&&<DebtPlanner debts={debts.data??[]}/>}
       <Modal
         open={open}
         onOpenChange={setOpen}
@@ -351,6 +347,7 @@ export function DebtsPage() {
             <select
               className="input"
               value={direction}
+              disabled={!!editing&&(repayments.data??[]).some(r=>r.debt_id===editing.id)}
               onChange={(e) => setDirection(e.target.value as DebtDirection)}
             >
               <option value="i_owe">{L("I owe someone")}</option>
@@ -375,6 +372,7 @@ export function DebtsPage() {
                 required
                 inputMode="decimal"
                 value={amount}
+                disabled={!!editing&&(repayments.data??[]).some(r=>r.debt_id===editing.id)}
                 onChange={(e) => setAmount(e.target.value)}
               />
             </label>

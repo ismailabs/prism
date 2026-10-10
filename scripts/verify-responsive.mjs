@@ -35,6 +35,7 @@ const platform = `const result=data=>({data,isPending:false,error:null,refetch:a
 await context.route('**/src/hooks/usePlatformData.ts*',route=>route.fulfill({contentType:'application/javascript',body:platform}));
 await context.route('**/src/hooks/useFinancialReports.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const useAnalyticsReport = () => ({data:[],isPending:false,error:null}); export const useFinancialReport=()=>({data:undefined,isPending:false,error:null});export const useTransactionPage=()=>({data:{rows:[{id:'tx-1',user_id:'qa-user',amount:'25.00',currency:'MYR',type:'expense',category_id:null,payment_method_id:null,description:'Purchase',transaction_date:'2026-09-19T12:00:00Z',created_at:''}],total:1},isPending:false,error:null});`}));
 await context.route('**/src/hooks/usePlanningData.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const usePlanningData=()=>({budgets:{data:[],error:null},rules:{data:[],error:null},importRows:{isPending:false}});`}));
+await context.route('**/src/hooks/useAdvancedPlanning.ts*',route=>route.fulfill({contentType:'application/javascript',body:`const query={data:[],isPending:false,error:null,refetch:async()=>{}};const mutation={isPending:false,mutateAsync:async()=>{}};export const useAdvancedPlanning=()=>({reserves:query,contracts:query,reserve:mutation,removeReserve:mutation,contract:mutation});`}));
 await context.route('**/src/lib/supabase.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `export const supabase = { auth: { mfa: { listFactors: async () => ({ data: { totp: [] }, error: null }) } } };` }));
 await context.route('**/api/rates?*', route => route.fulfill({ json: { base: 'MYR', rates: { USD: .23, EUR: .21, JPY: 34, MYR: 1 }, updatedAt: Date.now(), source: 'QA fixture' } }));
 const checks = [];
@@ -74,10 +75,10 @@ try {
       await page.setViewportSize({ width, height: width === 1440 ? 1000 : 740 });
       await page.goto('http://127.0.0.1:5174/');
       const routeTitles = locale === 'en'
-        ? ['Overview','All transactions','Analytics','Accounts','Plans','Goals','Savings','Personal debts','Categories','Payment methods','Settings']
-        : ['Gambaran keseluruhan','Semua transaksi','Analitik','Akaun','Perancangan','Matlamat','Simpanan','Hutang peribadi','Kategori','Kaedah pembayaran','Tetapan'];
+        ? ['Overview','All transactions','Analytics','Accounting laboratory','Accounts','Plans','Goals','Savings','Personal debts','Categories','Payment methods','Settings']
+        : ['Gambaran keseluruhan','Semua transaksi','Analitik','Makmal perakaunan','Akaun','Perancangan','Matlamat','Simpanan','Hutang peribadi','Kategori','Kaedah pembayaran','Tetapan'];
       let routeIndex = 0;
-      for (const route of ['/', '/transactions', '/analytics', '/accounts', '/plans', '/goals', '/savings', '/debts', '/categories', '/payments', '/settings']) {
+      for (const route of ['/', '/transactions', '/analytics', '/accounting', '/accounts', '/plans', '/goals', '/savings', '/debts', '/categories', '/payments', '/settings']) {
         if (route !== '/') await page.evaluate(path => { history.pushState(null, '', path); dispatchEvent(new PopStateEvent('popstate')); }, route);
         await page.waitForFunction(title => document.querySelector('main h1')?.textContent === title, routeTitles[routeIndex++]);
         await page.locator('main .card, main .metric-grid').first().waitFor();

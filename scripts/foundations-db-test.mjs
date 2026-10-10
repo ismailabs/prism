@@ -3,10 +3,15 @@ import { readFile, readdir } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { exercisePhase1Integrity } from './phase1-integrity-test.mjs';
+import { exerciseIdentityDefaultsMigration } from './phase3-identity-test.mjs';
 
 export async function replay(db) {
   await db.exec(await readFile('supabase/tests/auth-fixture.sql','utf8'));
-  for(const file of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort())await db.exec(await readFile(`supabase/migrations/${file}`,'utf8'));
+  for (const file of (await readdir('supabase/migrations')).filter(f => f.endsWith('.sql')).sort()) {
+    const sql = await readFile(`supabase/migrations/${file}`, 'utf8');
+    if (file === '20261010021500_malaysia_profile_defaults.sql') await exerciseIdentityDefaultsMigration(db, sql);
+    else await db.exec(sql);
+  }
 }
 export async function exercise(db) {
   const user=randomUUID(), other=randomUUID(), session=randomUUID(), otherSession=randomUUID();
@@ -80,7 +85,8 @@ export async function exercise(db) {
   assert.equal((await db.query('select count(*)::int as count from public.exact_transfers')).rows[0].count,0);
   await assert.rejects(createTransfer(a,b,'1','1'));await identity(user,session,'aal2');
   assert.equal((await db.query('select count(*)::int as count from public.exact_transfers')).rows[0].count,1);
-  await db.query('delete from public.debt_repayments where id=$1',[repayment]);
+  await assert.rejects(db.query('delete from public.debt_repayments where id=$1',[repayment]),/audited reversal/);
+  assert.equal((await db.query('select count(*)::int as n from public.debt_repayments where id=$1',[repayment])).rows[0].n,1,'Repayment trail must remain intact');
   await exercisePhase1Integrity(db);
   console.log('PASS exact text views, transfers/net worth, savings earmarks, principal cash/overpayment, timezone, RLS/MFA, atomic/idempotent CSV, category budget, recurrence clamping/idempotency and numeric pagination');
 }

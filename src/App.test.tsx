@@ -2,6 +2,8 @@ import { QueryClient,QueryClientProvider } from '@tanstack/react-query';
 import { renderToString } from 'react-dom/server';
 import { beforeEach,describe,expect,it,vi } from 'vitest';
 import App from './App';
+import Workspace from './components/Workspace';
+import { PublicHome } from './components/public/PublicHome';
 import { Dashboard } from './components/Dashboard';
 import { FinancialOverview } from './components/Platform';
 import type { AuthContextValue } from './hooks/useAuth';
@@ -40,15 +42,32 @@ vi.mock('./hooks/useFinanceData', () => ({
   useUpdateProfile: () => ({ isPending: false }),
 }));
 function render() {
-  return renderToString(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><App /></QueryClientProvider>);
+  return renderToString(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>{fixture.auth.user && !fixture.auth.loading && !fixture.auth.requiresMfa && !fixture.auth.authError ? <Workspace /> : <App />}</QueryClientProvider>);
 }
 beforeEach(() => {
+  vi.unstubAllGlobals();
   fixture.auth = { user: null, loading: false, requiresMfa: false, authError: null };
   fixture.error = null;
   fixture.platform = {};
   useAppStore.setState({ activeTab: 'transactions', currency: 'USD', locale: 'en', theme: 'light' });
 });
 describe('application auth and view integration', () => {
+  it('serves the guest homepage while the initial Auth check is pending', () => {
+    vi.stubGlobal('window', { location: { pathname: '/', search: '' } });
+    fixture.auth.loading = true;
+    expect(render()).toContain('Life has many sides.');
+    expect(render()).not.toContain('Coffee');
+    vi.unstubAllGlobals();
+  });
+  it('renders a marked public illustration without private records or navigation', () => {
+    const html = renderToString(<PublicHome />);
+    expect(html).toContain('Life has many sides.');
+    expect(html).toContain('SYNTHETIC DEMO');
+    expect(html).toContain('Nothing here is saved to accounts, reports or exports.');
+    expect(html).not.toContain('Coffee');
+    expect(html).not.toContain('app-nav');
+    expect(html).toContain('full ledger is in development');
+  });
   it('shows email and Google login without mounting private navigation', () => {
     const html = render();
     expect(html).toContain('Continue with Google');
@@ -66,6 +85,20 @@ describe('application auth and view integration', () => {
     fixture.auth.requiresMfa = true;
     expect(render()).toContain('One more layer of security');
     expect(render()).not.toContain('app-nav');
+  });
+  it('requires MFA before showing a recovery password form', () => {
+    fixture.auth = { user: { id: 'test-user' } as AuthContextValue['user'], loading: false, requiresMfa: true, recovery: true };
+    const html = render();
+    expect(html).toContain('One more layer of security');
+    expect(html).not.toContain('Set a new password');
+    expect(html).not.toContain('Coffee');
+  });
+  it('fails closed when session assurance cannot be verified', () => {
+    fixture.auth = { user: { id: 'test-user' } as AuthContextValue['user'], loading: false, requiresMfa: false, authError: 'Synthetic assurance error' };
+    const html = render();
+    expect(html).toContain('Synthetic assurance error');
+    expect(html).not.toContain('app-nav');
+    expect(html).not.toContain('Coffee');
   });
   it('connects authenticated transactions and all navigation destinations', () => {
     fixture.auth.user = { id: 'test-user', email: 'test@example.invalid' } as AuthContextValue['user'];
@@ -114,6 +147,7 @@ describe('application auth and view integration', () => {
     expect(overview).toContain('Your commitments');
     expect(overview).toContain('$30.00');
     expect(overview).toContain('active receivables. Separate from available cash.');
+    expect(overview).toContain('A spendable-cash total is not available.');
     expect(overview).not.toContain('YOUR DIRECTION');
     expect(overview).not.toContain('Financial progress');
   });

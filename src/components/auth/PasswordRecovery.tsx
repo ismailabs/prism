@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import { errorMessage } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
+import { loginPath, navigatePath, safeDestination } from '@/lib/routes';
 import { useState, type FormEvent } from "react";
 import { Button } from "../ui/button";
 export function PasswordRecovery({
@@ -38,8 +39,10 @@ export function PasswordRecovery({
           );
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
+        const destination = safeDestination(new URLSearchParams(window.location.search).get('next'));
         await signOut();
         completeRecovery();
+        navigatePath(`${loginPath(destination)}&notice=password-updated`, true);
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(
           email.trim(),

@@ -1,5 +1,5 @@
 import { financialDate } from "@/domain/dates";
-import { parseMoney,parseMoneyTotal } from "@/domain/money";
+import { AdvancedBudgets } from "./AdvancedBudgets";
 import { occurrenceDate, type Frequency } from "@/domain/recurrence";
 import { useCategories } from "@/hooks/useFinanceData";
 import { usePlanningData } from "@/hooks/usePlanningData";
@@ -7,7 +7,8 @@ import { usePlatformTable } from "@/hooks/usePlatformData";
 import { errorMessage } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import type { Currency } from "@/types";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { navigatePath } from '@/lib/routes';
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
@@ -17,14 +18,22 @@ import {
   Failure,
   money,
   positive,
-  ProgressBar,
   useFinancialCopy,
 } from "./shared";
+function planSection() {
+    const value = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('section');
+    return value === 'savings' || value === 'budgets' || value === 'recurring' ? value : 'goal';
+}
 export function Plans() {
   const c = useFinancialCopy();
   const [tab, setTab] = useState<"goal" | "savings" | "budgets" | "recurring">(
-    "goal",
+    planSection,
   );
+  useEffect(() => {
+    const sync = () => setTab(planSection());
+    window.addEventListener('popstate', sync);
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
   return (
     <div className="space-y-5">
       <nav
@@ -36,7 +45,7 @@ export function Plans() {
             key={v}
             variant={tab === v ? "default" : "outline"}
             aria-pressed={tab === v}
-            onClick={() => setTab(v)}
+            onClick={() => { setTab(v); navigatePath(`/plans?section=${v}`); }}
           >
             {c(
               ["Goals", "Savings", "Budgets", "Recurring activity"][i],
@@ -48,169 +57,11 @@ export function Plans() {
       {tab === "goal" || tab === "savings" ? (
         <ObjectivesPage key={tab} kind={tab} />
       ) : tab === "budgets" ? (
-        <Budgets />
+        <AdvancedBudgets />
       ) : (
         <Recurring />
       )}
     </div>
-  );
-}
-function Budgets() {
-  const c = useFinancialCopy();
-  const data = usePlanningData();
-  const cats = useCategories();
-  const [month, setMonth] = useState(() =>
-    financialDate(new Date(), useAppStore.getState().financialTimezone).slice(
-      0,
-      7,
-    ),
-  );
-  const [category, setCategory] = useState("");
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState<Currency>(
-    useAppStore.getState().currency,
-  );
-  const [error, setError] = useState("");
-  async function save(e: FormEvent) {
-    e.preventDefault();
-    try {
-      if (!positive(amount, currency))
-        throw new Error(
-          c("Enter a positive budget.", "Masukkan bajet positif."),
-        );
-      await data.budget.mutateAsync({
-        month: `${month}-01`,
-        category_id: category,
-        currency,
-        amount,
-      });
-      setAmount("");
-      setError("");
-    } catch (e) {
-      setError(errorMessage(e));
-    }
-  }
-  if (data.budgets.error || cats.error)
-    return (
-      <Failure
-        error={data.budgets.error ?? cats.error}
-        retry={() => void Promise.all([data.budgets.refetch(), cats.refetch()])}
-      />
-    );
-  return (
-    <section className="card p-5 space-y-5">
-      <h2 className="font-semibold">
-        {c("Monthly category budgets", "Bajet kategori bulanan")}
-      </h2>
-      <p className="text-sm text-subtle">
-        {c(
-          "Only genuine expenses count. Transfers, allocations and debt principal are excluded.",
-          "Hanya perbelanjaan sebenar dikira. Pindahan, peruntukan dan prinsipal hutang dikecualikan.",
-        )}
-      </p>
-      <form
-        onSubmit={(e) => void save(e)}
-        className="grid sm:grid-cols-2 gap-3"
-      >
-        <label className="form-field">
-          {c("Month", "Bulan")}
-          <input
-            className="input"
-            type="month"
-            required
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-          />
-        </label>
-        <label className="form-field">
-          {c("Expense category", "Kategori perbelanjaan")}
-          <select
-            className="input"
-            required
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">{c("Choose category", "Pilih kategori")}</option>
-            {cats.data
-              ?.filter((cat) => cat.type === "expense")
-              .map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-          </select>
-        </label>
-        <label className="form-field">
-          {c("Currency", "Mata wang")}
-          <select
-            className="input"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value as Currency)}
-          >
-            {currencies.map((v) => (
-              <option key={v}>{v}</option>
-            ))}
-          </select>
-        </label>
-        <label className="form-field">
-          {c("Budget amount", "Amaun bajet")}
-          <input
-            className="input"
-            required
-            inputMode="decimal"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-        </label>
-        <Button disabled={data.budget.isPending}>
-          {c("Save budget", "Simpan bajet")}
-        </Button>
-      </form>
-      {error && (
-        <p role="alert" className="error-message">
-          {error}
-        </p>
-      )}
-      <ul className="space-y-4">
-        {data.budgets.data
-          ?.filter((b) => b.month.startsWith(month))
-          .map((b) => {
-            const spent = parseMoneyTotal(b.spent ?? "0", b.currency),
-              limit = parseMoney(b.amount, b.currency);
-            return (
-              <li key={b.id} className="space-y-2">
-                <strong>
-                  {cats.data?.find((cat) => cat.id === b.category_id)?.name}
-                </strong>
-                <p>
-                  {money(b.spent ?? "0", b.currency)} /{" "}
-                  {money(b.amount, b.currency)}
-                </p>
-                <ProgressBar
-                  value={Math.min(100, Number((spent * 10000n) / limit) / 100)}
-                />
-                {spent > limit && (
-                  <p className="warning-message">
-                    {c("Over budget", "Melebihi bajet")}
-                  </p>
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={data.removeBudget.isPending}
-                  onClick={() =>
-                    void data.removeBudget
-                      .mutateAsync(b.id)
-                      .catch((e) => toast.error(errorMessage(e)))
-                  }
-                >
-                  {c("Remove budget", "Buang bajet")}
-                </Button>
-              </li>
-            );
-          })}
-      </ul>
-    </section>
   );
 }
 function Recurring() {
@@ -218,6 +69,8 @@ function Recurring() {
   const timezone = useAppStore((s) => s.financialTimezone);
   const data = usePlanningData();
   const accounts = usePlatformTable("accounts");
+  const categories = useCategories();
+  const [category, setCategory] = useState('');
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -246,7 +99,7 @@ function Recurring() {
         currency,
         type,
         account_id: account || null,
-        category_id: null,
+        category_id: category || null,
         payment_method_id: null,
         start_date: start,
         end_date: end || null,
@@ -358,12 +211,13 @@ function Recurring() {
             <select
               className="input"
               value={type}
-              onChange={(e) => setType(e.target.value as "income" | "expense")}
+              onChange={(e) => { setType(e.target.value as "income" | "expense"); setCategory(''); }}
             >
               <option value="expense">{c("Expense", "Perbelanjaan")}</option>
               <option value="income">{c("Income", "Pendapatan")}</option>
             </select>
           </label>
+          <label className="form-field">{c('Forecast category (optional)','Kategori ramalan (pilihan)')}<select className="input" value={category} onChange={e=>setCategory(e.target.value)}><option value="">{c('Unallocated','Tidak diperuntukkan')}</option>{categories.data?.filter(cat=>cat.type===type).map(cat=><option key={cat.id} value={cat.id}>{cat.name}</option>)}</select></label>
           <label className="form-field">
             {c("Amount", "Amaun")}
             <input

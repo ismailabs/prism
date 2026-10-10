@@ -1,0 +1,775 @@
+{
+  "recordedAtUtc": "2026-10-10T04:59:55.4719991Z",
+  "scope": "Local integration acceptance, synthetic data only; no hosted/production/release acceptance",
+  "environment": {
+    "node": "24.19.0",
+    "npm": "11.17.0",
+    "postgres": "18.4 native, isolated loopback",
+    "postgrest": "16.4 actual HTTP, loopback",
+    "browser": "Headless Microsoft Edge",
+    "auth": "Minimal synthetic Auth and JWTs, with browser provider fixtures"
+  },
+  "acceptedPhase1": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+  "integrationBranch": "codex/phases1-4-integration",
+  "integrationCommitCreated": false,
+  "checkpointEvidence": "docs/phases1-4-checkpoints.json",
+  "gates": [
+    {
+      "gate": "test",
+      "exitCode": 0,
+      "seconds": 14.81,
+      "log": "artifacts/integration/test.log"
+    },
+    {
+      "gate": "test:db",
+      "exitCode": 0,
+      "seconds": 8.34,
+      "log": "artifacts/integration/test-db.log"
+    },
+    {
+      "gate": "test:platform-db",
+      "exitCode": 0,
+      "seconds": 8.91,
+      "log": "artifacts/integration/test-platform-db.log"
+    },
+    {
+      "gate": "test:foundations-db",
+      "exitCode": 0,
+      "seconds": 6.17,
+      "log": "artifacts/integration/test-foundations-db.log"
+    },
+    {
+      "gate": "test:period-db",
+      "exitCode": 0,
+      "seconds": 4.54,
+      "log": "artifacts/integration/test-period-db.log"
+    },
+    {
+      "gate": "test:ledger-db",
+      "exitCode": 0,
+      "seconds": 5.41,
+      "log": "artifacts/integration/test-ledger-db.log"
+    },
+    {
+      "gate": "ledger:dry-run",
+      "exitCode": 0,
+      "seconds": 0.86,
+      "log": "artifacts/integration/ledger-dry-run.log"
+    },
+    {
+      "gate": "test:planning-db",
+      "exitCode": 0,
+      "seconds": 4.37,
+      "log": "artifacts/integration/test-planning-db.log"
+    },
+    {
+      "gate": "test:ledger-preview",
+      "exitCode": 0,
+      "seconds": 8.48,
+      "log": "artifacts/integration/test-ledger-preview.log"
+    },
+    {
+      "gate": "test:e2e",
+      "exitCode": 0,
+      "seconds": 515.95,
+      "log": "artifacts/integration/final-test-e2e.log"
+    },
+    {
+      "gate": "test:responsive",
+      "exitCode": 0,
+      "seconds": 147.26,
+      "log": "artifacts/integration/final-test-responsive.log"
+    },
+    {
+      "gate": "build",
+      "exitCode": 0,
+      "seconds": 21.79,
+      "log": "artifacts/integration/final-build.log"
+    },
+    {
+      "gate": "test:integration-db",
+      "exitCode": 0,
+      "seconds": 24.98,
+      "log": "artifacts/integration/post-review-test-integration-db.log"
+    },
+    {
+      "gate": "test:integration-review",
+      "exitCode": 0,
+      "seconds": 0.9,
+      "log": "artifacts/integration/post-review-test-integration-review.log"
+    },
+    {
+      "gate": "test:postgres",
+      "exitCode": 0,
+      "seconds": 21.33,
+      "log": "artifacts/integration/post-review-test-postgres.log"
+    },
+    {
+      "gate": "test:e2e",
+      "exitCode": 0,
+      "seconds": 79.96,
+      "log": "artifacts/integration/post-review-test-e2e.log"
+    },
+    {
+      "gate": "typecheck",
+      "exitCode": 0,
+      "seconds": 13.99,
+      "log": "artifacts/integration/visual-final-typecheck.log"
+    },
+    {
+      "gate": "lint",
+      "exitCode": 0,
+      "seconds": 15.45,
+      "log": "artifacts/integration/visual-final-lint.log"
+    },
+    {
+      "gate": "test:e2e",
+      "exitCode": 0,
+      "seconds": 40.11,
+      "log": "artifacts/integration/visual-final-test-e2e.log"
+    },
+    {
+      "gate": "test:responsive",
+      "exitCode": 0,
+      "seconds": 124.93,
+      "log": "artifacts/integration/visual-final-test-responsive.log"
+    },
+    {
+      "gate": "build",
+      "exitCode": 0,
+      "seconds": 20.02,
+      "log": "artifacts/integration/visual-final-build.log"
+    }
+  ],
+  "finalCounts": {
+    "unitTests": 127,
+    "unitFiles": 13,
+    "completeBrowserTests": 102,
+    "finalCrossPhaseBrowserTests": 6,
+    "responsiveChecks": 361,
+    "responsiveBrowserErrors": 0,
+    "adversarialCases": 100,
+    "cleanInstallMigrations": 16,
+    "upgradeRecoveryProbes": 3,
+    "legacyTablesPreserved": 13,
+    "originalSourceFilesVerified": 105
+  },
+  "finalFollowups": [
+    {
+      "gate": "npm run lint",
+      "exitCode": 0,
+      "log": "artifacts/integration/currency-final-lint.log"
+    },
+    {
+      "gate": "npm run test:e2e -- e2e/integration.spec.ts",
+      "exitCode": 0,
+      "testsPassed": 6,
+      "seconds": 47.1,
+      "log": "artifacts/integration/currency-final-browser.log",
+      "coverage": "USD/EUR/JPY empty-state native currency isolation, return to MYR, both locales, money line boxes, keyboard scroll, axe, invalid period clearing, guarded routes, positive and negative rollover"
+    }
+  ],
+  "remediationHistory": [
+    {
+      "log": "artifacts/integration/full-browser.log",
+      "result": "98 passed, 4 failed",
+      "cause": "P1 delete-button tests incompatible with P4 disabled history deletion; two synthetic fixtures omitted mandatory nullable payment_method_id",
+      "resolution": "Assert disabled deletion, localized reason, no DELETE and unchanged history; correct fixtures to real nullable contract; native history guard remains",
+      "verification": "4 targeted passed followed by 102/102 fresh full pass"
+    },
+    {
+      "result": "Manual post-green screenshot review found monetary table wrapping",
+      "resolution": "Single-line money cells and labeled keyboard-scrollable table regions",
+      "verification": "Typecheck/lint/6 browser/361 responsive/build passed after correction"
+    },
+    {
+      "log": "artifacts/integration/final-complete-integration-browser.log",
+      "result": "4 passed, 2 failed while adding currency isolation assertions",
+      "cause": "getByLabel exact lookup includes select options in the nested label; the accessible combobox name is correct",
+      "resolution": "Exact accessible combobox role/name and scoped equation status",
+      "verification": "6/6 passed with all USD/EUR/JPY assertions retained"
+    }
+  ],
+  "financialReconciliation": {
+    "environment": "isolated native PostgreSQL; synthetic data only",
+    "chain": [
+      {
+        "file": "20260928000200_initial_finance_tracker.sql",
+        "hash": "8B6EDBAFE0D0C8ABF40F790C2BBBCF9E8333DCD05C1E600152FA8E04CA5D2DCF"
+      },
+      {
+        "file": "20260928031516_personal_finance_platform.sql",
+        "hash": "694FE175C0D84AD19D843EF307DD7F383DDAF3AC21C66D810F814793AA9E215B"
+      },
+      {
+        "file": "20260928032448_exact_money_validation.sql",
+        "hash": "A1AE2E71A99E01C66BBA5F5173AB2D028D4143B3BCC2D730DEA1F6555B6FF520"
+      },
+      {
+        "file": "20260928043611_focused_crud_integrity.sql",
+        "hash": "09D6FF559EC89AB610AC9AFA8E9E53DB6AA27FF42F8F6D4940EDE4B11BA544E5"
+      },
+      {
+        "file": "20260928082016_harden_self_delete_rpc.sql",
+        "hash": "A15ABE93CA22D798EE36A21FCE9B16E3B64CAFCE0C5135F94FEE9914F4C00255"
+      },
+      {
+        "file": "20260930135217_financial_foundations.sql",
+        "hash": "A17DE5726E92918F98EE31E931003B56DA367B59DC31E01A6B6100F6FF328A36"
+      },
+      {
+        "file": "20260930135222_reporting_and_planning.sql",
+        "hash": "2BC5C6BCAD616B2947CD0AF82B50B9F53D13618077E6490E0406283F1EE5DB64"
+      },
+      {
+        "file": "20260930135716_financial_relationship_indexes.sql",
+        "hash": "2C6D7DAFB39982E0F79308B7EDFB007989B016068DFDB08E54C2EC51C8DB7319"
+      },
+      {
+        "file": "20260930141104_canonical_financial_transport.sql",
+        "hash": "12A7DE302D5D2A790419D091A00AA9DF8F526B5CE0CB70D31331CD49D65039E0"
+      },
+      {
+        "file": "20261001033902_analytics_drilldown_filters.sql",
+        "hash": "7358956BF1C261E2B7035AD39848767611C98F184C5F0AF2736F2BCA64BDEA4D"
+      },
+      {
+        "file": "20261001083346_period_analytics_preferences.sql",
+        "hash": "93738E0EFBDF892C60B1F1E59DB237A16C0FF15142CDF0902248A9981AD28854"
+      },
+      {
+        "file": "20261001083350_present_financial_progress.sql",
+        "hash": "2F96377F695550C63E1010DF4A5E17B734CD463CF7648B1B7328F4FDAB8C3D6A"
+      },
+      {
+        "file": "20261009162324_protect_debt_repayment_history.sql",
+        "hash": "1876FD422284C7C69D60E41CA622D0A8B342AB7510C2D9BF4B888D607BB23513"
+      },
+      {
+        "file": "20261009220402_shadow_double_entry_ledger.sql",
+        "hash": "0C89AD1DE837CB7ED79F9A0C0042939E1FAA05B7593A96B02A049720CAB840FE"
+      },
+      {
+        "file": "20261010021500_malaysia_profile_defaults.sql",
+        "hash": "DEA70B1077B4A50F704359A0EA30781A9B869AC453F2844369B504EEAE8A7839"
+      },
+      {
+        "file": "20261010024257_phase4_planning.sql",
+        "hash": "93719388A1EAA50CAF0C6A221DFBBFCED093E7993073290D99ABEC637FE92F0D"
+      }
+    ],
+    "checks": [
+      "clean installation replays all 16 accepted migrations",
+      "Phase 1 upgrade preserves exact financial rows; three injected DDL failures roll back and recover; clean/upgrade catalogues agree; incompatible receipts denied",
+      "existing Phase 1 four-currency cash, transfer, earmark and principal history reconciles with upgraded shadow reports at zero tolerance using independent native SQL",
+      "Phase 4 debt terms cannot race a committed principal repayment: native lock observed and recast denied",
+      "native SQL positive/negative rollover reconciles dashboard and budgeting; reserve saves preserve cash; upgrade retains ledger ownership, exact cutoff and independent historical SQL reconciliation"
+    ],
+    "recovery": [
+      {
+        "file": "20261009220402_shadow_double_entry_ledger.sql",
+        "injectedFailure": "22012 before commit",
+        "catalogueRolledBack": true,
+        "all13LegacyTablesPreserved": true,
+        "exactCashPreserved": true,
+        "successfulRetry": true
+      },
+      {
+        "file": "20261010021500_malaysia_profile_defaults.sql",
+        "injectedFailure": "22012 before commit",
+        "catalogueRolledBack": true,
+        "all13LegacyTablesPreserved": true,
+        "exactCashPreserved": true,
+        "successfulRetry": true
+      },
+      {
+        "file": "20261010024257_phase4_planning.sql",
+        "injectedFailure": "22012 before commit",
+        "catalogueRolledBack": true,
+        "all13LegacyTablesPreserved": true,
+        "exactCashPreserved": true,
+        "successfulRetry": true
+      }
+    ],
+    "reconciliation": [
+      {
+        "scenario": "positive",
+        "sqlSpent": [
+          "700.00",
+          "850.00"
+        ],
+        "available": "900.00",
+        "remaining": "50.00",
+        "dashboardReached": false
+      },
+      {
+        "scenario": "negative",
+        "sqlSpent": [
+          "900.00",
+          "750.00"
+        ],
+        "available": "700.00",
+        "remaining": "-50.00",
+        "dashboardReached": true
+      }
+    ],
+    "historicalReconciliation": {
+      "cutoff": "2000-10-31T23:59:59.999999Z",
+      "openingApprovals": "explicit synthetic dates only",
+      "cash": [
+        {
+          "id": "107ea2df-3993-4510-8daf-b52c5a650ae4",
+          "currency": "JPY",
+          "balance": "9007199254740993"
+        },
+        {
+          "id": "2398bfb7-bf5c-415e-bee6-8a00493e5220",
+          "currency": "EUR",
+          "balance": "90071992547409.93"
+        },
+        {
+          "id": "3b8e8a67-fb8c-4be3-bd4d-78f6c9f9faf3",
+          "currency": "MYR",
+          "balance": "30.00"
+        },
+        {
+          "id": "681ded89-a4a1-4edc-8f4d-a32fc9fe587f",
+          "currency": "MYR",
+          "balance": "90071992545729.93"
+        },
+        {
+          "id": "c6e307d1-b3ae-4b49-9a18-3b82d5efa834",
+          "currency": "USD",
+          "balance": "90071992547409.93"
+        }
+      ],
+      "shadowSheets": [
+        {
+          "currency": "MYR",
+          "assets": "90071992545759.93",
+          "liabilities": "900.00",
+          "equity": "90071992544859.93",
+          "netWorth": "90071992544859.93",
+          "income": "0.00",
+          "expenses": "0.00",
+          "profit": "0.00",
+          "equationDifference": "0.00"
+        },
+        {
+          "currency": "USD",
+          "assets": "90071992547409.93",
+          "liabilities": "0.00",
+          "equity": "90071992547409.93",
+          "netWorth": "90071992547409.93",
+          "income": "0.00",
+          "expenses": "0.00",
+          "profit": "0.00",
+          "equationDifference": "0.00"
+        },
+        {
+          "currency": "EUR",
+          "assets": "90071992547409.93",
+          "liabilities": "0.00",
+          "equity": "90071992547409.93",
+          "netWorth": "90071992547409.93",
+          "income": "0.00",
+          "expenses": "0.00",
+          "profit": "0.00",
+          "equationDifference": "0.00"
+        },
+        {
+          "currency": "JPY",
+          "assets": "9007199254740993",
+          "liabilities": "0",
+          "equity": "9007199254740993",
+          "netWorth": "9007199254740993",
+          "income": "0",
+          "expenses": "0",
+          "profit": "0",
+          "equationDifference": "0"
+        }
+      ],
+      "comparisons": [
+        {
+          "source": "accounts",
+          "id": "107ea2df-3993-4510-8daf-b52c5a650ae4",
+          "currency": "JPY",
+          "date": "2000-11-01",
+          "expected": "9007199254740993",
+          "actual": "9007199254740993",
+          "difference": "0"
+        },
+        {
+          "source": "accounts",
+          "id": "2398bfb7-bf5c-415e-bee6-8a00493e5220",
+          "currency": "EUR",
+          "date": "2000-11-01",
+          "expected": "90071992547409.93",
+          "actual": "90071992547409.93",
+          "difference": "0.00"
+        },
+        {
+          "source": "accounts",
+          "id": "3b8e8a67-fb8c-4be3-bd4d-78f6c9f9faf3",
+          "currency": "MYR",
+          "date": "2000-11-01",
+          "expected": "30.00",
+          "actual": "30.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "accounts",
+          "id": "681ded89-a4a1-4edc-8f4d-a32fc9fe587f",
+          "currency": "MYR",
+          "date": "2000-11-01",
+          "expected": "90071992545729.93",
+          "actual": "90071992545729.93",
+          "difference": "0.00"
+        },
+        {
+          "source": "accounts",
+          "id": "c6e307d1-b3ae-4b49-9a18-3b82d5efa834",
+          "currency": "USD",
+          "date": "2000-11-01",
+          "expected": "90071992547409.93",
+          "actual": "90071992547409.93",
+          "difference": "0.00"
+        },
+        {
+          "source": "income",
+          "id": "2000-09",
+          "currency": "MYR",
+          "date": "2000-09",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "expense",
+          "id": "2000-09",
+          "currency": "MYR",
+          "date": "2000-09",
+          "expected": "700.00",
+          "actual": "700.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "income",
+          "id": "2000-10",
+          "currency": "MYR",
+          "date": "2000-10",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "expense",
+          "id": "2000-10",
+          "currency": "MYR",
+          "date": "2000-10",
+          "expected": "850.00",
+          "actual": "850.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "income",
+          "id": "2000-09",
+          "currency": "USD",
+          "date": "2000-09",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "expense",
+          "id": "2000-09",
+          "currency": "USD",
+          "date": "2000-09",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "income",
+          "id": "2000-10",
+          "currency": "USD",
+          "date": "2000-10",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "expense",
+          "id": "2000-10",
+          "currency": "USD",
+          "date": "2000-10",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "income",
+          "id": "2000-09",
+          "currency": "EUR",
+          "date": "2000-09",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "expense",
+          "id": "2000-09",
+          "currency": "EUR",
+          "date": "2000-09",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "income",
+          "id": "2000-10",
+          "currency": "EUR",
+          "date": "2000-10",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "expense",
+          "id": "2000-10",
+          "currency": "EUR",
+          "date": "2000-10",
+          "expected": "0.00",
+          "actual": "0.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "income",
+          "id": "2000-09",
+          "currency": "JPY",
+          "date": "2000-09",
+          "expected": "0",
+          "actual": "0",
+          "difference": "0"
+        },
+        {
+          "source": "expense",
+          "id": "2000-09",
+          "currency": "JPY",
+          "date": "2000-09",
+          "expected": "0",
+          "actual": "0",
+          "difference": "0"
+        },
+        {
+          "source": "income",
+          "id": "2000-10",
+          "currency": "JPY",
+          "date": "2000-10",
+          "expected": "0",
+          "actual": "0",
+          "difference": "0"
+        },
+        {
+          "source": "expense",
+          "id": "2000-10",
+          "currency": "JPY",
+          "date": "2000-10",
+          "expected": "0",
+          "actual": "0",
+          "difference": "0"
+        },
+        {
+          "source": "person_debts",
+          "id": "765d0521-6542-408e-9dc9-8d4dbef2fd3c",
+          "currency": "MYR",
+          "date": "2000-11-01",
+          "expected": "900.00",
+          "actual": "900.00",
+          "difference": "0.00"
+        },
+        {
+          "source": "objectives",
+          "id": "f089a81b-44a5-4725-87b0-2c261376bd69",
+          "currency": "MYR",
+          "date": "2000-11-01",
+          "expected": "20.00",
+          "actual": "20.00",
+          "difference": "0.00"
+        }
+      ],
+      "accepted": true
+    },
+    "concurrency": {
+      "repaymentVersusTermRecast": "observed native lock wait; committed repayment preserved, monetary recast rejected",
+      "accepted": true
+    },
+    "accepted": true
+  },
+  "independentReview": {
+    "reviewer": "Separate adversarial pass by the same agent; not a second human or hosted review service",
+    "closedFormOracleCases": 100,
+    "allOracleCasesPassed": true,
+    "nativeSqlAndIndependentConnectionEvidence": "Actual native upgrade cash/debt oracle, catalogue and row preservation, observed repayment/recast lock, HTTP/concurrency/security rerun",
+    "firstGreenNotFinal": true
+  },
+  "originalSourcePreservation": {
+    "sources": [
+      {
+        "phase": "phase1",
+        "root": "C:/Users/moham/.codex/worktrees/33fa/prism-finance-baseline",
+        "expectedHead": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+        "actualHead": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+        "filesVerified": 25,
+        "byteMismatches": [],
+        "status": [],
+        "staged": []
+      },
+      {
+        "phase": "phase2",
+        "root": "C:/Users/moham/.codex/worktrees/8081/prism-finance-baseline",
+        "expectedHead": "5f07fe20062623d429a0e4fda4fb1ee759a4e063",
+        "actualHead": "5f07fe20062623d429a0e4fda4fb1ee759a4e063",
+        "filesVerified": 26,
+        "byteMismatches": [],
+        "status": [],
+        "staged": []
+      },
+      {
+        "phase": "phase3",
+        "root": "C:/Users/moham/.codex/worktrees/2ec2/prism-finance-baseline",
+        "expectedHead": "1c0c5fa98925dd29df3bc0ae9a7ecba4bcf0c068",
+        "actualHead": "1c0c5fa98925dd29df3bc0ae9a7ecba4bcf0c068",
+        "filesVerified": 29,
+        "byteMismatches": [],
+        "status": [],
+        "staged": []
+      },
+      {
+        "phase": "phase4",
+        "root": "C:/Users/moham/.codex/worktrees/0afe/prism-finance-baseline",
+        "expectedHead": "ba98330e50ca87afb03f58d1fd4bfca92dbc0e78",
+        "actualHead": "ba98330e50ca87afb03f58d1fd4bfca92dbc0e78",
+        "filesVerified": 25,
+        "byteMismatches": [],
+        "status": [],
+        "staged": []
+      }
+    ],
+    "primaryHead": "819ddef0e8a3b9aad07475ff495152e4d2ea9156",
+    "primaryStatus": [],
+    "integrationHead": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+    "integrationBranch": "codex/phases1-4-integration",
+    "lockSha256": "87684E891EBDEC9518E3FFDAE0ACB1421D26AF1FF160351F76A4B3BE41CD1EDA"
+  },
+  "dependencyAudit": {
+    "runtime": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "runtimeAuditExitCode": 0,
+    "full": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 6,
+      "critical": 0,
+      "total": 8
+    },
+    "fullAuditExitCode": 1,
+    "dependenciesUnchanged": true,
+    "disposition": "8 inherited development/build advisories disclosed; no product financial-input exposure to hostile source/pattern build tooling; no dependency security certification or untrusted-source processing approval"
+  },
+  "secretScan": {
+    "checkpointScans": "All three exact original staged packets PASS",
+    "combinedCandidatePreflight": "84 candidate files, Gitleaks 8.30.1 staged scan PASS, zero findings",
+    "finalPatchScanEvidence": "artifacts/integration/final-package.json, exported after final handoff/manifests are frozen",
+    "actualIntegrationIndexPreserved": true
+  },
+  "evidenceFiles": [
+    {
+      "path": "artifacts/integration/verification-gates.json",
+      "sha256": "06A26B6217C4CD39564FCB57B5664CF2D0F19814E2B8CCDCEB58152E444209CD"
+    },
+    {
+      "path": "artifacts/integration/final-release-gates.json",
+      "sha256": "0B38F1BBB684B2C20AEAF573DAEB857378FE4598ED8481B081F8C896241310FE"
+    },
+    {
+      "path": "artifacts/integration/post-review-gates.json",
+      "sha256": "6BF4263839BE3EFBDB314D2415BD99B27CE671A6577F52E0685602CA82E2131F"
+    },
+    {
+      "path": "artifacts/integration/visual-final-gates.json",
+      "sha256": "3CDCDD22A1EE292C411243A1597CE57EDBC5B255D5AC2AD87C2AB59DA0209B60"
+    },
+    {
+      "path": "artifacts/integration/currency-final-browser.log",
+      "sha256": "553C8F4CD4136A8805B3C801440B8A58285822832C8CE3FAF3BF3530850383EB"
+    },
+    {
+      "path": "artifacts/integration/currency-final-lint.log",
+      "sha256": "5EBB13F7B95648B8B0A17C1EECB6A66C5FE7F35D1C4FC1436884B18EC65ACD4F"
+    },
+    {
+      "path": "artifacts/integration/migration-verification.json",
+      "sha256": "8B21461CB1AD40633ED3D1EDC0D210CFF16B9B65F06360B2348CF88EF3ED35C1"
+    },
+    {
+      "path": "artifacts/integration/adversarial-rollover.json",
+      "sha256": "620E84072FB4C80E79FBF2FED85E3238A0478762520571FC5AA901F6C8402085"
+    },
+    {
+      "path": "artifacts/integration/preservation-verification.json",
+      "sha256": "1E13789B8312C576A96E0F0C802F63A7E2CA7225B461B1E77639DE1B592F6922"
+    },
+    {
+      "path": "artifacts/integration/production-dependency-audit.json",
+      "sha256": "38733499E0146AE1969A636F1A420A108681CE8D74D4B0C3A0944F37030CABF7"
+    },
+    {
+      "path": "artifacts/integration/dependency-audit.json",
+      "sha256": "11EC4A0C9E3ABC1FB2379191D34E3D98F6185288133C3DE1177B93CF66F0A722"
+    },
+    {
+      "path": "artifacts/integration/final-unit.log",
+      "sha256": "1B45C237A66BCA0E1B6D25CA8B867936A117835BFD75BE9EF70A074E0D44B510"
+    },
+    {
+      "path": "artifacts/integration/phase2-review-probes.log",
+      "sha256": "B429945A31338E37DEB7612D88986D38A778CF794B7C99786493CAEDFA7EA504"
+    },
+    {
+      "path": "artifacts/integration/full-browser.log",
+      "sha256": "608F26BE8887640D8EDCE271E40F4FC620EF4085DC3A312D42FE9EF78F7F5299"
+    },
+    {
+      "path": "artifacts/integration/browser-remediation.log",
+      "sha256": "4C2DE5992438399B742983AA638C10D8247622D6E8033F8EAA7B645592E4ED1E"
+    },
+    {
+      "path": "artifacts/integration/final-complete-integration-browser.log",
+      "sha256": "0FA3BA57804A1AA92E88EA675F86A8D0367574B1043C5FCCAC30F4D10D36C316"
+    },
+    {
+      "path": "artifacts/integration/preflight-secret-scan.json",
+      "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570"
+    },
+    {
+      "path": "artifacts/integration/preflight-secret-scan.log",
+      "sha256": "C1828BE4CB08F492935696A02674FFF5742F3B83BA57BE20A54C27A44D5C934D"
+    }
+  ],
+  "notVerified": [
+    "Hosted PostgreSQL 17/Auth/MFA/OAuth/Realtime/default grants",
+    "Real-record reconciliation, production backup/PITR and live cutover",
+    "Physical devices and full manual assistive technology acceptance"
+  ],
+  "financialSecurityP0P1Remaining": [],
+  "hostedMutationsPerformed": false,
+  "phase5Started": false
+}

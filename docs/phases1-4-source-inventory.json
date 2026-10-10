@@ -1,0 +1,1231 @@
+{
+  "capturedAt": "2026-10-10T03:41:03.7349287Z",
+  "phase1Commit": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+  "originalCommit": "819ddef0e8a3b9aad07475ff495152e4d2ea9156",
+  "phases": [
+    {
+      "phase": "phase1",
+      "root": "C:/Users/moham/.codex/worktrees/33fa/prism-finance-baseline",
+      "branch": "codex/phase1-stabilization",
+      "head": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+      "status": [],
+      "trackedModifiedCount": 0,
+      "untrackedFileCount": 0,
+      "cachedPaths": [],
+      "fileCount": 25,
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "C6C96DD88800A8AEFD1F976B0DD887861C34B226C89AFE841CC71FC14C1791C0",
+          "bytes": 9355,
+          "kind": "committed"
+        },
+        {
+          "path": "docs/phase1-stabilization.md",
+          "sha256": "CA3AC63C532DF7081E519535859DB75B59C2BC2081F1F517F41E16DB3320718D",
+          "bytes": 70923,
+          "kind": "committed"
+        },
+        {
+          "path": "e2e/enhancements.spec.ts",
+          "sha256": "B9BEF0D9D1F2E3B1C24B4F6721FCE3F22308B1F725B4E71EF00170BAE75F019A",
+          "bytes": 18833,
+          "kind": "committed"
+        },
+        {
+          "path": "e2e/fixtures.ts",
+          "sha256": "DFE0B8D3CBD7144072B8CEB0022A3AA75A3A4DC6D978923284A9DEF42E1856FE",
+          "bytes": 11756,
+          "kind": "committed"
+        },
+        {
+          "path": "e2e/focused-upgrade.spec.ts",
+          "sha256": "F03FDB3128ECC33BAB2A631DF49135B343DE0E59089519393141287838DDE8F9",
+          "bytes": 6334,
+          "kind": "committed"
+        },
+        {
+          "path": "e2e/periods-colors.spec.ts",
+          "sha256": "CED04DE568DFAEC9BAB6C179DC4C375831D833D41350F94ED1A766CD9CB06EE7",
+          "bytes": 11754,
+          "kind": "committed"
+        },
+        {
+          "path": "playwright.config.ts",
+          "sha256": "000D13019346348DFD06957F8B93594FE9CAF56C1D7C2799C5CD2A4268DB61B3",
+          "bytes": 891,
+          "kind": "committed"
+        },
+        {
+          "path": "scripts/browser-diagnostic-reporter.ts",
+          "sha256": "31FE825744AF88B5CA0552E1594356513FA1201B390C6BF8427D6FAF1929ED3A",
+          "bytes": 1666,
+          "kind": "committed"
+        },
+        {
+          "path": "scripts/e2e-server.mjs",
+          "sha256": "5288D2C28119DF240DA5BAA3D3A8CADDF5B1EA4A781F7BD7366C3B5CF726407C",
+          "bytes": 1119,
+          "kind": "committed"
+        },
+        {
+          "path": "scripts/foundations-db-test.mjs",
+          "sha256": "AED196E4F8B2DA9622A165A2A2B48296C0808E93094A5E7E47F99FACCB4F3E04",
+          "bytes": 11065,
+          "kind": "committed"
+        },
+        {
+          "path": "scripts/measure-browser-resources.ps1",
+          "sha256": "ED03638287160135E884B9F606EFAAE1D5AFD664C5C3E5E82D08A59774F68FB1",
+          "bytes": 1337,
+          "kind": "committed"
+        },
+        {
+          "path": "scripts/phase1-integrity-test.mjs",
+          "sha256": "8ECC4291197B5DD1FA53D8F86795F7822063D357FD06AB556340A1C5231DCEA6",
+          "bytes": 7795,
+          "kind": "committed"
+        },
+        {
+          "path": "scripts/real-postgres-test.mjs",
+          "sha256": "80E45B8B85E9395BE6DC7D12BA8DB368B640463C6D95055506B64437A0C680B0",
+          "bytes": 16132,
+          "kind": "committed"
+        },
+        {
+          "path": "src/App.test.tsx",
+          "sha256": "61312D98E5B8DFCE8F5F96F716F5A2CF74B8B29EA7B476BC0B7B5CC173CEA876",
+          "bytes": 12192,
+          "kind": "committed"
+        },
+        {
+          "path": "src/components/financial/Debts.tsx",
+          "sha256": "6558273F6065035D4DDE333A16D5E19CD15DC8959AA651DC3012FD5416FFDD6A",
+          "bytes": 20665,
+          "kind": "committed"
+        },
+        {
+          "path": "src/components/financial/Overview.tsx",
+          "sha256": "B6DF7F7D79E8FBD29DFC19D1D23DBE430D6D56366DD19A7457763078C5A3824F",
+          "bytes": 6798,
+          "kind": "committed"
+        },
+        {
+          "path": "src/components/financial/copy.ts",
+          "sha256": "518698FAFD21AE194E390BF5DCFFBD85E56F54EEEF10441DB419036EB611BDD5",
+          "bytes": 11945,
+          "kind": "committed"
+        },
+        {
+          "path": "src/domain/transport.ts",
+          "sha256": "68767D452C3D145A7D00AE1A9866CA561B5DD92FC3C5EC7D7A94B567F9993F5A",
+          "bytes": 1134,
+          "kind": "committed"
+        },
+        {
+          "path": "src/domain/upgrade.test.ts",
+          "sha256": "C58D4D9506C09A19AA161DED971315E8C0A8B5BBCC0689403C1F84A16F00D2CE",
+          "bytes": 7632,
+          "kind": "committed"
+        },
+        {
+          "path": "src/hooks/useFinanceData.ts",
+          "sha256": "E8E573CCE43B88B4372DD46B5536C6F081BC71251E465FF7AA844DD43524A6E7",
+          "bytes": 16168,
+          "kind": "committed"
+        },
+        {
+          "path": "src/hooks/usePlatformData.ts",
+          "sha256": "919C343F537A71ABB25F6ED11142255DC7CCDC2B6498447EEB94275EB8063B67",
+          "bytes": 13025,
+          "kind": "committed"
+        },
+        {
+          "path": "src/styles.css",
+          "sha256": "F1A33B1F2E7B1BDCFC75CFD26056BE65D0D0DD00A6B3A7ECD083A149D9FBB6E1",
+          "bytes": 32598,
+          "kind": "committed"
+        },
+        {
+          "path": "supabase/migrations/20261009162324_protect_debt_repayment_history.sql",
+          "sha256": "1876FD422284C7C69D60E41CA622D0A8B342AB7510C2D9BF4B888D607BB23513",
+          "bytes": 1218,
+          "kind": "committed"
+        },
+        {
+          "path": "supabase/migrations/README.md",
+          "sha256": "93DB86BE4766A3B331E9250C28B4396650583223B45151D9B3B4C7142C8C1C1E",
+          "bytes": 5491,
+          "kind": "committed"
+        },
+        {
+          "path": "vite.config.ts",
+          "sha256": "B473F1627F692518CF4D2621C7E71C24C5A2CAA979FA4B2BE1430D678F36CDB7",
+          "bytes": 1121,
+          "kind": "committed"
+        }
+      ],
+      "packageLockSha256": "87684E891EBDEC9518E3FFDAE0ACB1421D26AF1FF160351F76A4B3BE41CD1EDA",
+      "dependencies": {
+        "@fontsource/inter": "5.3.0",
+        "@supabase/supabase-js": "2.116.0",
+        "@tanstack/react-query": "5.103.1",
+        "class-variance-authority": "0.7.1",
+        "clsx": "2.1.1",
+        "framer-motion": "13.4.0",
+        "i18next": "26.4.2",
+        "lucide-react": "1.47.0",
+        "radix-ui": "1.6.7",
+        "react": "19.3.0",
+        "react-dom": "19.3.0",
+        "react-i18next": "17.0.14",
+        "recharts": "3.10.1",
+        "sonner": "2.0.8",
+        "tailwind-merge": "3.7.0",
+        "zod": "4.6.5",
+        "zustand": "5.0.15"
+      },
+      "devDependencies": {
+        "@axe-core/playwright": "4.13.0",
+        "@electric-sql/pglite": "^0.5.8",
+        "@eslint/js": "^9.39.5",
+        "@playwright/test": "^1.63.0",
+        "@types/node": "26.6.1",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "@vitejs/plugin-react": "6.1.1",
+        "autoprefixer": "10.6.1",
+        "embedded-postgres": "18.4.0-beta.17",
+        "eslint": "^9.39.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.4.26",
+        "pg": "8.16.3",
+        "postcss": "8.5.28",
+        "tailwindcss": "3.4.19",
+        "typescript": "5.9.3",
+        "typescript-eslint": "^8.70.1",
+        "vite": "8.3.0",
+        "vitest": "5.0.1"
+      },
+      "scripts": {
+        "dev": "vite --host 127.0.0.1",
+        "build": "tsc --noEmit && vite build",
+        "preview": "vite preview --host 127.0.0.1",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "test": "vitest run",
+        "test:db": "node scripts/finance-db-test.mjs",
+        "test:platform-db": "node scripts/platform-db-test.mjs",
+        "test:e2e": "playwright test",
+        "test:responsive": "node scripts/verify-responsive.mjs",
+        "test:foundations-db": "node scripts/foundations-db-test.mjs",
+        "test:period-db": "node scripts/period-db-test.mjs",
+        "test:postgres": "node scripts/real-postgres-test.mjs"
+      },
+      "migrations": [
+        {
+          "file": "20260928000200_initial_finance_tracker.sql",
+          "sha256": "D05AD805C7415E06537FA817411E3F2F0AD723B1553228F5FB0D1B95873B6B20"
+        },
+        {
+          "file": "20260928031516_personal_finance_platform.sql",
+          "sha256": "2181D399DD5CA668CC572D3BA4656EE5D309F3C0317443566F0ACF7F768905BB"
+        },
+        {
+          "file": "20260928032448_exact_money_validation.sql",
+          "sha256": "5677FD07CAA5A66FC6CC1203BF28426E9584EEA1522B63BC50BDC781693CD462"
+        },
+        {
+          "file": "20260928043611_focused_crud_integrity.sql",
+          "sha256": "C35628841EC3425A0E85183D127D174A8FA5B2C23D46A28313718E5B43B6242C"
+        },
+        {
+          "file": "20260928082016_harden_self_delete_rpc.sql",
+          "sha256": "0C49C13E27384ED546EC84499E1823B1C19856480703DB2E9628BE157F99C075"
+        },
+        {
+          "file": "20260930135217_financial_foundations.sql",
+          "sha256": "CF7286DF41B9920D14AE36FCAE712570C87D1B39249004D65EF34431496BE32B"
+        },
+        {
+          "file": "20260930135222_reporting_and_planning.sql",
+          "sha256": "5BCA265422163BD82E89D9A4C181411F9BDED7542FA5CF647B0D2F05EEE8F834"
+        },
+        {
+          "file": "20260930135716_financial_relationship_indexes.sql",
+          "sha256": "5313184A3FE2C89C241BEDFDB6BEEC1B8D0DFBFDB33568F1B551F857D3AE6C7E"
+        },
+        {
+          "file": "20260930141104_canonical_financial_transport.sql",
+          "sha256": "3881BBB39363AF6A048DE30BD48F887041B11EF1698A793F0841B722C2DB4DDE"
+        },
+        {
+          "file": "20261001033902_analytics_drilldown_filters.sql",
+          "sha256": "0DF00673B2BA377C02B8FC260BDA8BFBF84002DEFE36A9AEB5BE1AEFB87B3C65"
+        },
+        {
+          "file": "20261001083346_period_analytics_preferences.sql",
+          "sha256": "782BFD2C120573A8A6D19A70F665C35EBE1D3114BF981F3E5D291B903F87E0D2"
+        },
+        {
+          "file": "20261001083350_present_financial_progress.sql",
+          "sha256": "1BB2029F7653D5CB6192A95143D30586D7C7901255496D8A9F028BADF0820F0A"
+        },
+        {
+          "file": "20261009162324_protect_debt_repayment_history.sql",
+          "sha256": "1876FD422284C7C69D60E41CA622D0A8B342AB7510C2D9BF4B888D607BB23513"
+        }
+      ]
+    },
+    {
+      "phase": "phase2",
+      "root": "C:/Users/moham/.codex/worktrees/8081/prism-finance-baseline",
+      "branch": "codex/phase2-ledger",
+      "head": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+      "status": [
+        " M .github/workflows/ci.yml",
+        " M README.md",
+        " M package.json",
+        " M scripts/real-postgres-test.mjs",
+        " M supabase/migrations/README.md",
+        "?? docs/adr/0002-shadow-ledger.md",
+        "?? docs/phase2-accounting.md",
+        "?? docs/phase2-final-review.md",
+        "?? docs/phase2-ledger-recovery.md",
+        "?? docs/phase2-p1-remediation.md",
+        "?? docs/phase2-staging-rehearsal.md",
+        "?? scripts/ledger-db-test.mjs",
+        "?? scripts/ledger-dry-run.mjs",
+        "?? scripts/ledger-preview-test.mjs",
+        "?? scripts/ledger-preview.html",
+        "?? scripts/ledger-preview.mjs",
+        "?? scripts/phase2-review-probes.mjs",
+        "?? scripts/phase2-staging-reconciliation.sql",
+        "?? scripts/phase2-staging-validation.sql",
+        "?? src/domain/accounting.test.ts",
+        "?? src/domain/accounting.ts",
+        "?? src/domain/ledger-boundary.test.ts",
+        "?? src/domain/ledger-instant.ts",
+        "?? src/domain/ledger-reconciliation.ts",
+        "?? supabase/migrations/20261009220402_shadow_double_entry_ledger.sql",
+        "?? supabase/tests/ledger-history.synthetic.json"
+      ],
+      "trackedModifiedCount": 5,
+      "untrackedFileCount": 21,
+      "cachedPaths": [],
+      "fileCount": 26,
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha256": "F53FB48BC7CFEAAC44075C4599545E8215B1124C2D127EA2E80F747B45C38A52",
+          "bytes": 1292,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "docs/adr/0002-shadow-ledger.md",
+          "sha256": "E0566EA73A3B99163813DD305AA3C1FDD4D51CEFFB7DEAA0702E80C08CABBFBC",
+          "bytes": 5033,
+          "kind": "untracked"
+        },
+        {
+          "path": "docs/phase2-accounting.md",
+          "sha256": "CD34FD06C9ABBB6970BF56A98DDBDBEDF3DF0BE4ABD8C4D3DF4967D9AD4793E1",
+          "bytes": 14071,
+          "kind": "untracked"
+        },
+        {
+          "path": "docs/phase2-final-review.md",
+          "sha256": "597A7D3C1E00E2E535A73018734530A42D2A3088ACA5B443E434DC9AEAEDAF58",
+          "bytes": 23252,
+          "kind": "untracked"
+        },
+        {
+          "path": "docs/phase2-ledger-recovery.md",
+          "sha256": "38B4C397BEB09F47482422396BFC75B7D032390B331805BBA10F358C504E13ED",
+          "bytes": 8747,
+          "kind": "untracked"
+        },
+        {
+          "path": "docs/phase2-p1-remediation.md",
+          "sha256": "FCEFCD162E92FFEA51E24EFFB6DEA9AE8B56A40BDA32693A6C559BB3C02E18F9",
+          "bytes": 11988,
+          "kind": "untracked"
+        },
+        {
+          "path": "docs/phase2-staging-rehearsal.md",
+          "sha256": "3D1A2B290E133F55E7FC50CEEC6B324F1AE86FBCBE8368287485D5873BA30AC3",
+          "bytes": 34619,
+          "kind": "untracked"
+        },
+        {
+          "path": "package.json",
+          "sha256": "B799DC9C1B00F151559DA7B6ACC2BAA3EB5156E4BF98A8CAAD284C7304CB18DB",
+          "bytes": 2236,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "README.md",
+          "sha256": "AC5C626C6A7DE4F1A5356322B8F77FA2B2375126B4D858A7613D52C990764A56",
+          "bytes": 10257,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "scripts/ledger-db-test.mjs",
+          "sha256": "D9F443ECE5CBAB184668DEC7F738ED49DE643EA45BE87383B430E8D60251A2EA",
+          "bytes": 34378,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/ledger-dry-run.mjs",
+          "sha256": "8C1CB5132BCC28249489BC53E6C13CFF0AF3901676B45429E0EAAC73DECFBAE8",
+          "bytes": 700,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/ledger-preview-test.mjs",
+          "sha256": "9C598A711E21EF11D2093B6CB7881A7F09CDB9533BC60742F610B1279D16944F",
+          "bytes": 4539,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/ledger-preview.html",
+          "sha256": "AB6EC2103913B5968EE05AF4FF82867FC8CF9DA91155A4F4B425746434DA7639",
+          "bytes": 8984,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/ledger-preview.mjs",
+          "sha256": "50FD057DC5ED42BC3A30C24B21798B364E89B55A65AB0A956E2BA76489201D1B",
+          "bytes": 2480,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/phase2-review-probes.mjs",
+          "sha256": "B0DE9AFF6362B73F224E90F95ABF86D2644B40D6B0E8578A090D269CF70401F2",
+          "bytes": 4408,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/phase2-staging-reconciliation.sql",
+          "sha256": "298E6B15C8CB8E169BF965211C7A7A79928A08A682F763894D086190FE3BA272",
+          "bytes": 7400,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/phase2-staging-validation.sql",
+          "sha256": "A30C3922087743301DE33B40EA2BCDA48C447FE79BBC379B3455E3A5F3B728CF",
+          "bytes": 7104,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/real-postgres-test.mjs",
+          "sha256": "D2FC173E9BEF8FF4C48E810907A65B73E779E360E9860EEC22E90EA7329893ED",
+          "bytes": 23198,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/domain/accounting.test.ts",
+          "sha256": "867EF1C2F193841C45AE4798761CBFFDA0039BF81860A0251EC648C84A64DA10",
+          "bytes": 7894,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/accounting.ts",
+          "sha256": "B126EF0BAF98E6D8A29E09C1173E37D4B5DE8D028BBEA36F31EE536FDB38D773",
+          "bytes": 7618,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/ledger-boundary.test.ts",
+          "sha256": "FB66A8307822E2C24E5D2F2C674C351B6C7769CCB91B8A9D52FBC9EDD79AA825",
+          "bytes": 5531,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/ledger-instant.ts",
+          "sha256": "4395BA06ABAD8221C7E7779B032E66B0FA429B4F59F5A41CAB83E351B09DE0A8",
+          "bytes": 2349,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/ledger-reconciliation.ts",
+          "sha256": "19AD72CAC278E40A3EEDF9C9C805FBE7AC0732091B160D523FDB03A3B6BC8AA2",
+          "bytes": 20019,
+          "kind": "untracked"
+        },
+        {
+          "path": "supabase/migrations/20261009220402_shadow_double_entry_ledger.sql",
+          "sha256": "0C89AD1DE837CB7ED79F9A0C0042939E1FAA05B7593A96B02A049720CAB840FE",
+          "bytes": 22409,
+          "kind": "untracked"
+        },
+        {
+          "path": "supabase/migrations/README.md",
+          "sha256": "F6005A32538F428D8EF903088201B675E059C1CCD2C8680C853AFD38A61F724B",
+          "bytes": 6651,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "supabase/tests/ledger-history.synthetic.json",
+          "sha256": "FB8E0BF81814F9E311DDCF67F012A2CCC87B843B20D382E973C97101AE0B890A",
+          "bytes": 4701,
+          "kind": "untracked"
+        }
+      ],
+      "packageLockSha256": "87684E891EBDEC9518E3FFDAE0ACB1421D26AF1FF160351F76A4B3BE41CD1EDA",
+      "dependencies": {
+        "@fontsource/inter": "5.3.0",
+        "@supabase/supabase-js": "2.116.0",
+        "@tanstack/react-query": "5.103.1",
+        "class-variance-authority": "0.7.1",
+        "clsx": "2.1.1",
+        "framer-motion": "13.4.0",
+        "i18next": "26.4.2",
+        "lucide-react": "1.47.0",
+        "radix-ui": "1.6.7",
+        "react": "19.3.0",
+        "react-dom": "19.3.0",
+        "react-i18next": "17.0.14",
+        "recharts": "3.10.1",
+        "sonner": "2.0.8",
+        "tailwind-merge": "3.7.0",
+        "zod": "4.6.5",
+        "zustand": "5.0.15"
+      },
+      "devDependencies": {
+        "@axe-core/playwright": "4.13.0",
+        "@electric-sql/pglite": "^0.5.8",
+        "@eslint/js": "^9.39.5",
+        "@playwright/test": "^1.63.0",
+        "@types/node": "26.6.1",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "@vitejs/plugin-react": "6.1.1",
+        "autoprefixer": "10.6.1",
+        "embedded-postgres": "18.4.0-beta.17",
+        "eslint": "^9.39.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.4.26",
+        "pg": "8.16.3",
+        "postcss": "8.5.28",
+        "tailwindcss": "3.4.19",
+        "typescript": "5.9.3",
+        "typescript-eslint": "^8.70.1",
+        "vite": "8.3.0",
+        "vitest": "5.0.1"
+      },
+      "scripts": {
+        "dev": "vite --host 127.0.0.1",
+        "build": "tsc --noEmit && vite build",
+        "preview": "vite preview --host 127.0.0.1",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "test": "vitest run",
+        "test:db": "node scripts/finance-db-test.mjs",
+        "test:platform-db": "node scripts/platform-db-test.mjs",
+        "test:e2e": "playwright test",
+        "test:responsive": "node scripts/verify-responsive.mjs",
+        "test:foundations-db": "node scripts/foundations-db-test.mjs",
+        "test:period-db": "node scripts/period-db-test.mjs",
+        "test:postgres": "node scripts/real-postgres-test.mjs",
+        "test:ledger-db": "node scripts/ledger-db-test.mjs",
+        "ledger:dry-run": "node scripts/ledger-dry-run.mjs",
+        "ledger:preview": "node scripts/ledger-preview.mjs",
+        "test:ledger-preview": "node scripts/ledger-preview-test.mjs"
+      },
+      "migrations": [
+        {
+          "file": "20260928000200_initial_finance_tracker.sql",
+          "sha256": "D05AD805C7415E06537FA817411E3F2F0AD723B1553228F5FB0D1B95873B6B20"
+        },
+        {
+          "file": "20260928031516_personal_finance_platform.sql",
+          "sha256": "2181D399DD5CA668CC572D3BA4656EE5D309F3C0317443566F0ACF7F768905BB"
+        },
+        {
+          "file": "20260928032448_exact_money_validation.sql",
+          "sha256": "5677FD07CAA5A66FC6CC1203BF28426E9584EEA1522B63BC50BDC781693CD462"
+        },
+        {
+          "file": "20260928043611_focused_crud_integrity.sql",
+          "sha256": "C35628841EC3425A0E85183D127D174A8FA5B2C23D46A28313718E5B43B6242C"
+        },
+        {
+          "file": "20260928082016_harden_self_delete_rpc.sql",
+          "sha256": "0C49C13E27384ED546EC84499E1823B1C19856480703DB2E9628BE157F99C075"
+        },
+        {
+          "file": "20260930135217_financial_foundations.sql",
+          "sha256": "CF7286DF41B9920D14AE36FCAE712570C87D1B39249004D65EF34431496BE32B"
+        },
+        {
+          "file": "20260930135222_reporting_and_planning.sql",
+          "sha256": "5BCA265422163BD82E89D9A4C181411F9BDED7542FA5CF647B0D2F05EEE8F834"
+        },
+        {
+          "file": "20260930135716_financial_relationship_indexes.sql",
+          "sha256": "5313184A3FE2C89C241BEDFDB6BEEC1B8D0DFBFDB33568F1B551F857D3AE6C7E"
+        },
+        {
+          "file": "20260930141104_canonical_financial_transport.sql",
+          "sha256": "3881BBB39363AF6A048DE30BD48F887041B11EF1698A793F0841B722C2DB4DDE"
+        },
+        {
+          "file": "20261001033902_analytics_drilldown_filters.sql",
+          "sha256": "0DF00673B2BA377C02B8FC260BDA8BFBF84002DEFE36A9AEB5BE1AEFB87B3C65"
+        },
+        {
+          "file": "20261001083346_period_analytics_preferences.sql",
+          "sha256": "782BFD2C120573A8A6D19A70F665C35EBE1D3114BF981F3E5D291B903F87E0D2"
+        },
+        {
+          "file": "20261001083350_present_financial_progress.sql",
+          "sha256": "1BB2029F7653D5CB6192A95143D30586D7C7901255496D8A9F028BADF0820F0A"
+        },
+        {
+          "file": "20261009162324_protect_debt_repayment_history.sql",
+          "sha256": "04D6603448A2BD645B4A79D56EEE9AE77BE6A050D54B210D7B9DF7C70F8CB2BC"
+        },
+        {
+          "file": "20261009220402_shadow_double_entry_ledger.sql",
+          "sha256": "0C89AD1DE837CB7ED79F9A0C0042939E1FAA05B7593A96B02A049720CAB840FE"
+        }
+      ]
+    },
+    {
+      "phase": "phase3",
+      "root": "C:/Users/moham/.codex/worktrees/2ec2/prism-finance-baseline",
+      "branch": "codex/phase3-finance-ux",
+      "head": "72da622305754328f02ec8f5d2ca8b71a221ee17",
+      "status": [
+        " M e2e/auth-routing.spec.ts",
+        " M e2e/redesign.spec.ts",
+        " M index.html",
+        " M scripts/foundations-db-test.mjs",
+        " M src/App.test.tsx",
+        " M src/App.tsx",
+        " M src/components/Dashboard.tsx",
+        " M src/components/auth/AuthScreen.tsx",
+        " M src/components/auth/PasswordRecovery.tsx",
+        " M src/components/financial/Onboarding.tsx",
+        " M src/components/financial/Overview.tsx",
+        " M src/components/financial/Planning.tsx",
+        " M src/i18n.ts",
+        " M src/main.tsx",
+        " M src/store/useAppStore.ts",
+        " M src/styles.css",
+        " M supabase/migrations/README.md",
+        "?? docs/phase3-finance-ux.md",
+        "?? e2e/phase3.spec.ts",
+        "?? scripts/phase3-identity-test.mjs",
+        "?? src/components/Workspace.tsx",
+        "?? src/components/financial/PlanningHighlights.tsx",
+        "?? src/components/public/PublicHome.tsx",
+        "?? src/components/public/public.css",
+        "?? src/domain/planning-highlights.test.ts",
+        "?? src/domain/planning-highlights.ts",
+        "?? src/lib/routes.test.ts",
+        "?? src/lib/routes.ts",
+        "?? supabase/migrations/20261010021500_malaysia_profile_defaults.sql"
+      ],
+      "trackedModifiedCount": 17,
+      "untrackedFileCount": 12,
+      "cachedPaths": [],
+      "fileCount": 29,
+      "files": [
+        {
+          "path": "docs/phase3-finance-ux.md",
+          "sha256": "2BFEFC10212FC322C182CF86E3FD08E55F9B7406D6EACC67B0CFB6AB627058FB",
+          "bytes": 21783,
+          "kind": "untracked"
+        },
+        {
+          "path": "e2e/auth-routing.spec.ts",
+          "sha256": "0C039A203DC42914AC068C803C4FB29C2D7F0C5A3D7CC0C3F8FD38FFBA39DC8E",
+          "bytes": 3029,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "e2e/phase3.spec.ts",
+          "sha256": "7488DD5251F3F744674EC0CB867AFA8E9BF6FCBA2DAA9C1D7AF2875DFC1EC149",
+          "bytes": 20517,
+          "kind": "untracked"
+        },
+        {
+          "path": "e2e/redesign.spec.ts",
+          "sha256": "116CF1D281F4282D10462A3443AC683B58B43F6D803977CC76C7009E2273754D",
+          "bytes": 4338,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "index.html",
+          "sha256": "7CAB703525779D1827BB02784943470488166BDD1C732EEA3AA0BD791BD44C66",
+          "bytes": 1141,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "scripts/foundations-db-test.mjs",
+          "sha256": "0206E2C39E201482276D5269A1320FA79AE4B94AC82310E6CA0D4D2DC9EB47E9",
+          "bytes": 11310,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "scripts/phase3-identity-test.mjs",
+          "sha256": "E11A74D492F070F2EE756296CECDDBCB4A463C4D7304FA099E6252F12AAC3F68",
+          "bytes": 3350,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/App.test.tsx",
+          "sha256": "80923A55119525CBED65B6763B0C934E535CFA636EEC940FA36884602D5EFE94",
+          "bytes": 14151,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/App.tsx",
+          "sha256": "99EE6F087752FF5E507C070D18D5D4C2408BEB7C57E71725C43080C04446B777",
+          "bytes": 6961,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/auth/AuthScreen.tsx",
+          "sha256": "CFD2B183D295EBBBBA5DD99881DD27ACFCDEAEF70C36B1E696FC11427AEADED1",
+          "bytes": 7325,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/auth/PasswordRecovery.tsx",
+          "sha256": "1ACBDD354F29BC6364C6EC03CDD99C9C8F04E090EA28105C186974E17D98B30C",
+          "bytes": 4962,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/Dashboard.tsx",
+          "sha256": "909B3DB32C6222E3F43B4AFEE9DB57E8B3421F311295D9EEEC35FACA24B90F36",
+          "bytes": 6306,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/Onboarding.tsx",
+          "sha256": "F849D88FB5064925558EC5BCD3248B8D586183F4688BB5B4B614A5B539405198",
+          "bytes": 9650,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/Overview.tsx",
+          "sha256": "4FBE50C0ED706B9471B86BC8A4D37BF139B0761D9D010EEBFF912FB65A45C188",
+          "bytes": 7144,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/Planning.tsx",
+          "sha256": "F52971FAAFDC8F70AFDD80C92D006B4D8A894849FC23773C175B598F6BBFEDBC",
+          "bytes": 16466,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/PlanningHighlights.tsx",
+          "sha256": "4062D4207953937D87AFEB91EABA6A653E93C285DF5E12F1CEF664608DBC281C",
+          "bytes": 3330,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/components/public/public.css",
+          "sha256": "4A24FCDB0E852BECA4758E4F7D86F118D8B375D17A05C0E03CE3D03428DEACAF",
+          "bytes": 10666,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/components/public/PublicHome.tsx",
+          "sha256": "E356BB19819D3AAAFB88C7F688BB0E007B24B66701B29ACBEEBF37046169A2E5",
+          "bytes": 16221,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/components/Workspace.tsx",
+          "sha256": "AA16D79C6F1C1D1283191BA826BCE178204BACAC78C060BE8BA372D576EBD9C3",
+          "bytes": 22678,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/planning-highlights.test.ts",
+          "sha256": "59D3829FBFB591C0C95E26C9BA6F0059CFB5731A07A56DD6E21DFFB3CB8D4BF4",
+          "bytes": 1889,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/planning-highlights.ts",
+          "sha256": "8F56859F04D2272F3588E77F09560B7B589AE70F17BBB9A1343A511C8B07AF5A",
+          "bytes": 1056,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/i18n.ts",
+          "sha256": "EB7570EAAD0B363E733010CE5B456E42CBA914E1424C44FB1D0E059D9BA36108",
+          "bytes": 14887,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/lib/routes.test.ts",
+          "sha256": "6A320F877FC55176B479DA07AA84C12B509EAB167919067F58D325A210FE5A21",
+          "bytes": 907,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/lib/routes.ts",
+          "sha256": "01DE764425CA4A3E1EE57D91C909D1D7F7AA064C48E19CBACEC394B7B1BD63A3",
+          "bytes": 1685,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/main.tsx",
+          "sha256": "5CBE1AD13BB58695A5BECFBE98AD3489A41129672148B6BF7ED355502F8E7877",
+          "bytes": 1023,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/store/useAppStore.ts",
+          "sha256": "B89E070C876D50D9DF6CC46D4D4BD7EC6DB29CA4711D4B8F18F3ADDB3ADB6C1A",
+          "bytes": 3644,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/styles.css",
+          "sha256": "40B98319725E2B7E5D84649104EFDB8B785F216560C0277918BA9149AFCFD4FF",
+          "bytes": 33085,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "supabase/migrations/20261010021500_malaysia_profile_defaults.sql",
+          "sha256": "DEA70B1077B4A50F704359A0EA30781A9B869AC453F2844369B504EEAE8A7839",
+          "bytes": 970,
+          "kind": "untracked"
+        },
+        {
+          "path": "supabase/migrations/README.md",
+          "sha256": "FB8DF27ABA0CDFF2B5902BE425763586F89CC3D3DAB6C55DDFA2CAE06D4BC25D",
+          "bytes": 7055,
+          "kind": "tracked-modified"
+        }
+      ],
+      "packageLockSha256": "87684E891EBDEC9518E3FFDAE0ACB1421D26AF1FF160351F76A4B3BE41CD1EDA",
+      "dependencies": {
+        "@fontsource/inter": "5.3.0",
+        "@supabase/supabase-js": "2.116.0",
+        "@tanstack/react-query": "5.103.1",
+        "class-variance-authority": "0.7.1",
+        "clsx": "2.1.1",
+        "framer-motion": "13.4.0",
+        "i18next": "26.4.2",
+        "lucide-react": "1.47.0",
+        "radix-ui": "1.6.7",
+        "react": "19.3.0",
+        "react-dom": "19.3.0",
+        "react-i18next": "17.0.14",
+        "recharts": "3.10.1",
+        "sonner": "2.0.8",
+        "tailwind-merge": "3.7.0",
+        "zod": "4.6.5",
+        "zustand": "5.0.15"
+      },
+      "devDependencies": {
+        "@axe-core/playwright": "4.13.0",
+        "@electric-sql/pglite": "^0.5.8",
+        "@eslint/js": "^9.39.5",
+        "@playwright/test": "^1.63.0",
+        "@types/node": "26.6.1",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "@vitejs/plugin-react": "6.1.1",
+        "autoprefixer": "10.6.1",
+        "embedded-postgres": "18.4.0-beta.17",
+        "eslint": "^9.39.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.4.26",
+        "pg": "8.16.3",
+        "postcss": "8.5.28",
+        "tailwindcss": "3.4.19",
+        "typescript": "5.9.3",
+        "typescript-eslint": "^8.70.1",
+        "vite": "8.3.0",
+        "vitest": "5.0.1"
+      },
+      "scripts": {
+        "dev": "vite --host 127.0.0.1",
+        "build": "tsc --noEmit && vite build",
+        "preview": "vite preview --host 127.0.0.1",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "test": "vitest run",
+        "test:db": "node scripts/finance-db-test.mjs",
+        "test:platform-db": "node scripts/platform-db-test.mjs",
+        "test:e2e": "playwright test",
+        "test:responsive": "node scripts/verify-responsive.mjs",
+        "test:foundations-db": "node scripts/foundations-db-test.mjs",
+        "test:period-db": "node scripts/period-db-test.mjs",
+        "test:postgres": "node scripts/real-postgres-test.mjs"
+      },
+      "migrations": [
+        {
+          "file": "20260928000200_initial_finance_tracker.sql",
+          "sha256": "D05AD805C7415E06537FA817411E3F2F0AD723B1553228F5FB0D1B95873B6B20"
+        },
+        {
+          "file": "20260928031516_personal_finance_platform.sql",
+          "sha256": "2181D399DD5CA668CC572D3BA4656EE5D309F3C0317443566F0ACF7F768905BB"
+        },
+        {
+          "file": "20260928032448_exact_money_validation.sql",
+          "sha256": "5677FD07CAA5A66FC6CC1203BF28426E9584EEA1522B63BC50BDC781693CD462"
+        },
+        {
+          "file": "20260928043611_focused_crud_integrity.sql",
+          "sha256": "C35628841EC3425A0E85183D127D174A8FA5B2C23D46A28313718E5B43B6242C"
+        },
+        {
+          "file": "20260928082016_harden_self_delete_rpc.sql",
+          "sha256": "0C49C13E27384ED546EC84499E1823B1C19856480703DB2E9628BE157F99C075"
+        },
+        {
+          "file": "20260930135217_financial_foundations.sql",
+          "sha256": "CF7286DF41B9920D14AE36FCAE712570C87D1B39249004D65EF34431496BE32B"
+        },
+        {
+          "file": "20260930135222_reporting_and_planning.sql",
+          "sha256": "5BCA265422163BD82E89D9A4C181411F9BDED7542FA5CF647B0D2F05EEE8F834"
+        },
+        {
+          "file": "20260930135716_financial_relationship_indexes.sql",
+          "sha256": "5313184A3FE2C89C241BEDFDB6BEEC1B8D0DFBFDB33568F1B551F857D3AE6C7E"
+        },
+        {
+          "file": "20260930141104_canonical_financial_transport.sql",
+          "sha256": "3881BBB39363AF6A048DE30BD48F887041B11EF1698A793F0841B722C2DB4DDE"
+        },
+        {
+          "file": "20261001033902_analytics_drilldown_filters.sql",
+          "sha256": "0DF00673B2BA377C02B8FC260BDA8BFBF84002DEFE36A9AEB5BE1AEFB87B3C65"
+        },
+        {
+          "file": "20261001083346_period_analytics_preferences.sql",
+          "sha256": "782BFD2C120573A8A6D19A70F665C35EBE1D3114BF981F3E5D291B903F87E0D2"
+        },
+        {
+          "file": "20261001083350_present_financial_progress.sql",
+          "sha256": "1BB2029F7653D5CB6192A95143D30586D7C7901255496D8A9F028BADF0820F0A"
+        },
+        {
+          "file": "20261009162324_protect_debt_repayment_history.sql",
+          "sha256": "04D6603448A2BD645B4A79D56EEE9AE77BE6A050D54B210D7B9DF7C70F8CB2BC"
+        },
+        {
+          "file": "20261010021500_malaysia_profile_defaults.sql",
+          "sha256": "DEA70B1077B4A50F704359A0EA30781A9B869AC453F2844369B504EEAE8A7839"
+        }
+      ]
+    },
+    {
+      "phase": "phase4",
+      "root": "C:/Users/moham/.codex/worktrees/0afe/prism-finance-baseline",
+      "branch": "codex/phase4-budgeting-debt",
+      "head": "819ddef0e8a3b9aad07475ff495152e4d2ea9156",
+      "status": [
+        " M .github/workflows/ci.yml",
+        " M e2e/fixtures.ts",
+        " M package.json",
+        " M scripts/foundations-db-test.mjs",
+        " M scripts/real-postgres-test.mjs",
+        " M scripts/verify-responsive.mjs",
+        " M src/components/financial/Debts.tsx",
+        " M src/components/financial/Overview.tsx",
+        " M src/components/financial/Planning.tsx",
+        " M src/components/financial/copy.ts",
+        " M src/hooks/usePlanningData.ts",
+        " M src/types/database.ts",
+        " M src/types/index.ts",
+        " M supabase/migrations/README.md",
+        "?? docs/phase4-budgeting-debt.md",
+        "?? e2e/planning.spec.ts",
+        "?? scripts/planning-db-test.mjs",
+        "?? src/components/financial/AdvancedBudgets.tsx",
+        "?? src/components/financial/DebtPlanner.tsx",
+        "?? src/components/financial/PlanningSummary.tsx",
+        "?? src/components/financial/planningCopy.ts",
+        "?? src/domain/planning.test.ts",
+        "?? src/domain/planning.ts",
+        "?? src/hooks/useAdvancedPlanning.ts",
+        "?? supabase/migrations/20261010024257_phase4_planning.sql"
+      ],
+      "trackedModifiedCount": 14,
+      "untrackedFileCount": 11,
+      "cachedPaths": [],
+      "fileCount": 25,
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha256": "408DDA9280403C27C8503CDEE04026BFD7FF9A300921B79BF471517D602155B7",
+          "bytes": 1220,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "docs/phase4-budgeting-debt.md",
+          "sha256": "1E08E955627C73BD2D1031CEF3409E829556D33B3292A93DF1AF3D8C0A583B98",
+          "bytes": 13695,
+          "kind": "untracked"
+        },
+        {
+          "path": "e2e/fixtures.ts",
+          "sha256": "041C5BFEF200D600EE083B0B67BC93011C04EFD2DA7219F4F81F8160648C32D3",
+          "bytes": 11841,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "e2e/planning.spec.ts",
+          "sha256": "5A1D387E7DDDD82BE0A04D5781AA49AA4B30920DC31BFD4A9071618272F403C0",
+          "bytes": 10302,
+          "kind": "untracked"
+        },
+        {
+          "path": "package.json",
+          "sha256": "27BD4BC313FBCFF45952F5CEF68D8682DA0CEFD2EC81D1E1197CEF21BC26F1B0",
+          "bytes": 2061,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "scripts/foundations-db-test.mjs",
+          "sha256": "9B8EF378BAF692F28890E2860ECAADDB7178AC8D2946A7BCD714E78FF0E8B78E",
+          "bytes": 11159,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "scripts/planning-db-test.mjs",
+          "sha256": "A6B79540D4C8B200309A97B06177EB0AB1E578F51DC7A4516220301BADA8E07D",
+          "bytes": 10476,
+          "kind": "untracked"
+        },
+        {
+          "path": "scripts/real-postgres-test.mjs",
+          "sha256": "3A831BA002A4C7C45A75E17B1CF817983139D1E83669AA4A4374B0A46A51F27C",
+          "bytes": 13308,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "scripts/verify-responsive.mjs",
+          "sha256": "15B644FAC12832B30AC6DFA2C0F27CA265A2840F517485023AD9FB26BCA288BC",
+          "bytes": 11763,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/AdvancedBudgets.tsx",
+          "sha256": "0EDF9685AAEC39D84008832937B063DA7FE76AC41D92096645746E6D99E2CB89",
+          "bytes": 17162,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/components/financial/copy.ts",
+          "sha256": "6D63D2A848E1496B56D77A671F221830D7BF981AB0C82CC18D55EACC0192409B",
+          "bytes": 11968,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/DebtPlanner.tsx",
+          "sha256": "24C3C138519666F0549157247D16C968B7BEF2BD99D3DF3D728C41E134AE31CA",
+          "bytes": 22983,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/components/financial/Debts.tsx",
+          "sha256": "1A1271E43E195F0D73CBA02817582929A2842A2861A9F578F60FBD63852F5F07",
+          "bytes": 20496,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/Overview.tsx",
+          "sha256": "11647C3EF09DAB3239EDF2719F63E75A24210BC3BBCA15ABFF5815D1AF1CB482",
+          "bytes": 6560,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/Planning.tsx",
+          "sha256": "89E7EA7ECA4DBD13981EBF8C0A19EC3D7A7C4C986016B6E9C04576D07D9DCC8C",
+          "bytes": 11279,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/components/financial/planningCopy.ts",
+          "sha256": "F0A5500DFB2FC44131A9A76A3EAA6A444CCC5ED18E46D1BD15EBA93AA308F60F",
+          "bytes": 1586,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/components/financial/PlanningSummary.tsx",
+          "sha256": "B38F8BE3BF5C1787A9EFA511492E9189D1222480E30A9EDF0AFAE8963A81F1B0",
+          "bytes": 1689,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/planning.test.ts",
+          "sha256": "47700ABD4AEA9811587D8450A85241385ABBE01E1931E24028DDE17A8444775E",
+          "bytes": 10492,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/domain/planning.ts",
+          "sha256": "1161819397DEAD142D44D078CB1529E55506555CF6C33EEEE6BFCE0FE6B3B043",
+          "bytes": 12173,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/hooks/useAdvancedPlanning.ts",
+          "sha256": "A49D19DA9AA0AB88C2109511F9EE8FBBD8742458445AF1C1E4AFE4784B3614A0",
+          "bytes": 3793,
+          "kind": "untracked"
+        },
+        {
+          "path": "src/hooks/usePlanningData.ts",
+          "sha256": "B3E7B2731280333432A65F5C2E8F8C66B910754DB9593658D5C487B13D5DC185",
+          "bytes": 4818,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/types/database.ts",
+          "sha256": "2FA8724F40D7D86FD93916857F6DD2EC2363CBA5515F693387ACF99BFB6FA4E7",
+          "bytes": 3785,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "src/types/index.ts",
+          "sha256": "11FD899CFFA2F4227E4E93937D8AD412DB1750F66493A5790195698483E80E69",
+          "bytes": 4706,
+          "kind": "tracked-modified"
+        },
+        {
+          "path": "supabase/migrations/20261010024257_phase4_planning.sql",
+          "sha256": "93719388A1EAA50CAF0C6A221DFBBFCED093E7993073290D99ABEC637FE92F0D",
+          "bytes": 6269,
+          "kind": "untracked"
+        },
+        {
+          "path": "supabase/migrations/README.md",
+          "sha256": "A73E8731B40FFA022197228926FD80E0B19C30E2309E793C41399294A4265DCC",
+          "bytes": 5225,
+          "kind": "tracked-modified"
+        }
+      ],
+      "packageLockSha256": "87684E891EBDEC9518E3FFDAE0ACB1421D26AF1FF160351F76A4B3BE41CD1EDA",
+      "dependencies": {
+        "@fontsource/inter": "5.3.0",
+        "@supabase/supabase-js": "2.116.0",
+        "@tanstack/react-query": "5.103.1",
+        "class-variance-authority": "0.7.1",
+        "clsx": "2.1.1",
+        "framer-motion": "13.4.0",
+        "i18next": "26.4.2",
+        "lucide-react": "1.47.0",
+        "radix-ui": "1.6.7",
+        "react": "19.3.0",
+        "react-dom": "19.3.0",
+        "react-i18next": "17.0.14",
+        "recharts": "3.10.1",
+        "sonner": "2.0.8",
+        "tailwind-merge": "3.7.0",
+        "zod": "4.6.5",
+        "zustand": "5.0.15"
+      },
+      "devDependencies": {
+        "@axe-core/playwright": "4.13.0",
+        "@electric-sql/pglite": "^0.5.8",
+        "@eslint/js": "^9.39.5",
+        "@playwright/test": "^1.63.0",
+        "@types/node": "26.6.1",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "@vitejs/plugin-react": "6.1.1",
+        "autoprefixer": "10.6.1",
+        "embedded-postgres": "18.4.0-beta.17",
+        "eslint": "^9.39.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.4.26",
+        "pg": "8.16.3",
+        "postcss": "8.5.28",
+        "tailwindcss": "3.4.19",
+        "typescript": "5.9.3",
+        "typescript-eslint": "^8.70.1",
+        "vite": "8.3.0",
+        "vitest": "5.0.1"
+      },
+      "scripts": {
+        "dev": "vite --host 127.0.0.1",
+        "build": "tsc --noEmit && vite build",
+        "preview": "vite preview --host 127.0.0.1",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "test": "vitest run",
+        "test:db": "node scripts/finance-db-test.mjs",
+        "test:platform-db": "node scripts/platform-db-test.mjs",
+        "test:e2e": "playwright test",
+        "test:responsive": "node scripts/verify-responsive.mjs",
+        "test:foundations-db": "node scripts/foundations-db-test.mjs",
+        "test:period-db": "node scripts/period-db-test.mjs",
+        "test:postgres": "node scripts/real-postgres-test.mjs",
+        "test:planning-db": "node scripts/planning-db-test.mjs"
+      },
+      "migrations": [
+        {
+          "file": "20260928000200_initial_finance_tracker.sql",
+          "sha256": "D05AD805C7415E06537FA817411E3F2F0AD723B1553228F5FB0D1B95873B6B20"
+        },
+        {
+          "file": "20260928031516_personal_finance_platform.sql",
+          "sha256": "2181D399DD5CA668CC572D3BA4656EE5D309F3C0317443566F0ACF7F768905BB"
+        },
+        {
+          "file": "20260928032448_exact_money_validation.sql",
+          "sha256": "5677FD07CAA5A66FC6CC1203BF28426E9584EEA1522B63BC50BDC781693CD462"
+        },
+        {
+          "file": "20260928043611_focused_crud_integrity.sql",
+          "sha256": "C35628841EC3425A0E85183D127D174A8FA5B2C23D46A28313718E5B43B6242C"
+        },
+        {
+          "file": "20260928082016_harden_self_delete_rpc.sql",
+          "sha256": "0C49C13E27384ED546EC84499E1823B1C19856480703DB2E9628BE157F99C075"
+        },
+        {
+          "file": "20260930135217_financial_foundations.sql",
+          "sha256": "CF7286DF41B9920D14AE36FCAE712570C87D1B39249004D65EF34431496BE32B"
+        },
+        {
+          "file": "20260930135222_reporting_and_planning.sql",
+          "sha256": "5BCA265422163BD82E89D9A4C181411F9BDED7542FA5CF647B0D2F05EEE8F834"
+        },
+        {
+          "file": "20260930135716_financial_relationship_indexes.sql",
+          "sha256": "5313184A3FE2C89C241BEDFDB6BEEC1B8D0DFBFDB33568F1B551F857D3AE6C7E"
+        },
+        {
+          "file": "20260930141104_canonical_financial_transport.sql",
+          "sha256": "3881BBB39363AF6A048DE30BD48F887041B11EF1698A793F0841B722C2DB4DDE"
+        },
+        {
+          "file": "20261001033902_analytics_drilldown_filters.sql",
+          "sha256": "0DF00673B2BA377C02B8FC260BDA8BFBF84002DEFE36A9AEB5BE1AEFB87B3C65"
+        },
+        {
+          "file": "20261001083346_period_analytics_preferences.sql",
+          "sha256": "782BFD2C120573A8A6D19A70F665C35EBE1D3114BF981F3E5D291B903F87E0D2"
+        },
+        {
+          "file": "20261001083350_present_financial_progress.sql",
+          "sha256": "1BB2029F7653D5CB6192A95143D30586D7C7901255496D8A9F028BADF0820F0A"
+        },
+        {
+          "file": "20261010024257_phase4_planning.sql",
+          "sha256": "93719388A1EAA50CAF0C6A221DFBBFCED093E7993073290D99ABEC637FE92F0D"
+        }
+      ]
+    }
+  ],
+  "scope": "Read-only pre-integration inventory. Later phase implementations are uncommitted; no integrated application or acceptance proof.",
+  "integrationWorktree": "C:/Users/moham/.codex/worktrees/6aee/prism-finance-baseline"
+}

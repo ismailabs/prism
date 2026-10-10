@@ -25,6 +25,7 @@ export function CommandPalette({
         "dashboard",
         "transactions",
         "analytics",
+        "accounting",
         "accounts",
         "plans",
         "debts",

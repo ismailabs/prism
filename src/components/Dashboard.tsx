@@ -34,7 +34,7 @@ export function Dashboard({ transactions, categories, payments, month, period: s
   const metrics = [
     { label: t('analyticsPeriodIncome'), value: money(data.incomeExact), detail: periodLabel ?? t('period'), icon: ArrowDownLeft },
     { label: t('analyticsPeriodExpenses'), value: money(data.expenseExact), detail: periodLabel ?? t('period'), icon: ArrowUpRight },
-    { label: t('savingsRate'), value: personalization.privacyMode ? '•••' : data.unavailable ? '—' : data.income ? `${data.savingsRate.toFixed(1)}%` : '—', detail: t(data.income ? 'ofIncome' : 'noIncome'), icon: TrendingUp },
+    { label: t('savingsRate'), value: personalization.privacyMode ? '•••' : data.unavailable ? '—' : data.income ? `${data.savingsRate.toFixed(1)}%` : '—', detail: data.income ? c('Income less spending; not actual savings', 'Pendapatan tolak belanja; bukan simpanan sebenar') : t('noIncome'), icon: TrendingUp },
   ];
   return <div className="space-y-6">
     {data.unavailable && <p role="status" className="warning-message">{t('ratesUnavailable')}</p>}

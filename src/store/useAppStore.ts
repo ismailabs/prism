@@ -30,7 +30,7 @@ export const useAppStore = create<AppStore>()(
       resetPersonalization: () => set({personalization: sanitizePersonalization(defaultPersonalization)}),
       theme: 'system',
       locale: 'en',
-      currency: 'USD',
+      currency: 'MYR',
       exchangeRates: null,
       activeTab: 'dashboard',
       financialTimezone: browserTimezone(),

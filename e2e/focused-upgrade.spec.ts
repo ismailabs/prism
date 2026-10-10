@@ -8,10 +8,10 @@ for (const language of ['en', 'ms']) test(`debt history blocks parent deletion i
   const deletions:string[]=[];
   page.on('request',request=>{if(request.method()==='DELETE')deletions.push(request.url());});
   await page.goto('/debts');
-  await page.getByRole('button',{name:/Alex/}).first().click();
-  await page.getByRole('button',{name:/^(Delete|Padam) debt with Alex$/}).click();
+  await page.locator('button.selection-card').filter({has:page.getByRole('heading',{name:'Alex',exact:true})}).click();
+  await expect(page.getByRole('button',{name:/^(Delete|Padam) debt with Alex$/})).toBeDisabled();
   await expect(page.getByRole('alert').filter({hasText:language==='en'?'This debt has repayments':'Hutang ini mempunyai bayaran balik'})).toBeVisible();
-  await expect(page.getByRole('button',{name:language==='en'?'Delete permanently':'Padam kekal'})).toBeDisabled();
+  await expect(page.getByRole('button',{name:language==='en'?'Delete permanently':'Padam kekal'})).toHaveCount(0);
   expect(deletions).toEqual([]);
   expect(rows.person_debts).toHaveLength(1);expect(rows.debt_repayments).toHaveLength(1);
 });

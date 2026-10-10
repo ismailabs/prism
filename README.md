@@ -2,7 +2,9 @@
 
 PRISM is a personal finance tracker with accounts, transactions, transfers, goals, savings, debts, CSV import/export, category budgets, and explicitly recorded recurring activity. It supports English/Malay, password and Google sign-in, TOTP MFA, and password recovery.
 
-Current local stabilization and Phase 2 gates: [Phase 1 evidence](docs/phase1-stabilization.md). Historical deployment reports below describe earlier releases.
+Current local stabilization: [Phase 1 evidence](docs/phase1-stabilization.md).
+The [Phase 02 shadow ledger](docs/phase2-accounting.md) remains local-only and
+unapplied remotely. Historical deployment reports below describe earlier releases.
 
 ## Architecture
 
@@ -83,3 +85,33 @@ Transactions use 15-row server pages and native filters/search; recent activity 
 CSV import uses the existing parser, explicit default mappings, row validation, a preview, and one bounded atomic batch. Retry IDs prevent batch duplication; users choose semantic duplicate skipping. Export explicitly exports the current page and retains formula-injection protection.
 
 PRISM does not connect to banks, trade investments, provide AI advice, infer historical FX, schedule unattended financial writes, or offer MFA recovery codes. Live OAuth/email delivery and authenticated production mutation checks require a test account/provider configuration. See [upgrade evidence](docs/financial-foundations-upgrade.md) for actual deployment results and limitations.
+
+## Phase 02 local accounting foundation
+
+The additive double-entry ledger is local-only and remains a shadow foundation.
+Existing application balances and reports retain their legacy authority. New
+financial events post atomically with exact native money, durable request identity
+and immutable inverse corrections. The migration is unapplied remotely.
+
+Run `npm run test:ledger-db`, `npm run ledger:dry-run`, and
+`npm run test:ledger-preview` for synthetic checks. `npm run ledger:preview`
+opens a loopback-only English/Malay Accounting laboratory with balance sheet,
+income statement and journal inspection. It is not a production route.
+See [Phase 02 evidence](docs/phase2-accounting.md),
+[architecture decisions](docs/adr/0002-shadow-ledger.md), and
+[controlled rollout/recovery](docs/phase2-ledger-recovery.md).
+
+## Phases 1–4 integrated local baseline
+
+The protected `/accounting` workspace route reuses the synthetic accounting
+fixture and pure reporting modules. Legacy balances remain authoritative;
+the laboratory has no live ledger posting or historical cutover adapter.
+
+See the [integration handoff](docs/phases1-4-integration-handoff.md),
+[verification evidence](docs/phases1-4-verification.json), and
+[complete candidate manifest](docs/phases1-4-final-inventory.json).
+Run `npm run test:integration-db` for isolated native installation, Phase 1
+upgrade, migration recovery, reconciliation and concurrency checks, and
+`npm run test:integration-review` for the independent rollover oracle.
+Integration results remain uncommitted; local acceptance does not authorize
+publication, deployment or hosted migrations.

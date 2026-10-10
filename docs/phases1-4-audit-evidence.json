@@ -1,0 +1,502 @@
+{
+  "finalSourcePreservation": {
+    "candidateHashesChecked": 105,
+    "candidateByteChanges": 0,
+    "sourceWorktreeStatusChanges": 0,
+    "sourceHeadChanges": 0,
+    "sourceStagedFiles": 0,
+    "primaryCheckoutClean": true,
+    "chatCheckoutAddedFiles": [
+      "docs/phases1-4-integration-handoff.md",
+      "docs/phases1-4-source-inventory.json",
+      "docs/phases1-4-audit-evidence.json"
+    ]
+  },
+  "auditChecks": {
+    "acceptedSourceComparison": [
+      {
+        "phase": "phase2",
+        "manifest": "artifacts/phase2/p1-final-source-manifest.json",
+        "entries": 26,
+        "mismatches": []
+      },
+      {
+        "phase": "phase3",
+        "manifest": "artifacts/phase3/final-source-manifest.json",
+        "entries": 29,
+        "mismatches": []
+      }
+    ],
+    "trackedWhitespace": [
+      {
+        "root": "C:/Users/moham/.codex/worktrees/33fa/prism-finance-baseline",
+        "exitCode": 0,
+        "messages": []
+      },
+      {
+        "root": "C:/Users/moham/.codex/worktrees/8081/prism-finance-baseline",
+        "exitCode": 0,
+        "messages": []
+      },
+      {
+        "root": "C:/Users/moham/.codex/worktrees/2ec2/prism-finance-baseline",
+        "exitCode": 0,
+        "messages": []
+      },
+      {
+        "root": "C:/Users/moham/.codex/worktrees/0afe/prism-finance-baseline",
+        "exitCode": 0,
+        "messages": []
+      }
+    ],
+    "node": "v24.19.0",
+    "npm": "11.17.0"
+  },
+  "normalizedMigrationContent": [
+    {
+      "phase": "phase1",
+      "file": "20260928000200_initial_finance_tracker.sql",
+      "normalizedSha256": "8B6EDBAFE0D0C8ABF40F790C2BBBCF9E8333DCD05C1E600152FA8E04CA5D2DCF",
+      "crlf": 65
+    },
+    {
+      "phase": "phase1",
+      "file": "20260928031516_personal_finance_platform.sql",
+      "normalizedSha256": "694FE175C0D84AD19D843EF307DD7F383DDAF3AC21C66D810F814793AA9E215B",
+      "crlf": 169
+    },
+    {
+      "phase": "phase1",
+      "file": "20260928032448_exact_money_validation.sql",
+      "normalizedSha256": "A1AE2E71A99E01C66BBA5F5173AB2D028D4143B3BCC2D730DEA1F6555B6FF520",
+      "crlf": 24
+    },
+    {
+      "phase": "phase1",
+      "file": "20260928043611_focused_crud_integrity.sql",
+      "normalizedSha256": "09D6FF559EC89AB610AC9AFA8E9E53DB6AA27FF42F8F6D4940EDE4B11BA544E5",
+      "crlf": 46
+    },
+    {
+      "phase": "phase1",
+      "file": "20260928082016_harden_self_delete_rpc.sql",
+      "normalizedSha256": "A15ABE93CA22D798EE36A21FCE9B16E3B64CAFCE0C5135F94FEE9914F4C00255",
+      "crlf": 44
+    },
+    {
+      "phase": "phase1",
+      "file": "20260930135217_financial_foundations.sql",
+      "normalizedSha256": "A17DE5726E92918F98EE31E931003B56DA367B59DC31E01A6B6100F6FF328A36",
+      "crlf": 164
+    },
+    {
+      "phase": "phase1",
+      "file": "20260930135222_reporting_and_planning.sql",
+      "normalizedSha256": "2BC5C6BCAD616B2947CD0AF82B50B9F53D13618077E6490E0406283F1EE5DB64",
+      "crlf": 158
+    },
+    {
+      "phase": "phase1",
+      "file": "20260930135716_financial_relationship_indexes.sql",
+      "normalizedSha256": "2C6D7DAFB39982E0F79308B7EDFB007989B016068DFDB08E54C2EC51C8DB7319",
+      "crlf": 17
+    },
+    {
+      "phase": "phase1",
+      "file": "20260930141104_canonical_financial_transport.sql",
+      "normalizedSha256": "12A7DE302D5D2A790419D091A00AA9DF8F526B5CE0CB70D31331CD49D65039E0",
+      "crlf": 29
+    },
+    {
+      "phase": "phase1",
+      "file": "20261001033902_analytics_drilldown_filters.sql",
+      "normalizedSha256": "7358956BF1C261E2B7035AD39848767611C98F184C5F0AF2736F2BCA64BDEA4D",
+      "crlf": 31
+    },
+    {
+      "phase": "phase1",
+      "file": "20261001083346_period_analytics_preferences.sql",
+      "normalizedSha256": "93738E0EFBDF892C60B1F1E59DB237A16C0FF15142CDF0902248A9981AD28854",
+      "crlf": 25
+    },
+    {
+      "phase": "phase1",
+      "file": "20261001083350_present_financial_progress.sql",
+      "normalizedSha256": "2F96377F695550C63E1010DF4A5E17B734CD463CF7648B1B7328F4FDAB8C3D6A",
+      "crlf": 16
+    },
+    {
+      "phase": "phase1",
+      "file": "20261009162324_protect_debt_repayment_history.sql",
+      "normalizedSha256": "1876FD422284C7C69D60E41CA622D0A8B342AB7510C2D9BF4B888D607BB23513",
+      "crlf": 0
+    },
+    {
+      "phase": "phase2",
+      "file": "20260928000200_initial_finance_tracker.sql",
+      "normalizedSha256": "8B6EDBAFE0D0C8ABF40F790C2BBBCF9E8333DCD05C1E600152FA8E04CA5D2DCF",
+      "crlf": 65
+    },
+    {
+      "phase": "phase2",
+      "file": "20260928031516_personal_finance_platform.sql",
+      "normalizedSha256": "694FE175C0D84AD19D843EF307DD7F383DDAF3AC21C66D810F814793AA9E215B",
+      "crlf": 169
+    },
+    {
+      "phase": "phase2",
+      "file": "20260928032448_exact_money_validation.sql",
+      "normalizedSha256": "A1AE2E71A99E01C66BBA5F5173AB2D028D4143B3BCC2D730DEA1F6555B6FF520",
+      "crlf": 24
+    },
+    {
+      "phase": "phase2",
+      "file": "20260928043611_focused_crud_integrity.sql",
+      "normalizedSha256": "09D6FF559EC89AB610AC9AFA8E9E53DB6AA27FF42F8F6D4940EDE4B11BA544E5",
+      "crlf": 46
+    },
+    {
+      "phase": "phase2",
+      "file": "20260928082016_harden_self_delete_rpc.sql",
+      "normalizedSha256": "A15ABE93CA22D798EE36A21FCE9B16E3B64CAFCE0C5135F94FEE9914F4C00255",
+      "crlf": 44
+    },
+    {
+      "phase": "phase2",
+      "file": "20260930135217_financial_foundations.sql",
+      "normalizedSha256": "A17DE5726E92918F98EE31E931003B56DA367B59DC31E01A6B6100F6FF328A36",
+      "crlf": 164
+    },
+    {
+      "phase": "phase2",
+      "file": "20260930135222_reporting_and_planning.sql",
+      "normalizedSha256": "2BC5C6BCAD616B2947CD0AF82B50B9F53D13618077E6490E0406283F1EE5DB64",
+      "crlf": 158
+    },
+    {
+      "phase": "phase2",
+      "file": "20260930135716_financial_relationship_indexes.sql",
+      "normalizedSha256": "2C6D7DAFB39982E0F79308B7EDFB007989B016068DFDB08E54C2EC51C8DB7319",
+      "crlf": 17
+    },
+    {
+      "phase": "phase2",
+      "file": "20260930141104_canonical_financial_transport.sql",
+      "normalizedSha256": "12A7DE302D5D2A790419D091A00AA9DF8F526B5CE0CB70D31331CD49D65039E0",
+      "crlf": 29
+    },
+    {
+      "phase": "phase2",
+      "file": "20261001033902_analytics_drilldown_filters.sql",
+      "normalizedSha256": "7358956BF1C261E2B7035AD39848767611C98F184C5F0AF2736F2BCA64BDEA4D",
+      "crlf": 31
+    },
+    {
+      "phase": "phase2",
+      "file": "20261001083346_period_analytics_preferences.sql",
+      "normalizedSha256": "93738E0EFBDF892C60B1F1E59DB237A16C0FF15142CDF0902248A9981AD28854",
+      "crlf": 25
+    },
+    {
+      "phase": "phase2",
+      "file": "20261001083350_present_financial_progress.sql",
+      "normalizedSha256": "2F96377F695550C63E1010DF4A5E17B734CD463CF7648B1B7328F4FDAB8C3D6A",
+      "crlf": 16
+    },
+    {
+      "phase": "phase2",
+      "file": "20261009162324_protect_debt_repayment_history.sql",
+      "normalizedSha256": "1876FD422284C7C69D60E41CA622D0A8B342AB7510C2D9BF4B888D607BB23513",
+      "crlf": 25
+    },
+    {
+      "phase": "phase2",
+      "file": "20261009220402_shadow_double_entry_ledger.sql",
+      "normalizedSha256": "0C89AD1DE837CB7ED79F9A0C0042939E1FAA05B7593A96B02A049720CAB840FE",
+      "crlf": 0
+    },
+    {
+      "phase": "phase3",
+      "file": "20260928000200_initial_finance_tracker.sql",
+      "normalizedSha256": "8B6EDBAFE0D0C8ABF40F790C2BBBCF9E8333DCD05C1E600152FA8E04CA5D2DCF",
+      "crlf": 65
+    },
+    {
+      "phase": "phase3",
+      "file": "20260928031516_personal_finance_platform.sql",
+      "normalizedSha256": "694FE175C0D84AD19D843EF307DD7F383DDAF3AC21C66D810F814793AA9E215B",
+      "crlf": 169
+    },
+    {
+      "phase": "phase3",
+      "file": "20260928032448_exact_money_validation.sql",
+      "normalizedSha256": "A1AE2E71A99E01C66BBA5F5173AB2D028D4143B3BCC2D730DEA1F6555B6FF520",
+      "crlf": 24
+    },
+    {
+      "phase": "phase3",
+      "file": "20260928043611_focused_crud_integrity.sql",
+      "normalizedSha256": "09D6FF559EC89AB610AC9AFA8E9E53DB6AA27FF42F8F6D4940EDE4B11BA544E5",
+      "crlf": 46
+    },
+    {
+      "phase": "phase3",
+      "file": "20260928082016_harden_self_delete_rpc.sql",
+      "normalizedSha256": "A15ABE93CA22D798EE36A21FCE9B16E3B64CAFCE0C5135F94FEE9914F4C00255",
+      "crlf": 44
+    },
+    {
+      "phase": "phase3",
+      "file": "20260930135217_financial_foundations.sql",
+      "normalizedSha256": "A17DE5726E92918F98EE31E931003B56DA367B59DC31E01A6B6100F6FF328A36",
+      "crlf": 164
+    },
+    {
+      "phase": "phase3",
+      "file": "20260930135222_reporting_and_planning.sql",
+      "normalizedSha256": "2BC5C6BCAD616B2947CD0AF82B50B9F53D13618077E6490E0406283F1EE5DB64",
+      "crlf": 158
+    },
+    {
+      "phase": "phase3",
+      "file": "20260930135716_financial_relationship_indexes.sql",
+      "normalizedSha256": "2C6D7DAFB39982E0F79308B7EDFB007989B016068DFDB08E54C2EC51C8DB7319",
+      "crlf": 17
+    },
+    {
+      "phase": "phase3",
+      "file": "20260930141104_canonical_financial_transport.sql",
+      "normalizedSha256": "12A7DE302D5D2A790419D091A00AA9DF8F526B5CE0CB70D31331CD49D65039E0",
+      "crlf": 29
+    },
+    {
+      "phase": "phase3",
+      "file": "20261001033902_analytics_drilldown_filters.sql",
+      "normalizedSha256": "7358956BF1C261E2B7035AD39848767611C98F184C5F0AF2736F2BCA64BDEA4D",
+      "crlf": 31
+    },
+    {
+      "phase": "phase3",
+      "file": "20261001083346_period_analytics_preferences.sql",
+      "normalizedSha256": "93738E0EFBDF892C60B1F1E59DB237A16C0FF15142CDF0902248A9981AD28854",
+      "crlf": 25
+    },
+    {
+      "phase": "phase3",
+      "file": "20261001083350_present_financial_progress.sql",
+      "normalizedSha256": "2F96377F695550C63E1010DF4A5E17B734CD463CF7648B1B7328F4FDAB8C3D6A",
+      "crlf": 16
+    },
+    {
+      "phase": "phase3",
+      "file": "20261009162324_protect_debt_repayment_history.sql",
+      "normalizedSha256": "1876FD422284C7C69D60E41CA622D0A8B342AB7510C2D9BF4B888D607BB23513",
+      "crlf": 25
+    },
+    {
+      "phase": "phase3",
+      "file": "20261010021500_malaysia_profile_defaults.sql",
+      "normalizedSha256": "DEA70B1077B4A50F704359A0EA30781A9B869AC453F2844369B504EEAE8A7839",
+      "crlf": 0
+    },
+    {
+      "phase": "phase4",
+      "file": "20260928000200_initial_finance_tracker.sql",
+      "normalizedSha256": "8B6EDBAFE0D0C8ABF40F790C2BBBCF9E8333DCD05C1E600152FA8E04CA5D2DCF",
+      "crlf": 65
+    },
+    {
+      "phase": "phase4",
+      "file": "20260928031516_personal_finance_platform.sql",
+      "normalizedSha256": "694FE175C0D84AD19D843EF307DD7F383DDAF3AC21C66D810F814793AA9E215B",
+      "crlf": 169
+    },
+    {
+      "phase": "phase4",
+      "file": "20260928032448_exact_money_validation.sql",
+      "normalizedSha256": "A1AE2E71A99E01C66BBA5F5173AB2D028D4143B3BCC2D730DEA1F6555B6FF520",
+      "crlf": 24
+    },
+    {
+      "phase": "phase4",
+      "file": "20260928043611_focused_crud_integrity.sql",
+      "normalizedSha256": "09D6FF559EC89AB610AC9AFA8E9E53DB6AA27FF42F8F6D4940EDE4B11BA544E5",
+      "crlf": 46
+    },
+    {
+      "phase": "phase4",
+      "file": "20260928082016_harden_self_delete_rpc.sql",
+      "normalizedSha256": "A15ABE93CA22D798EE36A21FCE9B16E3B64CAFCE0C5135F94FEE9914F4C00255",
+      "crlf": 44
+    },
+    {
+      "phase": "phase4",
+      "file": "20260930135217_financial_foundations.sql",
+      "normalizedSha256": "A17DE5726E92918F98EE31E931003B56DA367B59DC31E01A6B6100F6FF328A36",
+      "crlf": 164
+    },
+    {
+      "phase": "phase4",
+      "file": "20260930135222_reporting_and_planning.sql",
+      "normalizedSha256": "2BC5C6BCAD616B2947CD0AF82B50B9F53D13618077E6490E0406283F1EE5DB64",
+      "crlf": 158
+    },
+    {
+      "phase": "phase4",
+      "file": "20260930135716_financial_relationship_indexes.sql",
+      "normalizedSha256": "2C6D7DAFB39982E0F79308B7EDFB007989B016068DFDB08E54C2EC51C8DB7319",
+      "crlf": 17
+    },
+    {
+      "phase": "phase4",
+      "file": "20260930141104_canonical_financial_transport.sql",
+      "normalizedSha256": "12A7DE302D5D2A790419D091A00AA9DF8F526B5CE0CB70D31331CD49D65039E0",
+      "crlf": 29
+    },
+    {
+      "phase": "phase4",
+      "file": "20261001033902_analytics_drilldown_filters.sql",
+      "normalizedSha256": "7358956BF1C261E2B7035AD39848767611C98F184C5F0AF2736F2BCA64BDEA4D",
+      "crlf": 31
+    },
+    {
+      "phase": "phase4",
+      "file": "20261001083346_period_analytics_preferences.sql",
+      "normalizedSha256": "93738E0EFBDF892C60B1F1E59DB237A16C0FF15142CDF0902248A9981AD28854",
+      "crlf": 25
+    },
+    {
+      "phase": "phase4",
+      "file": "20261001083350_present_financial_progress.sql",
+      "normalizedSha256": "2F96377F695550C63E1010DF4A5E17B734CD463CF7648B1B7328F4FDAB8C3D6A",
+      "crlf": 16
+    },
+    {
+      "phase": "phase4",
+      "file": "20261010024257_phase4_planning.sql",
+      "normalizedSha256": "93719388A1EAA50CAF0C6A221DFBBFCED093E7993073290D99ABEC637FE92F0D",
+      "crlf": 0
+    }
+  ],
+  "budgetConflictProbe": {
+    "exitCode": 0,
+    "output": "{\"case\":\"positive rollover\",\"phase3BudgetReached\":true,\"phase4Available\":\"900.00\",\"phase4Remaining\":\"50.00\",\"phase4Alert\":\"healthy\"}\n{\"case\":\"negative rollover\",\"phase3BudgetReached\":false,\"phase4Available\":\"700.00\",\"phase4Remaining\":\"-50.00\",\"phase4Alert\":\"over\"}\n",
+    "scope": "Actual original Phase 3 and Phase 4 pure functions, loaded read-only in memory with synthetic inputs. Exit 0 means the disagreement was reproduced."
+  },
+  "overlaps": [
+    {
+      "path": "README.md",
+      "phases": [
+        "phase1",
+        "phase2"
+      ]
+    },
+    {
+      "path": "e2e/fixtures.ts",
+      "phases": [
+        "phase1",
+        "phase4"
+      ]
+    },
+    {
+      "path": "scripts/foundations-db-test.mjs",
+      "phases": [
+        "phase1",
+        "phase3",
+        "phase4"
+      ]
+    },
+    {
+      "path": "scripts/real-postgres-test.mjs",
+      "phases": [
+        "phase1",
+        "phase2",
+        "phase4"
+      ]
+    },
+    {
+      "path": "src/App.test.tsx",
+      "phases": [
+        "phase1",
+        "phase3"
+      ]
+    },
+    {
+      "path": "src/components/financial/Debts.tsx",
+      "phases": [
+        "phase1",
+        "phase4"
+      ]
+    },
+    {
+      "path": "src/components/financial/Overview.tsx",
+      "phases": [
+        "phase1",
+        "phase3",
+        "phase4"
+      ]
+    },
+    {
+      "path": "src/components/financial/copy.ts",
+      "phases": [
+        "phase1",
+        "phase4"
+      ]
+    },
+    {
+      "path": "src/styles.css",
+      "phases": [
+        "phase1",
+        "phase3"
+      ]
+    },
+    {
+      "path": "supabase/migrations/README.md",
+      "phases": [
+        "phase1",
+        "phase2",
+        "phase3",
+        "phase4"
+      ]
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "phases": [
+        "phase2",
+        "phase4"
+      ]
+    },
+    {
+      "path": "package.json",
+      "phases": [
+        "phase2",
+        "phase4"
+      ]
+    },
+    {
+      "path": "src/components/financial/Planning.tsx",
+      "phases": [
+        "phase3",
+        "phase4"
+      ]
+    }
+  ],
+  "migrationOrder": [
+    "20260928000200_initial_finance_tracker.sql",
+    "20260928031516_personal_finance_platform.sql",
+    "20260928032448_exact_money_validation.sql",
+    "20260928043611_focused_crud_integrity.sql",
+    "20260928082016_harden_self_delete_rpc.sql",
+    "20260930135217_financial_foundations.sql",
+    "20260930135222_reporting_and_planning.sql",
+    "20260930135716_financial_relationship_indexes.sql",
+    "20260930141104_canonical_financial_transport.sql",
+    "20261001033902_analytics_drilldown_filters.sql",
+    "20261001083346_period_analytics_preferences.sql",
+    "20261001083350_present_financial_progress.sql",
+    "20261009162324_protect_debt_repayment_history.sql",
+    "20261009220402_shadow_double_entry_ledger.sql",
+    "20261010021500_malaysia_profile_defaults.sql",
+    "20261010024257_phase4_planning.sql"
+  ]
+}

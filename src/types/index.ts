@@ -1,7 +1,7 @@
 export type Currency = 'USD' | 'EUR' | 'JPY' | 'MYR';
 export type Locale = 'en' | 'ms';
 export type Theme = 'light' | 'dark' | 'system';
-export type Tab = 'analytics' | 'plans' | 'dashboard' | 'transactions' | 'accounts' | 'goals' | 'savings' | 'debts' | 'categories' | 'payments' | 'settings';
+export type Tab = 'accounting' | 'analytics' | 'plans' | 'dashboard' | 'transactions' | 'accounts' | 'goals' | 'savings' | 'debts' | 'categories' | 'payments' | 'settings';
 export type TransactionType = 'income' | 'expense';
 export type PaymentMethodType = 'credit_card' | 'cash' | 'bank_transfer' | 'e_wallet';
 export interface Profile { id: string; username: string; currency: Currency; language: Locale; theme: Theme; mfa_enabled: boolean; financial_timezone?: string | null; default_analysis_period?: import('@/domain/periods').DefaultPeriod; created_at: string }
@@ -26,6 +26,6 @@ export type NewCategory = Omit<Category, 'id' | 'user_id' | 'created_at'>;
 export type NewPaymentMethod = Omit<PaymentMethod, 'id' | 'user_id' | 'created_at'>;
 
 export interface Transfer { id: string; user_id: string; source_account_id: string; destination_account_id: string; source_amount: Money; source_currency: Currency; destination_amount: Money; destination_currency: Currency; occurred_at: string; note: string; created_at: string; updated_at: string }
-export interface MonthlyBudget { id:string; user_id:string; category_id:string; currency:Currency; month:string; amount:Money; spent?:Money; created_at:string }
+export interface MonthlyBudget { id:string; user_id:string; category_id:string; currency:Currency; month:string; amount:Money; spent?:Money; created_at:string; rollover_enabled?:boolean; alert_percent?:number }
 export interface RecurringRule { id:string; user_id:string; description:string; amount:Money; currency:Currency; type:TransactionType; account_id:string|null; category_id:string|null; payment_method_id:string|null; start_date:string; end_date:string|null; frequency:import('@/domain/recurrence').Frequency; interval:number; next_index:number; active:boolean; created_at:string }
 export interface MonthlyTotal { user_id:string; month:string; financial_date?:string; currency:Currency; type:TransactionType; category_id:string|null; amount:Money; transaction_count:number }

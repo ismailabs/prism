@@ -8,6 +8,7 @@ import { existsSync } from 'node:fs';
 import {createServer} from 'node:net';
 import assert from 'node:assert/strict';
 import { replay, exercise } from './foundations-db-test.mjs';
+import { exerciseLedger, exerciseHistoricalLedger, exerciseLedgerConcurrency, exerciseLedgerBoundaries } from './ledger-db-test.mjs';
 
 // No production credentials or production data. This is a real native PostgreSQL
 // server with independent connections, not a single-connection simulation.
@@ -24,6 +25,8 @@ try {
  const connect=async()=>{const client=server.getPgClient();await client.connect();clients.push(client);return client;};
  const admin=await connect();const db={exec:sql=>admin.query(sql),query:(sql,args)=>admin.query(sql,args)};
  await replay(db);await exercise(db);await admin.query('reset role');
+ const ledgerFixture=await exerciseLedger(db);await exerciseHistoricalLedger(db);await exerciseLedgerBoundaries(db);await admin.query('reset role');
+ await exerciseLedgerConcurrency(admin,await connect(),await connect(),ledgerFixture);
  const user=randomUUID(),session=randomUUID();await admin.query('insert into auth.users(id) values($1)',[user]);await admin.query('insert into auth.sessions(id,user_id) values($1,$2)',[session,user]);
  const tx=(await admin.query("insert into public.transactions(user_id,amount,currency,type) values($1,'1.00','MYR','expense') returning id",[user])).rows[0].id;
  const goal=(await admin.query("insert into public.objectives(user_id,kind,name,currency,target_amount) values($1,'goal','Race','MYR','50.00') returning id",[user])).rows[0].id;
@@ -73,6 +76,59 @@ try {
  const encode=value=>Buffer.from(JSON.stringify(value)).toString('base64url');const unsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode({sub:user,session_id:session,role:'authenticated',aal:'aal1',exp:Math.floor(Date.now()/1000)+3600})}`;const token=`${unsigned}.${createHmac('sha256',secret).update(unsigned).digest('base64url')}`;
  let ready=false;for(let i=0;i<100;i++){try{const response=await fetch(apiUrl);if(response.status<500){ready=true;break;}}catch{}await new Promise(resolve=>setTimeout(resolve,50));}assert(ready,'PostgREST must start');
  const headers={Authorization:`Bearer ${token}`,'Content-Type':'application/json',Prefer:'return=representation'};
+ const ledgerUnsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode({sub:ledgerFixture.user,session_id:ledgerFixture.session,role:'authenticated',aal:'aal2',exp:Math.floor(Date.now()/1000)+3600})}`;
+ const ledgerToken=`${ledgerUnsigned}.${createHmac('sha256',secret).update(ledgerUnsigned).digest('base64url')}`;
+ const ledgerHeaders={...headers,Authorization:`Bearer ${ledgerToken}`};
+ const ledgerRequest={...ledgerFixture.salary,request_key:'http-ledger-retry'};
+ const postLedger=body=>fetch(`${apiUrl}/rpc/post_ledger_event`,{method:'POST',headers:ledgerHeaders,body:JSON.stringify({p:body})});
+ const ledgerPost=await postLedger(ledgerRequest);assert.equal(ledgerPost.status,200);const ledgerId=await ledgerPost.json();
+ const ledgerRetry=await postLedger(ledgerRequest);assert.equal(ledgerRetry.status,200);assert.equal(await ledgerRetry.json(),ledgerId);
+ const ledgerConflict=await postLedger({...ledgerRequest,occurred_at:'2000-02-02T00:00:00Z'});assert.equal(ledgerConflict.status,409);
+ const ledgerRead=await fetch(`${apiUrl}/exact_ledger_lines?event_id=eq.${ledgerId}&select=side,amount&order=ordinal`,{headers:ledgerHeaders});assert.equal(ledgerRead.status,200);assert.deepEqual(await ledgerRead.json(),[{side:'debit',amount:'5000.00'},{side:'credit',amount:'5000.00'}]);
+ const hugeLedger=await postLedger({...ledgerRequest,request_key:'http-ledger-large',lines:ledgerRequest.lines.map(l=>({...l,amount:'90071992547409.93'}))});assert.equal(hugeLedger.status,200);const hugeLedgerId=await hugeLedger.json();
+ for(const currency of ['MYR','USD','EUR','JPY']){const eventId=currency==='MYR'?hugeLedgerId:(await admin.query('select id from public.financial_events where user_id=$1 and request_key=$2',[ledgerFixture.user,`salary:${currency}`])).rows[0].id;const response=await fetch(`${apiUrl}/exact_ledger_lines?event_id=eq.${eventId}&select=amount&order=ordinal`,{headers:ledgerHeaders});assert.equal(response.status,200);assert.deepEqual(await response.json(),Array(2).fill({amount:currency==='JPY'?'9007199254740993':'90071992547409.93'}));}
+ const ledgerDenied=await fetch(`${apiUrl}/exact_ledger_lines?event_id=eq.${ledgerId}`,{headers});assert.equal(ledgerDenied.status,200);assert.deepEqual(await ledgerDenied.json(),[]);
+ const ledgerPrecision=await postLedger({...ledgerRequest,request_key:'http-ledger-precision',lines:ledgerRequest.lines.map(l=>({...l,amount:'1.001'}))});assert.equal(ledgerPrecision.status,400);
+ const ledgerDirect=await fetch(`${apiUrl}/journal_lines`,{method:'POST',headers:ledgerHeaders,body:JSON.stringify({user_id:ledgerFixture.user})});assert.equal(ledgerDirect.status,403);
+ const preciseRequest={...ledgerRequest,request_key:'http-microseconds',occurred_at:'2000-02-29T23:59:59.000099+08:00'};
+ const precise=await postLedger(preciseRequest);assert.equal(precise.status,200);const preciseId=await precise.json();
+ const preciseRetry=await postLedger(preciseRequest);assert.equal(preciseRetry.status,200);assert.equal(await preciseRetry.json(),preciseId);
+ const preciseRead=await fetch(`${apiUrl}/exact_ledger_lines?event_id=eq.${preciseId}&select=occurred_at&order=ordinal`,{headers:ledgerHeaders});assert.equal(preciseRead.status,200);assert.deepEqual(await preciseRead.json(),Array(2).fill({occurred_at:'2000-02-29T15:59:59.000099Z'}));
+ const ledgerCounts=async()=> (await admin.query(`select
+   (select count(*)::int from public.ledger_accounts) as accounts,
+   (select count(*)::int from public.financial_events) as events,
+   (select count(*)::int from public.journals) as journals,
+   (select count(*)::int from public.journal_lines) as lines,
+   (select count(*)::int from public.ledger_allocations) as allocations,
+   (select count(*)::int from public.transactions) as legacy`)).rows[0];
+ const beforeDenied=await ledgerCounts();
+ for(const [label,claims] of [
+   ['missing-aal',{sub:ledgerFixture.user,session_id:ledgerFixture.session}],
+   ['null-aal',{sub:ledgerFixture.user,session_id:ledgerFixture.session,aal:null}],
+   ['aal1',{sub:ledgerFixture.user,session_id:ledgerFixture.session,aal:'aal1'}],
+   ['missing-session',{sub:ledgerFixture.user,aal:'aal2'}],
+   ['invalid-session',{sub:ledgerFixture.user,session_id:randomUUID(),aal:'aal2'}],
+   ['wrong-session-owner',{sub:ledgerFixture.user,session_id:session,aal:'aal2'}],
+ ]){
+   const unsignedDenied=`${encode({alg:'HS256',typ:'JWT'})}.${encode({...claims,role:'authenticated',exp:Math.floor(Date.now()/1000)+3600})}`;
+   const deniedToken=`${unsignedDenied}.${createHmac('sha256',secret).update(unsignedDenied).digest('base64url')}`;
+   const deniedHeaders={...headers,Authorization:`Bearer ${deniedToken}`};
+   for(const [rpc,p] of [
+     ['create_ledger_account',{code:`denied-http:${label}`,classification:'asset',currency:'MYR'}],
+     ['post_ledger_event',{...ledgerRequest,request_key:`denied-http:${label}`}],
+   ]){
+     const response=await fetch(`${apiUrl}/rpc/${rpc}`,{method:'POST',headers:deniedHeaders,body:JSON.stringify({p})});
+     assert.equal(response.status,403,`${rpc}:${label}`);assert.equal((await response.json()).code,'42501');
+     assert.deepEqual(await ledgerCounts(),beforeDenied,`${rpc}:${label} persistent writes`);
+   }
+   const hidden=await fetch(`${apiUrl}/exact_ledger_lines?select=id`,{headers:deniedHeaders});assert.equal(hidden.status,200);assert.deepEqual(await hidden.json(),[]);
+ }
+ for(const occurred_at of ['2000-02-29T15:59:59.0000991Z','2000-02-30T00:00:00Z','2000-02-29T24:00:00Z']){
+   const response=await postLedger({...ledgerRequest,request_key:'denied-http-precision',occurred_at});assert.equal(response.status,400);
+   assert.deepEqual(await ledgerCounts(),beforeDenied);
+ }
+ console.log('PASS P1 actual HTTP: microsecond offset/string round trip and retry; both RPCs deny NULL/FALSE/session/owner/MFA, RLS hides rows, all ledger and legacy counts unchanged; unsupported precision rejected');
+ console.log('PASS actual ledger HTTP: invoker RPC posts/retries once, conflicting payload 409, exact text reads, cross-user rows hidden, invalid precision/direct writes rejected');
  const saved=await fetch(`${apiUrl}/transactions`,{method:'POST',headers,body:JSON.stringify({user_id:user,amount:'90071992547409.93',currency:'MYR',type:'income',description:'API exact round trip'})});assert.equal(saved.status,201,await saved.text());
  const exact=await fetch(`${apiUrl}/exact_transactions?description=eq.API%20exact%20round%20trip&select=amount`,{headers});assert.equal(exact.status,200);assert.deepEqual(await exact.json(),[{amount:'90071992547409.93'}]);
  const anon=await fetch(`${apiUrl}/exact_transactions?select=amount`);assert([401,403].includes(anon.status));
@@ -89,9 +145,16 @@ try {
  const category=await post('categories',{name:'Exact budget',type:'expense',color:'#4265ee'});
  const budget=await post('monthly_budgets',{category_id:category,currency:'MYR',month:'2026-09-01',amount});
  const rule=await post('recurring_rules',{description:'Exact recurring',currency:'MYR',type:'expense',start_date:'2026-09-01',frequency:'monthly',amount});
- for(const [table,id,field] of [['accounts',first,'opening_balance'],['objectives',objective,'target_amount'],['objective_contributions',contribution,'effective_amount'],['objective_milestones',milestone,'amount'],['person_debts',person,'original_amount'],['debt_repayments',repayment,'effective_amount'],['transfers',transfer,'source_amount'],['transfers',transfer,'destination_amount'],['monthly_budgets',budget,'amount'],['recurring_rules',rule,'amount']]){
+ const cashBefore=(await (await fetch(`${apiUrl}/exact_accounts?id=eq.${first}&select=balance`,{headers})).json())[0].balance;
+ const reservePlan=await post('reserve_plans',{month:'2026-10-01',currency:'MYR',name:'Exact reserve assumption',amount});
+ const debtPlan=await post('debt_plans',{debt_id:person,currency:'MYR',debt_type:'personal',scenario_principal:amount,balance_as_of:'2026-10-01',apr_bps:1200,rate_mode:'fixed',minimum_payment:amount,frequency:'monthly',first_payment_date:'2026-10-31'});
+ for(const [table,id,field] of [['accounts',first,'opening_balance'],['objectives',objective,'target_amount'],['objective_contributions',contribution,'effective_amount'],['objective_milestones',milestone,'amount'],['person_debts',person,'original_amount'],['debt_repayments',repayment,'effective_amount'],['transfers',transfer,'source_amount'],['transfers',transfer,'destination_amount'],['monthly_budgets',budget,'amount'],['recurring_rules',rule,'amount'],['reserve_plans',reservePlan,'amount'],['debt_plans',debtPlan,'scenario_principal'],['debt_plans',debtPlan,'minimum_payment']]){
    const response=await fetch(`${apiUrl}/exact_${table}?id=eq.${id}&select=${field}`,{headers});assert.equal(response.status,200);assert.deepEqual(await response.json(),[{[field]:amount}]);
  }
+ assert.equal((await (await fetch(`${apiUrl}/exact_accounts?id=eq.${first}&select=balance`,{headers})).json())[0].balance,cashBefore,'Saving planning assumptions must not affect cash');
+ const eraseRepayment=await fetch(`${apiUrl}/debt_repayments?id=eq.${repayment}`,{method:'DELETE',headers});assert.equal(eraseRepayment.status,400);assert.match(await eraseRepayment.text(),/audited reversal/);
+ const eraseDebt=await fetch(`${apiUrl}/person_debts?id=eq.${person}`,{method:'DELETE',headers});assert.equal(eraseDebt.status,400);assert.match(await eraseDebt.text(),/cannot be deleted/);
+ console.log('PASS Phase 4 PostgREST HTTP: planning assumptions round-trip exact text, preserve cash and reject history erasure');
  const badPrecision=await fetch(`${apiUrl}/transactions`,{method:'POST',headers,body:JSON.stringify({user_id:user,amount:'1.001',currency:'MYR',type:'income'})});assert.equal(badPrecision.status,400);
  const yenAccount=await post('accounts',{name:'Legacy JPY scale',currency:'JPY',opening_balance:'100.00'});
  const yenTx=await post('transactions',{currency:'JPY',amount:'1.00',type:'expense',account_id:yenAccount});
@@ -114,6 +177,9 @@ try {
  console.log('PASS actual PostgREST HTTP: four native currencies retain exact strings; parent history deletion rejected and empty debt deletion allowed');
  const deleted=await fetch(`${apiUrl}/rpc/delete_own_account`,{method:'POST',headers,body:JSON.stringify({confirmation:'DELETE'})});assert([200,204].includes(deleted.status),await deleted.text());
  assert.equal((await admin.query('select count(*)::int as n from auth.users where id=$1',[user])).rows[0].n,0);
- for(const table of ['accounts','transfers','transactions','objectives','objective_contributions','objective_milestones','person_debts','debt_repayments','monthly_budgets','recurring_rules'])assert.equal((await admin.query(`select count(*)::int as n from public.${table} where user_id=$1`,[user])).rows[0].n,0,table);
+ for(const table of ['accounts','transfers','transactions','objectives','objective_contributions','objective_milestones','person_debts','debt_repayments','monthly_budgets','recurring_rules','reserve_plans','debt_plans'])assert.equal((await admin.query(`select count(*)::int as n from public.${table} where user_id=$1`,[user])).rows[0].n,0,table);
  console.log('PASS actual PostgREST HTTP: confirmed self-deletion cascades through transfers, budgets, recurring rules and all financial history');
+ const ledgerDeleted=await fetch(`${apiUrl}/rpc/delete_own_account`,{method:'POST',headers:ledgerHeaders,body:JSON.stringify({confirmation:'DELETE'})});assert([200,204].includes(ledgerDeleted.status),await ledgerDeleted.text());
+ for(const table of ['ledger_accounts','financial_events','journals','journal_lines','ledger_allocations'])assert.equal((await admin.query(`select count(*)::int as n from public.${table} where user_id=$1`,[ledgerFixture.user])).rows[0].n,0,table);
+ console.log('PASS actual ledger HTTP: AAL2 confirmed whole-account erasure removes ledger rows through the existing privileged Auth path');
 }catch(error){console.error(error?.message??String(error));process.exitCode=1;}finally{if(api&&api.exitCode===null){const exited=new Promise(resolve=>api.once('exit',resolve));api.kill();await exited;}for(const client of clients)await client.end();await server.stop();}

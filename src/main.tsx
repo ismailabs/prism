@@ -11,6 +11,7 @@ import { Toaster } from 'sonner';
 import App from './App';
 import './i18n';
 import './styles.css';
+import './components/public/public.css';
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: true }, mutations: { retry: false } } });
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><QueryClientProvider client={queryClient}><AuthProvider><ErrorBoundary><App/></ErrorBoundary><Toaster richColors position="bottom-right" closeButton/></AuthProvider></QueryClientProvider></React.StrictMode>);

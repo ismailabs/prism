@@ -5,19 +5,20 @@ import { z } from 'zod';
 import { supabase } from '../../lib/supabase';
 import { useAuthCopy } from './copy';
 import { PasswordRecovery } from './PasswordRecovery';
+import { authCallback } from '@/lib/routes';
 
 export function AuthScreen() {
   const copy = useAuthCopy();
   const [forgot,setForgot]=useState(false);
   const ms=useAppStore(s=>s.locale)==='ms';
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup'>(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signup' ? 'signup' : 'signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('notice') === 'password-updated' ? (ms ? 'Kata laluan dikemas kini. Log masuk dengan kata laluan baharu.' : 'Password updated. Sign in with your new password.') : '');
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError(''); setNotice('');
@@ -33,7 +34,7 @@ export function AuthScreen() {
     setBusy(true);
     try {
       if (mode === 'signup') {
-        const { data, error: authError } = await supabase.auth.signUp({ email: result.data.email, password: result.data.password, options: { data: { username: result.data.username }, emailRedirectTo: window.location.origin } });
+        const { data, error: authError } = await supabase.auth.signUp({ email: result.data.email, password: result.data.password, options: { data: { username: result.data.username, prism_setup_preferences: { currency: 'MYR', financial_timezone: 'Asia/Kuala_Lumpur', language: useAppStore.getState().locale } }, emailRedirectTo: authCallback() } });
         if (authError) throw authError;
         if (!data.session) { setNotice(copy.checkEmail); setMode('signin'); setPassword(''); }
       } else {
@@ -47,7 +48,7 @@ export function AuthScreen() {
   async function googleSignIn() {
     setBusy(true); setError(''); setNotice('');
     try {
-      const { error: authError } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+      const { error: authError } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: authCallback() } });
       if (authError) throw authError;
     } catch (cause) { setError(cause instanceof Error ? cause.message : copy.failed); setBusy(false); }
   }

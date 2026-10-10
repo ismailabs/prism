@@ -1,5 +1,9 @@
 import { useAppStore } from "@/store/useAppStore";
 const ms: Record<string, string> = {
+  'History preserved':'Sejarah dikekalkan',
+  'Repayment history is preserved. Corrections require an audited reversal after ledger integration.':'Sejarah bayaran balik dikekalkan. Pembetulan memerlukan pembalikan diaudit selepas integrasi lejar.',
+  'Only debts without repayment history can be deleted.':'Hanya hutang tanpa sejarah bayaran balik boleh dipadam.',
+  'This removes an empty debt record. Existing financial history must be preserved.':'Ini memadam rekod hutang kosong. Sejarah kewangan sedia ada mesti dikekalkan.',
   "Account saved": "Akaun disimpan",
   "Account deleted": "Akaun dipadam",
   "Add account": "Tambah akaun",

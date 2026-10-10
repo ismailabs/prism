@@ -1,662 +1,91 @@
-import { AuthScreen } from "@/components/auth/AuthScreen";
-import { MfaChallenge } from "@/components/auth/MfaChallenge";
-import { PasswordRecovery } from "@/components/auth/PasswordRecovery";
-import { SettingsView } from "@/components/financial/Settings";
-import { Onboarding } from "@/components/financial/Onboarding";
-import { Plans } from "@/components/financial/Planning";
-import { ManageLists } from "@/components/ManageLists";
-import { LoadingState } from "@/components/LoadingState";
-import {
-  AccountsPage,
-  AccountsSection,
-  DebtsPage,
-  FinancialOverview,
-  ObjectivesPage,
-} from "@/components/Platform";
-import { TransactionDialog } from "@/components/TransactionDialog";
-import { Transactions } from "@/components/Transactions";
-import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/dialog";
-import { browserTimezone } from "@/domain/dates";
-import { useFinancialPeriod } from '@/hooks/useFinancialPeriod';
-import { PeriodSelector, periodLabel } from '@/components/analytics/PeriodSelector';
-import { useAuth } from "@/hooks/useAuth";
-import {
-  useCategories,
-  useFinanceRealtime,
-  usePaymentMethods,
-  useProfile,
-  useTransactionMutations,
-  useTransactions,
-} from "@/hooks/useFinanceData";
-import { useFinancialReport } from "@/hooks/useFinancialReports";
-import { usePlatformTable } from "@/hooks/usePlatformData";
-import { errorMessage } from "@/lib/utils";
-import { fetchExchangeRates } from "@/services/currency";
-import { useAppStore } from "@/store/useAppStore";
-import type { Tab, Transaction } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import {
-  HandCoins,
-  ChartNoAxesCombined,
-  Search,
-  Eye,
-  EyeOff,
-  Landmark,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Plus,
-  Settings,
-  Target,
-  Wallet,
-  X,
-} from "lucide-react";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { AnalyticsBar } from "@/components/analytics/AnalyticsBar";
-import { CommandPalette } from "@/components/CommandPalette";
-import { useNavigationGestures } from "@/hooks/useNavigationGestures";
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { MfaChallenge } from '@/components/auth/MfaChallenge';
+import { PasswordRecovery } from '@/components/auth/PasswordRecovery';
+import { LoadingState } from '@/components/LoadingState';
+import { PublicHome } from '@/components/public/PublicHome';
+import { useAuth } from '@/hooks/useAuth';
+import { loginPath, navigatePath, pathTab, safeDestination } from '@/lib/routes';
+import { useAppStore } from '@/store/useAppStore';
 
-const Dashboard = lazy(() =>
-  import("@/components/Dashboard").then((module) => ({
-    default: module.Dashboard,
-  })),
-);
-const Analytics = lazy(() => import('@/components/analytics/Analytics').then(module=>({default:module.Analytics})));
-const tabs = [
-  { id: "dashboard", icon: LayoutDashboard },
-  { id: "transactions", icon: Wallet },
-  { id: "analytics", icon: ChartNoAxesCombined },
-  { id: "accounts", icon: Landmark },
-  { id: "plans", icon: Target },
-  { id: "debts", icon: HandCoins },
-
-  { id: "settings", icon: Settings },
-] as const;
-
-function routeTab(): Tab | null {
-  if (typeof window === "undefined") return "dashboard";
-  const route = window.location.pathname.replace(/^\/+|\/+$/g, "");
-  return route === ""
-    ? useAppStore.getState().personalization.landingPage
-    : (tabs.find((tab) => tab.id === route)?.id ??
-        (["goals", "savings", "categories", "payments"].includes(route)
-          ? (route as Tab)
-          : null));
-}
+const Workspace = lazy(() => import('@/components/Workspace'));
 
 export default function App() {
-  const { user, loading, requiresMfa, authError, recovery, completeRecovery } =
-    useAuth();
+  const { user, loading, requiresMfa, authError, recovery, completeRecovery } = useAuth();
   const { t, i18n } = useTranslation();
   const { theme, locale, activeTab, setActiveTab, personalization } = useAppStore();
-  const [notFound, setNotFound] = useState(() => routeTab() === null);
+  const [, setRouteRevision] = useState(0);
+  // Supabase can consume callback parameters with replaceState without popstate.
+  // Read the current URL on Auth renders as well as history navigation.
+  const location = typeof window === 'undefined' ? { path: '/login', search: '' } : { path: window.location.pathname, search: window.location.search };
+  const syncing = useRef(false);
+  const params = new URLSearchParams(location.search);
+  const callback = params.has('code') || params.get('recovery') === '1' || recovery;
+  const publicPage = location.path === '/demo' || (location.path === '/' && !user && !callback);
+  const known = publicPage || location.path === '/' || location.path === '/login' || pathTab(location.path);
+  const allowed = user && !loading && !requiresMfa && !authError && !recovery;
+
   useEffect(() => {
     const sync = () => {
-      const route = routeTab();
-      setNotFound(route === null);
-      if (route) setActiveTab(route);
+      const path = window.location.pathname;
+      setRouteRevision(value => value + 1);
+      const tab = pathTab(path) ?? (path === '/' ? useAppStore.getState().personalization.landingPage : null);
+      if (tab) { syncing.current = true; setActiveTab(tab); syncing.current = false; }
     };
     sync();
     const unsubscribe = useAppStore.subscribe((state, previous) => {
-      if (state.activeTab !== previous.activeTab) {
-        const path =
-          state.activeTab === "dashboard" ? (state.personalization.landingPage==='dashboard'?'/':'/dashboard') : `/${state.activeTab}`;
-        if (window.location.pathname !== path)
-          window.history.pushState(null, "", path);
-        setNotFound(false);
-      }
+      if (syncing.current || state.activeTab === previous.activeTab) return;
+      // State-driven navigation is used only inside the authenticated workspace.
+      const path = state.activeTab === 'dashboard' ? '/dashboard' : `/${state.activeTab}`;
+      if (window.location.pathname !== path) navigatePath(path);
     });
-    window.addEventListener("popstate", sync);
-    return () => {
-      unsubscribe();
-      window.removeEventListener("popstate", sync);
-    };
+    window.addEventListener('popstate', sync);
+    return () => { unsubscribe(); window.removeEventListener('popstate', sync); };
   }, [setActiveTab]);
+
   useEffect(() => {
-    void i18n.changeLanguage(locale);
-    document.documentElement.lang = locale;
-  }, [i18n, locale]);
+    if (loading || callback || !known || publicPage) return;
+    if (!user && pathTab(location.path)) {
+      navigatePath(loginPath(location.path + location.search), true);
+    } else if (allowed && location.path === '/login') {
+      navigatePath(safeDestination(new URLSearchParams(location.search).get('next'), `/${personalization.landingPage}`), true);
+    }
+  }, [allowed, callback, known, loading, location.path, location.search, personalization.landingPage, publicPage, user]);
+  useEffect(() => { void i18n.changeLanguage(locale); document.documentElement.lang = locale; }, [i18n, locale]);
   useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = () =>
-      document.documentElement.classList.toggle(
-        "dark",
-        theme === "dark" || (theme === "system" && media.matches),
-      );
-    apply();
-    media.addEventListener("change", apply);
-    return () => media.removeEventListener("change", apply);
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => document.documentElement.classList.toggle('dark', theme === 'dark' || (theme === 'system' && media.matches));
+    apply(); media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
   }, [theme]);
   useEffect(() => {
-    document.documentElement.dataset.accent=personalization.accent;
-    document.documentElement.dataset.density=personalization.density;
-    document.documentElement.dataset.motion=personalization.motion;
-  },[personalization.accent,personalization.density,personalization.motion]);
+    document.documentElement.dataset.accent = personalization.accent;
+    document.documentElement.dataset.density = personalization.density;
+    document.documentElement.dataset.motion = personalization.motion;
+  }, [personalization.accent, personalization.density, personalization.motion]);
   useEffect(() => {
-    document.title = `P.R.I.S.M. · ${t(activeTab)}`;
-  }, [activeTab, t]);
+    document.title = publicPage ? (locale === 'ms' ? 'PRISM · Kejelasan kewangan, mengikut cara anda' : 'PRISM · Financial clarity, on your terms') : `P.R.I.S.M. · ${location.path === '/login' ? t('signIn') : t(activeTab)}`;
+  }, [activeTab, locale, location.path, publicPage, t]);
 
-  if (notFound)
-    return (
-      <main className="grid min-h-screen place-items-center p-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold">{t("notFound")}</h1>
-          <a className="text-link mt-4" href="/">
-            {t("backHome")}
-          </a>
-        </div>
-      </main>
-    );
-  if (loading)
-    return (
-      <main className="grid min-h-screen place-items-center">
-        <div className="w-full max-w-4xl p-6"><LoadingState /></div>
-      </main>
-    );
-  if (!user)
-    return (
-      <main className="auth-layout">
-        <aside className="auth-story">
-          <a href="/" className="auth-brand"><img src="/prism.svg" width="38" height="38" alt="" /><span>PRISM<span className="brand-caption">{locale === 'ms' ? 'Kewangan peribadi' : 'Personal finance'}</span></span></a>
-          <div className="auth-story-copy"><p className="eyebrow">{locale === 'ms' ? 'SEBUAH RUANG UNTUK WANG ANDA' : 'A SPACE FOR YOUR MONEY'}</p><h2>{locale === 'ms' ? 'Sedikit kejelasan. Lebih banyak kemungkinan.' : 'A little clarity. A lot more possibility.'}</h2><p>{locale === 'ms' ? 'Fahami perbelanjaan anda, rancang perkara yang penting dan lihat kemajuan anda.' : 'Understand your spending, make room for what matters, and see your progress.'}</p></div>
-          <div className="prism-art" aria-hidden="true"><span /><span /><span /></div>
-          <p className="auth-story-footer">{locale === 'ms' ? 'Pendapatan · Perbelanjaan · Perancangan' : 'Income · Spending · Plans'}</p>
-        </aside>
-        <div className="auth-form-side">
-          <div className="auth-preferences"><select className="input" aria-label={t('language')} value={locale} onChange={event => useAppStore.getState().setLocale(event.target.value === 'ms' ? 'ms' : 'en')}><option value="en">English</option><option value="ms">Bahasa Melayu</option></select><select className="input" aria-label={t('theme')} value={theme} onChange={event => useAppStore.getState().setTheme(event.target.value as 'system' | 'light' | 'dark')}><option value="system">{t('system')}</option><option value="light">{t('light')}</option><option value="dark">{t('dark')}</option></select></div>
-          <div className="auth-form"><AuthScreen /></div>
-          <img src="/built-by-ismail.png" alt="Built by Ismail" className="auth-credit" />
-        </div>
-      </main>
-    );
-  if (requiresMfa || authError)
-    return (
-      <main className="auth-shell">
-        <MfaChallenge />
-      </main>
-    );
-  if (recovery)
-    return (
-      <main className="auth-shell">
-        <div className="card p-7 max-w-lg">
-          <PasswordRecovery reset onBack={completeRecovery} />
-        </div>
-      </main>
-    );
-  return <Workspace key={user.id} />;
-}
-
-function Workspace() {
-  const { user, signOut } = useAuth();
-  const { t } = useTranslation();
-  const store = useAppStore();
-  const { setCurrency, setLocale, setTheme, setFinancialTimezone } = store;
-  const transactions = useTransactions();
-  const categories = useCategories();
-  const payments = usePaymentMethods();
-  const profile = useProfile();
-  const objectiveContributions = usePlatformTable("objective_contributions");
-  const debtRepayments = usePlatformTable("debt_repayments");
-  const mutations = useTransactionMutations();
-  useFinanceRealtime();
-  const { selection, period, setSelection } = useFinancialPeriod();
-  const label = periodLabel(selection, store.locale, t);
-  const report = useFinancialReport(period, store.personalization.analyticsBar || ['dashboard', 'analytics'].includes(store.activeTab));
-  const [search, setSearch] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<Transaction | null>(null);
-  const [deleting, setDeleting] = useState<Transaction | null>(null);
-  const [signingOut, setSigningOut] = useState(false);
-  const [navigationOpen, setNavigationOpen] = useState(false);
-  const [paletteOpen,setPaletteOpen]=useState(false);
-  const [routeRevision,setRouteRevision]=useState(0);
-  useNavigationGestures(navigationOpen,setNavigationOpen);
-  useEffect(()=>{
-    const media=window.matchMedia('(min-width: 640px)');
-    const close=()=>{if(media.matches)setNavigationOpen(false);};
-    media.addEventListener('change',close);
-    return ()=>media.removeEventListener('change',close);
-  },[]);
-  useEffect(()=>{const update=()=>setRouteRevision(r=>r+1);window.addEventListener('popstate',update);return ()=>window.removeEventListener('popstate',update);},[]);
-  useEffect(()=>{
-    const keyboard=(event:KeyboardEvent)=>{
-      const typing=(event.target as Element)?.closest('input,textarea,select,[contenteditable="true"]');
-      if((event.ctrlKey||event.metaKey)&&!event.altKey&&event.key.toLowerCase()==='k'){if(document.querySelector('[role="dialog"]')&&!document.querySelector('#command-list'))return;event.preventDefault();setPaletteOpen(v=>!v);return;}
-      if(typing||event.ctrlKey||event.metaKey||!event.altKey||document.querySelector('[role="dialog"]'))return;
-      if(event.key.toLowerCase()==='n'){event.preventDefault();document.querySelector<HTMLButtonElement>('[data-quick-add]')?.click();}
-      if(event.key.toLowerCase()==='p'){event.preventDefault();const state=useAppStore.getState();state.setPersonalization({privacyMode:!state.personalization.privacyMode});}
-    };
-    document.addEventListener('keydown',keyboard);return ()=>document.removeEventListener('keydown',keyboard);
-  },[]);
-  const menuButton = useRef<HTMLButtonElement>(null);
-  const navigationPanel = useRef<HTMLElement>(null);
-  const [online, setOnline] = useState(navigator.onLine);
-  const rates = useQuery({
-    queryKey: ["exchange-rates", store.currency],
-    queryFn: () => fetchExchangeRates(store.currency),
-    staleTime: 60 * 60 * 1000,
-    refetchInterval: 60 * 60 * 1000,
-  });
-  const savedCurrency = profile.data?.currency,
-    savedLanguage = profile.data?.language,
-    savedTheme = profile.data?.theme,
-    savedTimezone = profile.data?.financial_timezone;
-  useEffect(() => {
-    if (!savedCurrency || !savedLanguage || !savedTheme) return;
-    setCurrency(savedCurrency);
-    setLocale(savedLanguage);
-    setTheme(savedTheme);
-    setFinancialTimezone(savedTimezone ?? browserTimezone());
-  }, [
-    savedCurrency,
-    savedLanguage,
-    savedTheme,
-    savedTimezone,
-    setCurrency,
-    setLocale,
-    setTheme,
-    setFinancialTimezone,
-  ]);
-  useEffect(() => {
-    const update = () => setOnline(navigator.onLine);
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
-    return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
-    };
-  }, []);
-  useEffect(() => {
-    if (!navigationOpen) return;
-    const previousOverflow = document.body.style.overflow;
-    const returnFocus = menuButton.current;
-    document.body.style.overflow = "hidden";
-    const panel = navigationPanel.current;
-    const focusable = panel?.querySelectorAll<HTMLElement>(
-      "a[href],button:not([disabled])",
-    );
-    focusable?.[0]?.focus();
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setNavigationOpen(false);
-        menuButton.current?.focus();
-        return;
-      }
-      if (event.key !== "Tab" || !focusable?.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", handleKey);
-      requestAnimationFrame(()=>returnFocus?.focus());
-    };
-  }, [navigationOpen]);
-  const requireAuth = (action: () => void) => {
-    if (!online) toast.error(t("offline"));
-    else action();
-  };
-  const add = () =>
-    requireAuth(() => {
-      setEditing(null);
-      setDialogOpen(true);
-    });
-  const edit = (transaction: Transaction) =>
-    requireAuth(() => {
-      setEditing(transaction);
-      setDialogOpen(true);
-    });
-  async function remove() {
-    if (!deleting) return;
-    try {
-      await mutations.remove.mutateAsync(deleting.id);
-      setDeleting(null);
-      toast.success(t("deleted"));
-    } catch (error) {
-      toast.error(errorMessage(error));
-    }
-  }
-  async function logout() {
-    setSigningOut(true);
-    try {
-      await signOut();
-    } catch (error) {
-      toast.error(errorMessage(error));
-    } finally {
-      setSigningOut(false);
-    }
-  }
-  const dataError =
-    (store.activeTab === "dashboard" ? report.error : null) ||
-    transactions.error ||
-    categories.error ||
-    payments.error ||
-    profile.error;
-  const pending =
-    (store.activeTab === "dashboard" ? report.isPending : false) ||
-    transactions.isPending ||
-    categories.isPending ||
-    payments.isPending ||
-    profile.isPending;
-  const data = {
-    transactions: transactions.data ?? [],
-    categories: categories.data ?? [],
-    payments: payments.data ?? [],
-  };
-  const title =
-    store.activeTab === "dashboard"
-      ? "overviewTitle"
-      : store.activeTab === "transactions"
-        ? "allTransactions"
-        : store.activeTab;
-  const navigate = (tab: Tab) => {
-    if(tab===store.activeTab && window.location.search){window.history.pushState(null,'',tab==='dashboard'?'/':`/${tab}`);setRouteRevision(r=>r+1);}
-    store.setActiveTab(tab);
-    setNavigationOpen(false);
-  };
-  const navigationLinks = (closeLabel = false) =>
-    tabs.map(({ id, icon: Icon }) => (
-      <a
-        href={id === "dashboard" ? (store.personalization.landingPage==='dashboard'?'/':'/dashboard') : `/${id}`}
-        key={id}
-        title={t(id)}
-        aria-label={t(id)}
-        aria-current={(store.activeTab === id || (id === 'plans' && ['goals','savings'].includes(store.activeTab)) || (id === 'settings' && ['categories','payments'].includes(store.activeTab))) ? "page" : undefined}
-        onClick={(event) => {
-          if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
-            return;
-          event.preventDefault();
-          navigate(id);
-        }}
-      >
-        <Icon size={17} />
-        <span>{t(id)}</span>
-        {closeLabel && store.activeTab === id && (
-          <span className="sr-only">{store.locale === 'ms' ? ', halaman semasa' : ', current page'}</span>
-        )}
-      </a>
-    ));
-  return (
-    <div className={`app-shell ${store.personalization.sidebarCompact?'sidebar-compact':''}`}>
-      <a
-        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-background focus:p-3"
-        href="#main-content"
-      >
-        {store.locale === "ms" ? "Langkau ke kandungan" : "Skip to content"}
-      </a>
-      <aside className="desktop-sidebar">
-        <a className="brand sidebar-brand" href="/" onClick={event => { event.preventDefault(); navigate('dashboard'); }}><img src="/prism.svg" width="35" height="35" alt="" /><span>PRISM<span className="brand-caption">{store.locale === 'ms' ? 'Kewangan peribadi' : 'Personal finance'}</span></span></a>
-        <p className="eyebrow sidebar-label">{store.locale === 'ms' ? 'WANG ANDA' : 'YOUR MONEY'}</p>
-        <nav className="sidebar-links" aria-label={t('workspace')}>{navigationLinks()}</nav>
-        <div className="sidebar-footer"><p>{store.locale === 'ms' ? 'Sedikit kejelasan, setiap hari.' : 'A little clarity, every day.'}</p><Button variant="ghost" disabled={signingOut} onClick={() => void logout()}><LogOut size={16} />{t('signOut')}</Button></div>
-      </aside>
-      <header className="app-header" inert={navigationOpen}>
-        <div className="flex min-w-0 items-center gap-2">
-          <Button
-            ref={menuButton}
-            className="sm:hidden"
-            variant="ghost"
-            size="icon"
-            aria-label={t("openNavigation")}
-            aria-expanded={navigationOpen}
-            aria-controls="mobile-navigation"
-            onClick={() => setNavigationOpen(true)}
-          >
-            <Menu size={20} />
-          </Button>
-          <a
-            className="brand header-brand"
-            href="/"
-            onClick={(event) => {
-              event.preventDefault();
-              navigate("dashboard");
-            }}
-          >
-            <img src="/prism.svg" alt="" width="34" height="34" />
-            PRISM
-          </a>
-          <span className="header-context">{t('personalWorkspace')}<span>/</span><strong>{t(store.activeTab)}</strong></span>
-        </div>
-        <div className="flex min-w-0 items-center gap-1 sm:gap-3">
-          <Button variant="ghost" size="icon" aria-label={t('quickNavigation')} title={t('keyboardHint')} onClick={()=>setPaletteOpen(true)}><Search size={18}/></Button>
-          <Button variant="ghost" size="icon" aria-label={t('privacyMode')} title={t(store.personalization.privacyMode?'privacyOn':'privacyOff')} aria-pressed={store.personalization.privacyMode} onClick={()=>store.setPersonalization({privacyMode:!store.personalization.privacyMode})}>{store.personalization.privacyMode?<EyeOff size={18}/>:<Eye size={18}/>}</Button>
-          <span className="header-currency">{store.currency}</span>
-          <button
-            className="profile-button"
-            aria-label={t('settings')}
-            onClick={() => navigate("settings")}
-          >
-            <span className="profile-avatar" aria-hidden="true">{(profile.data?.username || user?.email || 'P').slice(0,1).toUpperCase()}</span><span className="profile-name">{profile.data?.username || user?.email}</span>
-          </button>
-          <Button
-            variant="ghost"
-            className="header-signout"
-            aria-label={t("signOut")}
-            disabled={signingOut}
-            onClick={() => void logout()}
-          >
-            <LogOut size={16} />
-            <span className="hidden sm:inline">{t("signOut")}</span>
-          </Button>
-        </div>
-      </header>
-      <nav className="app-nav hidden sm:flex" aria-label={t("workspace")}>
-        {navigationLinks()}
-      </nav>
-      {navigationOpen && (
-        <>
-          <button
-            className="mobile-nav-backdrop"
-            aria-label={t("closeNavigation")}
-            onClick={() => {
-              setNavigationOpen(false);
-              menuButton.current?.focus();
-            }}
-          />
-          <aside
-            ref={navigationPanel}
-            id="mobile-navigation"
-            className="mobile-nav-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-label={t("workspace")}
-          >
-            <div className="flex items-center justify-between border-b border-border px-4 py-4">
-              <span className="brand">
-                <img src="/prism.svg" alt="" width="30" height="30" />
-                P.R.I.S.M.
-              </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t('closeNavigation')}
-                onClick={() => {
-                  setNavigationOpen(false);
-                  menuButton.current?.focus();
-                }}
-              >
-                <X size={20} />
-              </Button>
-            </div>
-            <nav className="mobile-nav-links" aria-label={t("workspace")}>
-              {navigationLinks(true)}
-            </nav>
-          </aside>
-        </>
-      )}
-      <main id="main-content" className="app-main" inert={navigationOpen}>
-        {profile.data&&!report.error&&<AnalyticsBar report={report.data} period={period} label={label}/>}
-        <div className="page-heading">
-          <div>
-            <p className="eyebrow mb-2">{store.activeTab === 'dashboard' ? (profile.isPending ? t('loading') : label) : t('personalWorkspace')}</p>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              {t(title)}
-            </h1>
-            <p className="page-description">{store.activeTab === 'dashboard' ? (store.locale === 'ms' ? 'Kedudukan anda hari ini. Ruang untuk hari esok.' : 'Where you stand today. Room for tomorrow.') : store.activeTab === 'transactions' ? (store.locale === 'ms' ? 'Semak, cari dan rekod wang yang masuk dan keluar.' : 'Review, find, and record the money coming in and going out.') : null}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            {profile.data && (store.activeTab === "dashboard" || store.activeTab === "analytics") && (
-              <PeriodSelector selection={selection} period={period} onChange={setSelection}/>
-            )}
-            {(
-              <Button data-quick-add onClick={add} disabled={pending || !!dataError}>
-                <Plus size={16} />
-                {t("addTransaction")}
-              </Button>
-            )}
-          </div>
-        </div>
-        {!online && (
-          <p className="warning-message mb-5" role="status">
-            {t("offline")}
-          </p>
-        )}
-        {rates.error && (
-          <p className="warning-message mb-5" role="status">
-            {t("ratesUnavailable")}
-          </p>
-        )}
-        {dataError ? (
-          <section className="card p-7" role="alert">
-            <h2 className="font-semibold">{t("errorTitle")}</h2>
-            <p className="my-3 text-sm">{errorMessage(dataError)}</p>
-            <Button
-              onClick={() =>
-                void Promise.all([
-                  transactions.refetch(),
-                  categories.refetch(),
-                  payments.refetch(),
-                  profile.refetch(),
-                  report.refetch(),
-                ])
-              }
-            >
-              {t("retry")}
-            </Button>
-          </section>
-        ) : pending ? (
-          <LoadingState />
-        ) : (
-          <Suspense fallback={<LoadingState />}>
-            {store.activeTab === "dashboard" && profile.data && (
-              <Onboarding profile={profile.data} />
-            )}
-            {store.activeTab === "dashboard" && (
-              <Dashboard
-                {...data}
-                report={report.data}
-                period={period}
-                periodLabel={label}
-                onEdit={edit}
-                onDelete={setDeleting}
-                accountSummary={<FinancialOverview />}
-                onAdd={add}
-              />
-            )}
-            {store.activeTab === "analytics" && <Analytics period={period} categories={data.categories}/>}
-            {store.activeTab === "transactions" && (
-              <div className="space-y-7">
-                <Transactions key={routeRevision}
-                  {...data}
-                  search={search}
-                  setSearch={setSearch}
-                  onEdit={edit}
-                  onDelete={setDeleting}
-                />
-                <AccountsSection />
-              </div>
-            )}
-            {store.activeTab === "plans" && <Plans />}
-            {store.activeTab === "accounts" && <AccountsPage />}
-            {store.activeTab === "goals" && <ObjectivesPage kind="goal" />}
-            {store.activeTab === "savings" && <ObjectivesPage kind="savings" />}
-            {store.activeTab === "debts" && <DebtsPage />}
-            {(store.activeTab === "categories" ||
-              store.activeTab === "payments") && (
-              <ManageLists
-                key={store.activeTab}
-                {...data}
-                kind={store.activeTab}
-                requireAuth={requireAuth}
-              />
-            )}
-            {store.activeTab === "settings" && profile.data && (
-              <SettingsView profile={profile.data} />
-            )}
-          </Suspense>
-        )}
-        {rates.data && (
-          <p className="mt-8 text-xs text-subtle">
-            {t("rateSource")}: {rates.data.source} ·{" "}
-            {new Date(rates.data.updatedAt).toLocaleDateString(
-              store.locale === "ms" ? "ms-MY" : "en-US",
-            )}
-          </p>
-        )}
-      </main>
-      <Button className="quick-add-mobile" size="icon" aria-label={t('quickAdd')} onClick={add} disabled={pending||!!dataError}><Plus size={22}/></Button>
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} onAdd={add} canAdd={!pending&&!dataError&&online}/>
-      <TransactionDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        transaction={editing}
-        categories={data.categories}
-        payments={data.payments}
-      />
-      <Modal
-        open={!!deleting}
-        onOpenChange={(open) => {
-          if (!open && !mutations.remove.isPending) setDeleting(null);
-        }}
-        title={t("deleteTransaction")}
-        description={t("deleteWarning")}
-      >
-        <p className="mb-3">{deleting?.description}</p>
-        {deleting &&
-          ((objectiveContributions.data ?? []).some(
-            (c) => c.transaction_id === deleting.id,
-          ) ||
-            (debtRepayments.data ?? []).some(
-              (r) => r.transaction_id === deleting.id,
-            )) && (
-            <p className="warning-message mb-5" role="alert">
-              {t("linkedTransactionDelete")}
-            </p>
-          )}
-        <div className="modal-actions">
-          <Button
-            variant="outline"
-            disabled={mutations.remove.isPending}
-            onClick={() => setDeleting(null)}
-          >
-            {t("cancel")}
-          </Button>
-          <Button
-            variant="destructive"
-            disabled={
-              mutations.remove.isPending ||
-              !online ||
-              objectiveContributions.isPending ||
-              debtRepayments.isPending
-            }
-            onClick={() => void remove()}
-          >
-            {t("delete")}
-          </Button>
-        </div>
-      </Modal>
+  if (!known) return <main className="grid min-h-screen place-items-center p-6"><div className="text-center"><h1 className="text-2xl font-semibold">{t('notFound')}</h1><a className="text-link mt-4" href="/">{t('backHome')}</a></div></main>;
+  if (publicPage) return <PublicHome demoOnly={location.path === '/demo'} />;
+  if (loading) return <main className="grid min-h-screen place-items-center"><div className="w-full max-w-4xl p-6"><LoadingState /></div></main>;
+  if (!user) return <main className="auth-layout">
+    <aside className="auth-story">
+      <a href="/" className="auth-brand"><img src="/prism.svg" width="38" height="38" alt="" /><span>PRISM<span className="brand-caption">{locale === 'ms' ? 'Kewangan peribadi' : 'Personal finance'}</span></span></a>
+      <div className="auth-story-copy"><p className="eyebrow">{locale === 'ms' ? 'SEBUAH RUANG UNTUK WANG ANDA' : 'A SPACE FOR YOUR MONEY'}</p><h2>{locale === 'ms' ? 'Sedikit kejelasan. Lebih banyak kemungkinan.' : 'A little clarity. A lot more possibility.'}</h2><p>{locale === 'ms' ? 'Fahami perbelanjaan anda, rancang perkara yang penting dan lihat kemajuan anda.' : 'Understand your spending, make room for what matters, and see your progress.'}</p></div>
+      <div className="prism-art" aria-hidden="true"><span /><span /><span /></div>
+      <p className="auth-story-footer">{locale === 'ms' ? 'Pendapatan · Perbelanjaan · Perancangan' : 'Income · Spending · Plans'}</p>
+    </aside>
+    <div className="auth-form-side">
+      <div className="auth-preferences"><select className="input" aria-label={t('language')} value={locale} onChange={event => useAppStore.getState().setLocale(event.target.value === 'ms' ? 'ms' : 'en')}><option value="en">English</option><option value="ms">Bahasa Melayu</option></select><select className="input" aria-label={t('theme')} value={theme} onChange={event => useAppStore.getState().setTheme(event.target.value as 'system' | 'light' | 'dark')}><option value="system">{t('system')}</option><option value="light">{t('light')}</option><option value="dark">{t('dark')}</option></select></div>
+      <div className="auth-form"><AuthScreen /></div><a className="text-link mt-5" href="/">{t('backHome')}</a>
+      <img src="/built-by-ismail.png" alt="Built by Ismail" className="auth-credit" />
     </div>
-  );
+  </main>;
+  if (requiresMfa || authError) return <main className="auth-shell"><MfaChallenge /></main>;
+  if (recovery) return <main className="auth-shell"><div className="card p-7 max-w-lg"><PasswordRecovery reset onBack={completeRecovery} /></div></main>;
+  if (location.path === '/login') return <main><LoadingState /></main>;
+  return <Suspense fallback={<main><LoadingState /></main>}><Workspace key={user.id} /></Suspense>;
 }

@@ -19,7 +19,14 @@
     "test:responsive": "node scripts/verify-responsive.mjs",
     "test:foundations-db": "node scripts/foundations-db-test.mjs",
     "test:period-db": "node scripts/period-db-test.mjs",
-    "test:postgres": "node scripts/real-postgres-test.mjs"
+    "test:postgres": "node scripts/real-postgres-test.mjs",
+    "test:ledger-db": "node scripts/ledger-db-test.mjs",
+    "ledger:dry-run": "node scripts/ledger-dry-run.mjs",
+    "ledger:preview": "node scripts/ledger-preview.mjs",
+    "test:ledger-preview": "node scripts/ledger-preview-test.mjs",
+    "test:planning-db": "node scripts/planning-db-test.mjs",
+    "test:integration-db": "node scripts/integration-db-test.mjs",
+    "test:integration-review": "node scripts/integration-review-probes.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "5.3.0",

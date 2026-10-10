@@ -1,6 +1,6 @@
 import { type Page, type Route } from '@playwright/test';
 
-const userId = '11111111-1111-4111-8111-111111111111';
+export const userId = '11111111-1111-4111-8111-111111111111';
 export const supabaseUrl=process.env.PRISM_E2E_SUPABASE_URL ?? 'https://fixture.supabase.co';
 export const authStorageKey=`sb-${new URL(supabaseUrl).hostname.split('.')[0]}-auth-token`;
 const now = Math.floor(Date.now() / 1000);
@@ -15,7 +15,7 @@ export const rows: Record<string, unknown[]> = {
   objectives: [{ id:'goal-1', user_id:userId, kind:'goal', name:'Emergency fund', notes:'', category:'Safety', priority:'high', target_amount:'500.00', currency:'MYR', target_date:null, status:'active', created_at:'', updated_at:'' },{ id:'save-1', user_id:userId, kind:'savings', name:'Travel fund', notes:'', category:'Travel', priority:'normal', target_amount:'300.00', currency:'MYR', target_date:null, status:'active', created_at:'', updated_at:'' }],
   objective_contributions: [], objective_milestones: [],
   person_debts: [{ id:'debt-1', user_id:userId, direction:'i_owe', counterparty:'Alex', original_amount:'80.00', currency:'MYR', due_date:null, notes:'', created_at:'', updated_at:'' }],
-  debt_repayments: [], transfers: [], monthly_budgets: [], recurring_rules: [],
+  debt_repayments: [], transfers: [], monthly_budgets: [], recurring_rules: [], reserve_plans:[], debt_plans:[],
 };
 
 const baseline=structuredClone(rows);
@@ -82,6 +82,11 @@ async function handleSupabase(route: Route) {
   const table=resource.replace(/^exact_/,'');
   if (!(table in rows)) return route.fulfill({ status:200, contentType:'application/json', body:'[]' });
   const singular = request.headers().accept?.includes('application/vnd.pgrst.object+json');
+  if(resource==='exact_monthly_budgets')for(const item of rows.monthly_budgets as Record<string,unknown>[]){
+    let total=0n;const scale=item.currency==='JPY'?0:2;
+    for(const tx of rows.transactions as Record<string,unknown>[]){const date=String(tx.financial_date??new Date(new Date(String(tx.transaction_date)).getTime()+8*3600000).toISOString().slice(0,10));if(tx.type!=='expense'||(tx.activity_kind??'ordinary')!=='ordinary'||tx.currency!==item.currency||tx.category_id!==item.category_id||date.slice(0,7)!==String(item.month).slice(0,7)||new Date(String(tx.transaction_date))>new Date())continue;const [whole,fraction='']=String(tx.amount).split('.');total+=BigInt(whole)*10n**BigInt(scale)+BigInt(fraction.padEnd(scale,'0')||'0');}
+    item.spent=scale?`${total/100n}.${String(total%100n).padStart(2,'0')}`:String(total);
+  }
   if(resource==='exact_accounts'){for(const account of rows.accounts as {id:string;opening_balance:string;balance?:string}[]){const minor=(value:unknown)=>BigInt(String(value).replace('.',''));let total=minor(account.opening_balance);for(const tx of rows.transactions as {account_id:string;type:string;amount:string}[])if(tx.account_id===account.id)total+=(tx.type==='income'?1n:-1n)*minor(tx.amount);for(const transfer of rows.transfers as {source_account_id:string;destination_account_id:string;source_amount:string;destination_amount:string}[]){if(transfer.source_account_id===account.id)total-=minor(transfer.source_amount);if(transfer.destination_account_id===account.id)total+=minor(transfer.destination_amount);}account.balance=`${total/100n}.${String(total%100n).padStart(2,'0')}`;}}
   if (request.method() === 'GET') {
     const selected = rows[table].filter(row => [...url.searchParams].every(([key, value]) =>
@@ -98,5 +103,7 @@ async function handleSupabase(route: Route) {
     return route.fulfill({ status:200, contentType:'application/json', body:JSON.stringify(singular ? rows[table][index] : [rows[table][index]]) });
   }
   if (request.method() === 'DELETE') { if(table==='categories'||table==='payment_methods'){const key=table==='categories'?'category_id':'payment_method_id',id=url.searchParams.get('id')?.replace('eq.','');for(const tx of rows.transactions as Record<string,unknown>[])if(tx[key]===id)tx[key]=null;} const index=rows[table].findIndex(row=>(row as {id:string}).id===url.searchParams.get('id')?.replace('eq.',''));const deleted={id:(rows[table].splice(Math.max(0,index),1)[0] as {id:string}).id}; return route.fulfill({ status:200, contentType:'application/json', body:JSON.stringify(singular?deleted:[deleted]) }); }
+  const conflict=url.searchParams.get('on_conflict')?.split(',');
+  if(conflict){const existing=rows[table].find(row=>conflict.every(key=>(row as Record<string,unknown>)[key]===body?.[key]));if(existing){Object.assign(existing,body);return route.fulfill({status:200,json:singular?existing:[existing]});}}
   const created={id:crypto.randomUUID(),user_id:userId,created_at:new Date().toISOString(),updated_at:new Date().toISOString(),...body};rows[table].push(created);return route.fulfill({status:201,json:singular?created:[created]});
 }

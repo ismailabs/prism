@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { decimalMoney, parseMoney } from '@/domain/money';
 import type { MonthlyBudget, RecurringRule } from "@/types";
 import type { Json } from "@/types/database.generated";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -65,7 +66,7 @@ export function usePlanningData() {
       const { error } = await supabase
         .from("monthly_budgets")
         .upsert(
-          { ...input, user_id: verify() },
+          { ...input, amount:decimalMoney(parseMoney(input.amount,input.currency),input.currency),user_id: verify() },
           { onConflict: "user_id,category_id,currency,month" },
         );
       if (error) throw error;
@@ -78,7 +79,7 @@ export function usePlanningData() {
         .from("monthly_budgets")
         .delete()
         .eq("user_id", verify())
-        .eq("id", budgetId);
+        .eq("id", budgetId).select('id').single();
       if (error) throw error;
     },
     onSuccess: refresh,
@@ -89,7 +90,7 @@ export function usePlanningData() {
     ) => {
       const { error } = await supabase
         .from("recurring_rules")
-        .insert({ ...input, user_id: verify() });
+        .insert({ ...input, amount:decimalMoney(parseMoney(input.amount,input.currency),input.currency),user_id: verify() });
       if (error) throw error;
     },
     onSuccess: refresh,
