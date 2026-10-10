@@ -5,7 +5,7 @@ import { enhancementEn, enhancementMs } from './enhancementCopy';
 const en = {
   accounting:'Accounting laboratory',
   close:'Close',
-  exportPage:'Export this page',plans:'Plans',
+  exportPage:'Export this page',plans:'Plans',notes:'Notes',reminders:'Reminders',notifications:'Notifications',calendar:'Calendar',
   allAccounts:'All accounts', allCurrencies:'All currencies',minimumAmount:'Minimum native amount',maximumAmount:'Maximum native amount',accountOptional:'Account (optional)',unassigned:'Unassigned',savings_allocation:'Savings allocation (legacy link)',debt_principal:'Debt principal (legacy link)',
   closeNavigation:'Close navigation', openNavigation:'Open navigation', linkedTransactionDelete:'This legacy transaction is linked to progress. Deleting it removes the linked contribution or repayment and recalculates progress.', financialTimezone:'Financial timezone', invalidTimezone:'Choose a valid IANA timezone.', mfaRecoveryHint:'Add a second authenticator before losing access to your first device. Supabase TOTP has no downloadable recovery codes. A password reset does not remove MFA.',
   dashboard:'Overview', transactions:'Transactions', accounts:'Accounts', goals:'Goals', savings:'Savings', debts:'Personal debts', categories:'Categories', payments:'Payment methods', settings:'Settings',
@@ -28,7 +28,7 @@ const en = {
 const ms: Record<keyof typeof en,string> = {
   accounting:'Makmal perakaunan',
   close:'Tutup',
-  exportPage:'Eksport halaman ini',plans:'Perancangan',
+  exportPage:'Eksport halaman ini',plans:'Perancangan',notes:'Nota',reminders:'Peringatan',notifications:'Pemberitahuan',calendar:'Kalendar',
   allAccounts:'Semua akaun', allCurrencies:'Semua mata wang',minimumAmount:'Amaun asal minimum',maximumAmount:'Amaun asal maksimum',accountOptional:'Akaun (pilihan)',unassigned:'Tidak ditetapkan',savings_allocation:'Peruntukan simpanan (pautan lama)',debt_principal:'Prinsipal hutang (pautan lama)',
   closeNavigation:'Tutup navigasi', openNavigation:'Buka navigasi', linkedTransactionDelete:'Transaksi lama ini berpaut kepada kemajuan. Memadamnya membuang sumbangan atau bayaran balik berpaut dan mengira semula kemajuan.', financialTimezone:'Zon waktu kewangan', invalidTimezone:'Pilih zon waktu IANA yang sah.', mfaRecoveryHint:'Tambah pengesah kedua sebelum kehilangan akses kepada peranti pertama. Supabase TOTP tidak menyediakan kod pemulihan boleh muat turun. Tetapan semula kata laluan tidak membuang MFA.',
   dashboard:'Gambaran keseluruhan', transactions:'Transaksi', accounts:'Akaun', goals:'Matlamat', savings:'Simpanan', debts:'Hutang peribadi', categories:'Kategori', payments:'Kaedah pembayaran', settings:'Tetapan',

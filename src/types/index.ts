@@ -1,7 +1,7 @@
 export type Currency = 'USD' | 'EUR' | 'JPY' | 'MYR';
 export type Locale = 'en' | 'ms';
 export type Theme = 'light' | 'dark' | 'system';
-export type Tab = 'accounting' | 'analytics' | 'plans' | 'dashboard' | 'transactions' | 'accounts' | 'goals' | 'savings' | 'debts' | 'categories' | 'payments' | 'settings';
+export type Tab = 'notes' | 'reminders' | 'notifications' | 'calendar' | 'accounting' | 'analytics' | 'plans' | 'dashboard' | 'transactions' | 'accounts' | 'goals' | 'savings' | 'debts' | 'categories' | 'payments' | 'settings';
 export type TransactionType = 'income' | 'expense';
 export type PaymentMethodType = 'credit_card' | 'cash' | 'bank_transfer' | 'e_wallet';
 export interface Profile { id: string; username: string; currency: Currency; language: Locale; theme: Theme; mfa_enabled: boolean; financial_timezone?: string | null; default_analysis_period?: import('@/domain/periods').DefaultPeriod; created_at: string }

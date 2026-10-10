@@ -4,7 +4,7 @@ import {authStorageKey, mockSignedInApp, supabaseUrl} from './fixtures';
 test('authentication guard protects workspace routes and sign-in UI is keyboard operable', async ({ page }) => {
   const errors: string[] = [];
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-  for (const route of ['/login', '/transactions', '/categories', '/payments', '/settings']) {
+  for (const route of ['/login', '/transactions', '/categories', '/payments', '/settings', '/notes', '/reminders', '/notifications', '/calendar']) {
     await page.goto(route);
     await expect(page.getByRole('heading', { name: /your money\. a clearer picture\./i })).toBeVisible();
   }

@@ -15,7 +15,7 @@ export const rows: Record<string, unknown[]> = {
   objectives: [{ id:'goal-1', user_id:userId, kind:'goal', name:'Emergency fund', notes:'', category:'Safety', priority:'high', target_amount:'500.00', currency:'MYR', target_date:null, status:'active', created_at:'', updated_at:'' },{ id:'save-1', user_id:userId, kind:'savings', name:'Travel fund', notes:'', category:'Travel', priority:'normal', target_amount:'300.00', currency:'MYR', target_date:null, status:'active', created_at:'', updated_at:'' }],
   objective_contributions: [], objective_milestones: [],
   person_debts: [{ id:'debt-1', user_id:userId, direction:'i_owe', counterparty:'Alex', original_amount:'80.00', currency:'MYR', due_date:null, notes:'', created_at:'', updated_at:'' }],
-  debt_repayments: [], transfers: [], monthly_budgets: [], recurring_rules: [], reserve_plans:[], debt_plans:[],
+  debt_repayments: [], transfers: [], monthly_budgets: [], recurring_rules: [], reserve_plans:[], debt_plans:[], goal_action_plans:[], financial_notes:[], financial_reminders:[], action_receipts:[], action_preferences:[],
 };
 
 const baseline=structuredClone(rows);
@@ -49,6 +49,12 @@ async function handleSupabase(route: Route) {
   if (url.pathname === '/auth/v1/logout') return route.fulfill({ status:204 });
   if (url.pathname === '/rest/v1/rpc/delete_own_account') return route.fulfill({ status:204, contentType:'application/json', body:'' });
   const resource=url.pathname.split('/').at(-1)??'';
+  if(resource==='record_goal_contribution'){
+    const p=request.postDataJSON();
+    const existing=rows.objective_contributions.find(r=>(r as {id:string}).id===p.p_id);
+    if(!existing)rows.objective_contributions.push({id:p.p_id,user_id:userId,objective_id:p.p_objective,currency:p.p_currency,amount:p.p_amount,effective_amount:p.p_amount,transfer_id:p.p_transfer,account_id:p.p_account,transaction_id:null,note:p.p_note,contributed_at:p.p_at,created_at:p.p_at});
+    return route.fulfill({json:p.p_id});
+  }
   if(resource==='import_transactions')return route.fulfill({json:request.postDataJSON().p_rows.length});
   if(resource==='record_recurring_occurrence')return route.fulfill({json:'recorded-occurrence'});
   if(resource==='transaction_page'){
@@ -89,11 +95,19 @@ async function handleSupabase(route: Route) {
   }
   if(resource==='exact_accounts'){for(const account of rows.accounts as {id:string;opening_balance:string;balance?:string}[]){const minor=(value:unknown)=>BigInt(String(value).replace('.',''));let total=minor(account.opening_balance);for(const tx of rows.transactions as {account_id:string;type:string;amount:string}[])if(tx.account_id===account.id)total+=(tx.type==='income'?1n:-1n)*minor(tx.amount);for(const transfer of rows.transfers as {source_account_id:string;destination_account_id:string;source_amount:string;destination_amount:string}[]){if(transfer.source_account_id===account.id)total-=minor(transfer.source_amount);if(transfer.destination_account_id===account.id)total+=minor(transfer.destination_amount);}account.balance=`${total/100n}.${String(total%100n).padStart(2,'0')}`;}}
   if (request.method() === 'GET') {
-    const selected = rows[table].filter(row => [...url.searchParams].every(([key, value]) =>
-      !['id', 'debt_id'].includes(key) || !value.startsWith('eq.') || String((row as Record<string, unknown>)[key]) === value.slice(3)));
+    // Legacy synthetic records default to the fixture owner; explicit foreign owners are retained.
+    let selected = rows[table].map(row=>({user_id:userId,...row as object})).filter(row => [...url.searchParams].every(([key, value]) => {
+      const entry=row as Record<string,unknown>;
+      if(['id','debt_id','user_id','archived'].includes(key)&&value.startsWith('eq.'))return String(entry[key])===value.slice(3);
+      if(['transaction_date','updated_at'].includes(key)){if(value.startsWith('gte.'))return Date.parse(String(entry[key]))>=Date.parse(value.slice(4));if(value.startsWith('lt.'))return Date.parse(String(entry[key]))<Date.parse(value.slice(3));}
+      if(key==='search_document')return value.slice(value.indexOf('.')+1).toLowerCase().split(/\s+/).every(term=>`${entry.title} ${entry.body}`.toLowerCase().includes(term));
+      if(key==='tags'&&value.startsWith('cs.'))return (entry.tags as string[])?.includes(value.slice(4,-1));
+      return true;
+    }));
+    if(table==='financial_notes')selected=selected.sort((a,b)=>{const x=a as {pinned:boolean;updated_at:string;id:string},y=b as typeof x;return Number(y.pinned)-Number(x.pinned)||y.updated_at.localeCompare(x.updated_at)||x.id.localeCompare(y.id);});
     const offset = Number(url.searchParams.get('offset') ?? 0);
     const limit = Number(url.searchParams.get('limit') ?? selected.length);
-    return route.fulfill({ status:200, contentType:'application/json', headers:{'content-range':`0-${Math.max(0,selected.length-1)}/${selected.length}`}, body:JSON.stringify(singular ? selected[0] ?? null : selected.slice(offset, offset + limit)) });
+    return route.fulfill({ status:200, contentType:'application/json', headers:{'access-control-expose-headers':'content-range','content-range':`0-${Math.max(0,selected.length-1)}/${selected.length}`}, body:JSON.stringify(singular ? selected[0] ?? null : selected.slice(offset, offset + limit)) });
   }
   const body = request.postDataJSON?.() as Record<string, unknown> | undefined;
   if (request.method() === 'PATCH') {

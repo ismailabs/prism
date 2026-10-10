@@ -1,6 +1,7 @@
 import type { Database as Generated } from './database.generated';
 import type { Account,Category,DebtRepayment,MonthlyBudget,MonthlyTotal,Objective,ObjectiveContribution,ObjectiveMilestone,PaymentMethod,PersonDebt,Profile,RecurringRule,Transaction,Transfer } from './index';
 import type { DebtPlan, ReservePlan } from '@/domain/planning';
+import type { GoalActionPlan,FinancialNote,FinancialReminder,ActionReceipt,ActionPreferences } from './actions';
 
 type Models={accounts:Account;categories:Category;debt_repayments:DebtRepayment;monthly_budgets:MonthlyBudget;objectives:Objective;objective_contributions:ObjectiveContribution;objective_milestones:ObjectiveMilestone;payment_methods:PaymentMethod;person_debts:PersonDebt;profiles:Profile;recurring_rules:RecurringRule;transactions:Transaction;transfers:Transfer};
 type MoneyColumn='amount'|'opening_balance'|'target_amount'|'original_amount'|'source_amount'|'destination_amount';
@@ -24,12 +25,17 @@ type Views={ [K in keyof GeneratedView]:K extends keyof ViewModels ? {Row:Column
 type PlanRow<T> = {[K in keyof T]:T[K]};
 type PlanTable<T> = { Row:{[K in keyof T]:K extends 'amount'|'scenario_principal'|'minimum_payment'?number|(null extends T[K]?null:never):T[K]}; Insert:Omit<T,'id'|'created_at'> & {id?:string;created_at?:string}; Update:Partial<T>; Relationships:[] };
 type BudgetOptions = {rollover_enabled?:boolean;alert_percent?:number};
+type ActionTable<T>={Row:PlanRow<T>;Insert:Omit<T,'id'|'created_at'|'updated_at'> & {id?:string;created_at?:string;updated_at?:string};Update:Partial<T>;Relationships:[]};
 type LocalTables = Omit<Tables,'monthly_budgets'> & {
  monthly_budgets: {Row:Tables['monthly_budgets']['Row'] & Required<BudgetOptions>;Insert:Tables['monthly_budgets']['Insert'] & BudgetOptions;Update:Tables['monthly_budgets']['Update'] & BudgetOptions;Relationships:[]};
  reserve_plans:PlanTable<ReservePlan>;debt_plans:PlanTable<DebtPlan>;
+ goal_action_plans:{Row:Omit<GoalActionPlan,'cadence_amount'> & {cadence_amount:number};Insert:Omit<GoalActionPlan,'id'|'created_at'> & {id?:string;created_at?:string};Update:Partial<GoalActionPlan>;Relationships:[]};
+ financial_notes:ActionTable<FinancialNote> & {Row:FinancialNote & {search_document:unknown}};
+ financial_reminders:ActionTable<FinancialReminder>;action_receipts:ActionTable<ActionReceipt>;action_preferences:ActionTable<ActionPreferences>;
 };
 type LocalViews = Omit<Views,'exact_monthly_budgets'> & {
  exact_monthly_budgets:{Row:Views['exact_monthly_budgets']['Row'] & Required<BudgetOptions>;Relationships:[]};
  exact_reserve_plans:{Row:PlanRow<ReservePlan>;Relationships:[]};exact_debt_plans:{Row:PlanRow<DebtPlan>;Relationships:[]};
+ exact_goal_action_plans:{Row:PlanRow<GoalActionPlan>;Relationships:[]};
 };
-export type Database=Omit<Generated,'public'> & {public:Omit<Generated['public'],'Tables'|'Views'> & {Tables:LocalTables;Views:LocalViews}};
+export type Database=Omit<Generated,'public'> & {public:Omit<Generated['public'],'Tables'|'Views'|'Functions'> & {Tables:LocalTables;Views:LocalViews;Functions:Generated['public']['Functions'] & {record_goal_contribution:{Args:{p_id:string;p_objective:string;p_currency:string;p_amount:string;p_transfer:string|null;p_account:string|null;p_note:string;p_at:string};Returns:string}}}};

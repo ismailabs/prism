@@ -1,6 +1,8 @@
 import { financialDate } from "@/domain/dates";
-import { parseMoney } from "@/domain/money";
-import { objectiveProgress } from "@/domain/progress";
+import { parseMoney, parseMoneyTotal } from "@/domain/money";
+import { goalFunding } from "@/domain/goal-actions";
+import { useGoalActions } from '@/hooks/useGoalActions';
+import { GoalActionPlan } from './GoalActionPlan';
 import { useTransactions } from "@/hooks/useFinanceData";
 import { usePlatformMutation, usePlatformTable } from "@/hooks/usePlatformData";
 import { errorMessage } from "@/lib/utils";
@@ -12,9 +14,12 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
 import { usePlatformText } from "./copy";
-import { Failure, ProgressBar, currencies, money, positive } from "./shared";
+import { Failure, ProgressBar, currencies, money, positive, useFinancialCopy } from "./shared";
 export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
   const L = usePlatformText();
+  const c = useFinancialCopy();
+  const goalActions = useGoalActions();
+  const [requestIdentity,setRequestIdentity]=useState({id:crypto.randomUUID(),at:new Date().toISOString()});
   const timezone = useAppStore((s) => s.financialTimezone);
   const transfers = usePlatformTable("transfers");
   const accounts = usePlatformTable("accounts");
@@ -27,7 +32,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
   const objectiveMutations = usePlatformMutation("objectives");
   const contributionMutations = usePlatformMutation("objective_contributions");
   const milestoneMutations = usePlatformMutation("objective_milestones");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(()=>typeof window==='undefined'?null:new URLSearchParams(window.location.search).get('item'));
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Objective | null>(null);
   const [deleting, setDeleting] = useState<Objective | null>(null);
@@ -57,6 +62,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
     [objectives.data, kind],
   );
   const current = rows.find((o) => o.id === selected) ?? null;
+  const objectiveProgress = (goal:Objective, rows:typeof contributions.data, txs:typeof transactions.data) => goalFunding(goal, rows??[], txs??[], transfers.data??[]);
   function begin(o?: Objective) {
     setEditing(o ?? null);
     setName(o?.name ?? "");
@@ -101,18 +107,19 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
     if (!link && !positive(amount, current.currency))
       return toast.error(L("Enter a positive contribution."));
     try {
-      await contributionMutations.create.mutateAsync({
-        objective_id: current.id,
+      const movement=(transfers.data??[]).find(t=>t.id===link);
+      await goalActions.contribute.mutateAsync({
+        id:requestIdentity.id,
+        objective: current.id,
         currency: current.currency,
         amount: link
           ? ((transfers.data ?? []).find((t) => t.id === link)
               ?.destination_amount ?? amount)
           : amount,
-        transaction_id: null,
-        transfer_id: link || null,
-        account_id: funding || null,
+        transfer: link || null,
+        account: link ? movement?.destination_account_id??null : funding || null,
         note,
-        contributed_at: new Date().toISOString(),
+        at: requestIdentity.at,
       });
       setContributeOpen(false);
       setAmount("");
@@ -156,6 +163,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
   }
   const error =
     objectives.error ||
+    transfers.error || accounts.error ||
     contributions.error ||
     milestones.error ||
     repayments.error ||
@@ -167,6 +175,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
         retry={() =>
           void Promise.all([
             objectives.refetch(),
+            transfers.refetch(), accounts.refetch(),
             contributions.refetch(),
             milestones.refetch(),
             repayments.refetch(),
@@ -177,6 +186,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
     );
   const busy =
     objectives.isPending ||
+    transfers.isPending || accounts.isPending ||
     contributions.isPending ||
     milestones.isPending ||
     repayments.isPending ||
@@ -202,6 +212,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
           {kind === "goal" ? L("New goal") : L("New savings target")}
         </Button>
       </div>
+      <p className="text-xs text-subtle">{c('Progress may include overlapping notional earmarks. It is not additive funded cash across goals; linked transfers are counted once.', 'Kemajuan mungkin termasuk peruntukan andaian bertindih. Ia bukan tunai dibiayai yang boleh dijumlahkan antara matlamat; pindahan berpaut dikira sekali.')}</p>
       {busy ? (
         <p role="status">{L("Loading progress…")}</p>
       ) : !rows.length ? (
@@ -324,6 +335,8 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                   onClick={() => {
                     setAmount("");
                     setLink("");
+                    setFunding('');setNote('');
+                    setRequestIdentity({id:crypto.randomUUID(),at:new Date().toISOString()});
                     setContributeOpen(true);
                   }}
                 >
@@ -374,6 +387,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                   {current.status === "archived" ? L("Restore") : L("Archive")}
                 </Button>
               </div>
+              {(()=>{const funding=goalFunding(current,contributions.data??[],transactions.data??[],transfers.data??[]);return <section className="mt-6 text-sm space-y-2" aria-label={c('Funding evidence','Bukti pembiayaan')}><p>{c('Linked transfers','Pindahan berpaut')}: {money(funding.transferred,current.currency)}</p><p>{c('Notional earmarks','Peruntukan andaian')}: {money(funding.earmarked,current.currency)}</p><p>{c('Legacy transaction links','Pautan transaksi lama')}: {money(funding.legacy,current.currency)}</p><GoalActionPlan key={current.id} goal={current} remaining={funding.remaining} accounts={accounts.data??[]}/></section>;})()}
               <div className="mt-8">
                 <h3 className="font-semibold">{L("Milestones")}</h3>
                 <ul className="mt-3 space-y-2">
@@ -394,7 +408,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                         className="flex items-center justify-between rounded-lg bg-muted p-3 text-sm"
                       >
                         <span className="flex items-center gap-2">
-                          {parseMoney(
+                          {parseMoneyTotal(
                             objectiveProgress(
                               current,
                               contributions.data ?? [],
@@ -442,9 +456,9 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                           </strong>
                           <p className="text-xs text-subtle">
                             {financialDate(c.contributed_at, timezone)} ·{" "}
-                            {c.transaction_id
+                            {c.transfer_id ? L('Linked transfer') : c.transaction_id
                               ? L("Linked transaction")
-                              : L("Manual")}
+                              : L("Notional earmark")}
                             {c.note ? ` · ${c.note}` : ""}
                           </p>
                         </div>
@@ -642,7 +656,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
           {link ? (
             <p className="text-xs text-subtle">
               {L(
-                "The allocation uses the exact transfer destination amount. Editing or deleting that transaction updates this progress.",
+                "The allocation uses the exact transfer destination amount. Unlink the contribution before correcting or removing the transfer; posted journal corrections preserve history.",
               )}
             </p>
           ) : (
@@ -677,7 +691,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
             </Button>
             <Button
               disabled={
-                contributionMutations.create.isPending ||
+                goalActions.contribute.isPending ||
                 (!link && (!current || !positive(amount, current.currency)))
               }
             >

@@ -36,6 +36,9 @@ import type { Tab, Transaction } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   HandCoins,
+  FileText,
+  Bell,
+  CalendarDays,
   ChartNoAxesCombined,
   Search,
   Eye,
@@ -64,6 +67,11 @@ const Dashboard = lazy(() =>
 );
 const Analytics = lazy(() => import('@/components/analytics/Analytics').then(module=>({default:module.Analytics})));
 const AccountingLab = lazy(() => import('@/components/financial/AccountingLab'));
+const Notes = lazy(() => import('@/components/financial/Notes'));
+const Reminders = lazy(() => import('@/components/financial/Reminders'));
+const Notifications = lazy(() => import('@/components/financial/Notifications'));
+const Calendar = lazy(() => import('@/components/financial/Calendar'));
+const ActionSourceContext = lazy(() => import('@/components/financial/ActionSourceContext'));
 const tabs = [
   { id: "dashboard", icon: LayoutDashboard },
   { id: "transactions", icon: Wallet },
@@ -74,6 +82,10 @@ const tabs = [
   { id: "goals", icon: Target },
   { id: "savings", icon: Target },
   { id: "debts", icon: HandCoins },
+  { id: "notes", icon: FileText },
+  { id: "reminders", icon: Bell },
+  { id: "notifications", icon: Bell },
+  { id: "calendar", icon: CalendarDays },
   { id: "categories", icon: Wallet },
   { id: "payments", icon: Wallet },
   { id: "settings", icon: Settings },
@@ -283,6 +295,7 @@ export default function Workspace() {
     { en: 'Money', ms: 'Wang', items: ['transactions', 'accounts'] },
     { en: 'Planning', ms: 'Perancangan', items: ['plans', 'goals', 'savings', 'debts'] },
     { en: 'Insights', ms: 'Wawasan', items: ['analytics', 'accounting'] },
+    { en: 'Action', ms: 'Tindakan', items: ['notes','reminders','notifications','calendar'] },
     { en: 'Personal', ms: 'Peribadi', items: ['settings', 'categories', 'payments'] },
   ].map(group => <div className="workspace-nav-group" key={group.en}><p className="eyebrow">{store.locale === 'ms' ? group.ms : group.en}</p>{navigationLinks(mobile, group.items)}</div>);
   return (
@@ -447,6 +460,7 @@ export default function Workspace() {
           <LoadingState />
         ) : (
           <Suspense fallback={<LoadingState />}>
+            {typeof window !== 'undefined' && /(?:[?&])(?:item|note)=/.test(window.location.search) && <ActionSourceContext key={routeRevision} tab={store.activeTab}/>}
             {store.activeTab === "dashboard" && profile.data && (
               <Onboarding profile={profile.data} />
             )}
@@ -478,9 +492,13 @@ export default function Workspace() {
             {store.activeTab === "plans" && <Plans />}
             {store.activeTab === "accounting" && <Suspense fallback={<LoadingState />}><AccountingLab /></Suspense>}
             {store.activeTab === "accounts" && <AccountsPage />}
-            {store.activeTab === "goals" && <ObjectivesPage kind="goal" />}
-            {store.activeTab === "savings" && <ObjectivesPage kind="savings" />}
-            {store.activeTab === "debts" && <DebtsPage />}
+            {store.activeTab === 'notes' && <Suspense fallback={<LoadingState/>}><Notes/></Suspense>}
+            {store.activeTab === 'reminders' && <Suspense fallback={<LoadingState/>}><Reminders/></Suspense>}
+            {store.activeTab === 'notifications' && <Suspense fallback={<LoadingState/>}><Notifications/></Suspense>}
+            {store.activeTab === 'calendar' && <Suspense fallback={<LoadingState/>}><Calendar key={routeRevision}/></Suspense>}
+            {store.activeTab === "goals" && <ObjectivesPage key={routeRevision} kind="goal" />}
+            {store.activeTab === "savings" && <ObjectivesPage key={routeRevision} kind="savings" />}
+            {store.activeTab === "debts" && <DebtsPage key={routeRevision} />}
             {(store.activeTab === "categories" ||
               store.activeTab === "payments") && (
               <ManageLists

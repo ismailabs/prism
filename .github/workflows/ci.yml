@@ -34,6 +34,8 @@ jobs:
       - run: npm run test:ledger-db 2>&1 | tee artifacts/ci/ledger-db.log
       - run: npm run ledger:dry-run 2>&1 | tee artifacts/ci/ledger-dry-run.log
       - run: node scripts/phase2-review-probes.mjs 2>&1 | tee artifacts/ci/phase2-review.log
+      - run: npm run test:actions-review 2>&1 | tee artifacts/ci/actions-review.log
+      - run: npm run test:actions-db 2>&1 | tee artifacts/ci/actions-db.log
       - run: npm run test:planning-db 2>&1 | tee artifacts/ci/planning-db.log
       - run: npm run test:integration-db 2>&1 | tee artifacts/ci/integration-db.log
       - run: npm run test:integration-review 2>&1 | tee artifacts/ci/integration-review.log
@@ -42,6 +44,7 @@ jobs:
           curl -fsSL https://github.com/PostgREST/postgrest/releases/download/v16.4/postgrest-v16.4-linux-static-x86-64.tar.xz -o /tmp/postgrest.tar.xz
           tar -xf /tmp/postgrest.tar.xz -C /tmp
           echo "PGRST_TEST_BINARY=/tmp/postgrest" >> "$GITHUB_ENV"
+      - run: npm run test:actions-native 2>&1 | tee artifacts/ci/actions-native.log
       - run: npm run test:postgres 2>&1 | tee artifacts/ci/native-http.log
       - run: npx playwright install --with-deps chromium 2>&1 | tee artifacts/ci/browser-install.log
       - run: npm run test:ledger-preview 2>&1 | tee artifacts/ci/ledger-preview.log
@@ -69,6 +72,9 @@ jobs:
             artifacts/integration/accounting-*.png
             artifacts/phase2/final-review-probes.json
             artifacts/phase2/reconciliation.json
+            artifacts/phase5/native-verification.json
+            artifacts/phase5/*-review.json
+            artifacts/phase5/*.png
             artifacts/responsive-checks.json
             artifacts/qa-failure.png
             test-results/

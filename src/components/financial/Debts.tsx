@@ -23,7 +23,7 @@ export function DebtsPage() {
   const transactions = useTransactions();
   const debtMutations = usePlatformMutation("person_debts");
   const repaymentMutations = usePlatformMutation("debt_repayments");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(()=>typeof window==='undefined'?null:new URLSearchParams(window.location.search).get('item'));
   const [open, setOpen] = useState(false);
   const [repayOpen, setRepayOpen] = useState(false);
   const [editing, setEditing] = useState<PersonDebt | null>(null);

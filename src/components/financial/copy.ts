@@ -1,5 +1,8 @@
 import { useAppStore } from "@/store/useAppStore";
 const ms: Record<string, string> = {
+  'Linked transfer':'Pindahan berpaut',
+  'Notional earmark':'Peruntukan andaian',
+  'The allocation uses the exact transfer destination amount. Unlink the contribution before correcting or removing the transfer; posted journal corrections preserve history.':'Peruntukan menggunakan amaun destinasi pindahan tepat. Buang pautan sumbangan sebelum membetulkan atau membuang pindahan; pembetulan jurnal direkodkan mengekalkan sejarah.',
   'History preserved':'Sejarah dikekalkan',
   'Repayment history is preserved. Corrections require an audited reversal after ledger integration.':'Sejarah bayaran balik dikekalkan. Pembetulan memerlukan pembalikan diaudit selepas integrasi lejar.',
   'Only debts without repayment history can be deleted.':'Hanya hutang tanpa sejarah bayaran balik boleh dipadam.',

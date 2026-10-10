@@ -28,6 +28,7 @@ export function CommandPalette({
         "accounting",
         "accounts",
         "plans",
+        "goals","savings","notes","reminders","notifications","calendar",
         "debts",
         "settings",
       ] as Tab[]

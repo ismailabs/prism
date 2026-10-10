@@ -1,6 +1,6 @@
 import type { Tab } from '@/types';
 
-export const privateTabs: readonly Tab[] = ['dashboard', 'transactions', 'analytics', 'accounting', 'accounts', 'plans', 'goals', 'savings', 'debts', 'categories', 'payments', 'settings'];
+export const privateTabs: readonly Tab[] = ['dashboard', 'transactions', 'analytics', 'accounting', 'accounts', 'plans', 'goals', 'savings', 'debts', 'categories', 'payments', 'settings','notes','reminders','notifications','calendar'];
 export function pathTab(path: string): Tab | null {
   const name = path.replace(/^\/+|\/+$/g, '');
   return privateTabs.includes(name as Tab) ? name as Tab : null;

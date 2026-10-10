@@ -1,0 +1,9 @@
+{
+  "baseline": "7a92a4174455750869133dc6dc65828da08bcae0",
+  "migrations": [
+    {
+      "file": "20261010062259_phase5_connected_actions.sql",
+      "normalizedSha256": "D09B8E535D491D0D9DA6D699CF3C0D578CF6E49C16A82ED4945727F10E8214EE"
+    }
+  ]
+}

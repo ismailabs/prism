@@ -15,14 +15,15 @@ import { exerciseLedger, exerciseHistoricalLedger, exerciseLedgerBoundaries } fr
 // Only fresh native databases on loopback, synthetic inputs and random passwords.
 // The receipt map below is a test oracle, not a hosted migration history repair.
 const files = (await readdir('supabase/migrations')).filter(f => f.endsWith('.sql')).sort();
-assert.equal(files.length, 16, 'Review any change to the accepted migration chain');
+assert.equal(files.length, 17, 'Review any change to the accepted migration chain');
 assert.equal(new Set(files.map(f => f.split('_')[0])).size, files.length);
 const audit = JSON.parse(await readFile('docs/phases1-4-audit-evidence.json', 'utf8'));
+const phase5 = JSON.parse(await readFile('docs/phase5-migration-inventory.json','utf8'));
 const migrations = [];
 for (const file of files) {
   const sql = await readFile(`supabase/migrations/${file}`, 'utf8');
   const hash = createHash('sha256').update(sql.replaceAll('\r\n', '\n')).digest('hex').toUpperCase();
-  const expected = audit.normalizedMigrationContent.find(m => m.file === file && m.phase === 'phase1') ?? audit.normalizedMigrationContent.find(m => m.file === file);
+  const expected = audit.normalizedMigrationContent.find(m => m.file === file && m.phase === 'phase1') ?? audit.normalizedMigrationContent.find(m => m.file === file) ?? phase5.migrations.find(m => m.file === file);
   assert(expected, `Unreviewed migration: ${file}`);
   assert.equal(hash, expected.normalizedSha256, `Accepted SQL bytes changed: ${file}`);
   migrations.push({ file, sql, hash });
@@ -78,7 +79,7 @@ try {
   const clean = await connect('integration_clean');
   await assert.rejects(apply(clean,migrations[1]), /Out-of-order migration history/);
   for (const migration of migrations) await apply(clean, migration);
-  check('clean installation replays all 16 accepted migrations');
+  check('clean installation replays all 16 baseline migrations plus the reviewed Phase 5 migration');
   const upgraded = await connect('integration_upgrade');
   for (const migration of migrations.slice(0, 13)) await apply(upgraded, migration);
   const user = randomUUID(), session = randomUUID();
@@ -122,7 +123,7 @@ try {
   await assert.rejects(apply(clean,{...migrations[15],file:'20990101000000_unknown.sql'}), /Unreviewed/);
   await assert.rejects(apply(upgraded,{...migrations[15],hash:'changed-hash'}), /Incompatible migration hash/);
   await assert.rejects(apply(upgraded,{...migrations[15],sql:migrations[15].sql+'select 1;'}), /Incompatible migration content/);
-  check('Phase 1 upgrade preserves exact financial rows; three injected DDL failures roll back and recover; clean/upgrade catalogues agree; incompatible receipts denied');
+  check('Phase 1 upgrade preserves exact financial rows; four injected DDL failures roll back and recover; clean/upgrade catalogues agree; incompatible receipts denied');
   await identity();
   const at = column => `to_char(${column} at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
   const read = async (table,columns) => (await upgraded.query(`select ${columns} from public.${table} where user_id=auth.uid() order by id`)).rows;

@@ -36,6 +36,10 @@ await context.route('**/src/hooks/usePlatformData.ts*',route=>route.fulfill({con
 await context.route('**/src/hooks/useFinancialReports.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const useAnalyticsReport = () => ({data:[],isPending:false,error:null}); export const useFinancialReport=()=>({data:undefined,isPending:false,error:null});export const useTransactionPage=()=>({data:{rows:[{id:'tx-1',user_id:'qa-user',amount:'25.00',currency:'MYR',type:'expense',category_id:null,payment_method_id:null,description:'Purchase',transaction_date:'2026-09-19T12:00:00Z',created_at:''}],total:1},isPending:false,error:null});`}));
 await context.route('**/src/hooks/usePlanningData.ts*',route=>route.fulfill({contentType:'application/javascript',body:`export const usePlanningData=()=>({budgets:{data:[],error:null},rules:{data:[],error:null},importRows:{isPending:false}});`}));
 await context.route('**/src/hooks/useAdvancedPlanning.ts*',route=>route.fulfill({contentType:'application/javascript',body:`const query={data:[],isPending:false,error:null,refetch:async()=>{}};const mutation={isPending:false,mutateAsync:async()=>{}};export const useAdvancedPlanning=()=>({reserves:query,contracts:query,reserve:mutation,removeReserve:mutation,contract:mutation});`}));
+const actionMock = `const query={data:[],isPending:false,error:null,refetch:async()=>{}};const mutation={isPending:false,mutateAsync:async()=>{}};export const defaultActionPreferences={reminders_enabled:true,debt_enabled:true,recurring_enabled:true,budget_enabled:true,goal_enabled:true};export const useActionTable=()=>query;export const useNotes=()=>({...query,data:{rows:[],total:0}});export const useNoteMutations=()=>({save:mutation,update:mutation});export const useActionMutations=()=>({save:mutation,update:mutation,receipt:mutation,preferences:mutation});`;
+await context.route('**/src/hooks/useActionData.ts*',route=>route.fulfill({contentType:'application/javascript',body:actionMock}));
+await context.route('**/src/hooks/useGoalActions.ts*',route=>route.fulfill({contentType:'application/javascript',body:`const query={data:[],isPending:false,error:null,refetch:async()=>{}};const mutation={isPending:false,mutateAsync:async()=>{}};export const useGoalActions=()=>({plans:query,save:mutation,remove:mutation,contribute:mutation});`}));
+await context.route('**/src/hooks/useActionTimeline.ts*',route=>route.fulfill({contentType:'application/javascript',body:`import {defaultActionPreferences} from '/src/hooks/useActionData.ts';export const useActionClock=()=>Date.now();export const useActionTimeline=()=>({sources:{transactions:[],reminders:[],notes:[],receipts:[],preferences:defaultActionPreferences,goals:[],contributions:[],transfers:[],plans:[],debts:[],repayments:[],rules:[],budgets:[]},pending:false,error:null,refresh:async()=>{}});`}));
 await context.route('**/src/lib/supabase.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `export const supabase = { auth: { mfa: { listFactors: async () => ({ data: { totp: [] }, error: null }) } } };` }));
 await context.route('**/api/rates?*', route => route.fulfill({ json: { base: 'MYR', rates: { USD: .23, EUR: .21, JPY: 34, MYR: 1 }, updatedAt: Date.now(), source: 'QA fixture' } }));
 const checks = [];
@@ -75,13 +79,20 @@ try {
       await page.setViewportSize({ width, height: width === 1440 ? 1000 : 740 });
       await page.goto('http://127.0.0.1:5174/');
       const routeTitles = locale === 'en'
-        ? ['Overview','All transactions','Analytics','Accounting laboratory','Accounts','Plans','Goals','Savings','Personal debts','Categories','Payment methods','Settings']
-        : ['Gambaran keseluruhan','Semua transaksi','Analitik','Makmal perakaunan','Akaun','Perancangan','Matlamat','Simpanan','Hutang peribadi','Kategori','Kaedah pembayaran','Tetapan'];
+        ? ['Overview','All transactions','Analytics','Accounting laboratory','Accounts','Plans','Goals','Savings','Personal debts','Notes','Reminders','Notifications','Calendar','Categories','Payment methods','Settings']
+        : ['Gambaran keseluruhan','Semua transaksi','Analitik','Makmal perakaunan','Akaun','Perancangan','Matlamat','Simpanan','Hutang peribadi','Nota','Peringatan','Pemberitahuan','Kalendar','Kategori','Kaedah pembayaran','Tetapan'];
       let routeIndex = 0;
-      for (const route of ['/', '/transactions', '/analytics', '/accounting', '/accounts', '/plans', '/goals', '/savings', '/debts', '/categories', '/payments', '/settings']) {
+      for (const route of ['/', '/transactions', '/analytics', '/accounting', '/accounts', '/plans', '/goals', '/savings', '/debts', '/notes', '/reminders', '/notifications', '/calendar', '/categories', '/payments', '/settings']) {
         if (route !== '/') await page.evaluate(path => { history.pushState(null, '', path); dispatchEvent(new PopStateEvent('popstate')); }, route);
         await page.waitForFunction(title => document.querySelector('main h1')?.textContent === title, routeTitles[routeIndex++]);
-        await page.locator('main .card, main .metric-grid').first().waitFor();
+        const actionReady = {
+          '/notes': locale === 'en' ? 'No notes match this view.' : 'Tiada nota sepadan dengan paparan ini.',
+          '/reminders': locale === 'en' ? 'No reminders in this view.' : 'Tiada peringatan dalam paparan ini.',
+          '/notifications': locale === 'en' ? '0 open notices' : '0 notis terbuka',
+          '/calendar': locale === 'en' ? '0 items' : '0 perkara',
+        }[route];
+        if (actionReady) await page.getByRole('main').getByText(actionReady, { exact: true }).waitFor();
+        else await page.locator('main .card, main .metric-grid').first().waitFor();
         if (route === '/') {
           await page.getByLabel(locale === 'en' ? 'Month' : 'Bulan', {exact:true}).fill('2026-09');
           await page.locator('.snapshot').waitFor();
@@ -104,6 +115,13 @@ try {
         if (route === '/categories' || route === '/payments') {
           await page.getByRole('button', { name: locale === 'en' ? (route === '/categories' ? 'Add category' : 'Add payment method') : (route === '/categories' ? 'Tambah kategori' : 'Tambah kaedah pembayaran'), exact: true }).click();
           await contained(`${locale} ${width} ${route} form`, true);
+          await page.keyboard.press('Escape');
+        }
+        if(route==='/notes'||route==='/reminders'){
+          await page.getByRole('button',{name:locale==='en'?(route==='/notes'?'New note':'New reminder'):(route==='/notes'?'Nota baharu':'Peringatan baharu'),exact:true}).click();
+          await page.getByLabel(locale==='en'?'Title':'Tajuk',{exact:true}).fill('LongUnbrokenPrivateContext'.repeat(4));
+          if(route==='/notes')await page.getByLabel(locale==='en'?'Plain-text note':'Nota teks biasa',{exact:true}).fill('LongUnbrokenFinancialDecision'.repeat(100));
+          await contained(`${locale} ${width} ${route} form`,true);
           await page.keyboard.press('Escape');
         }
         if (route === '/settings') {
