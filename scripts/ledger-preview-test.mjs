@@ -12,10 +12,41 @@ const server = spawn(process.execPath, ['scripts/ledger-preview.mjs'], { env: { 
 let browser;
 try {
   await new Promise((resolve, reject) => { server.stdout.on('data', data => { if (data.toString().includes('Synthetic accounting preview')) resolve(); }); server.once('error', reject); server.once('exit', code => reject(new Error(`Preview exited: ${code}`))); });
-  browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
+  browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' && !process.argv.includes('--chromium') ? { channel: 'msedge' } : {}) });
   const context = await browser.newContext({ viewport: { width: 1280, height: 920 } });
   const page = await context.newPage();
   const external = []; page.on('request', request => { if (!request.url().startsWith(`http://127.0.0.1:${port}/`)) external.push(request.url()); });
+  async function verifyKeyboardScroll(name) {
+    const viewport = page.viewportSize();
+    await page.setViewportSize({ width: 320, height: 844 });
+    // Exercise real overflow, independent of the desktop browser's font metrics.
+    assert.deepEqual((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations, []);
+    const scroll = page.getByRole('group', { name, exact: true });
+    const bounds = await scroll.evaluate(element => ({ client: element.clientWidth, content: element.scrollWidth }));
+    assert(bounds.content > bounds.client, 'The keyboard regression must exercise overflowing content');
+    await page.getByLabel('Language / Bahasa', { exact: true }).focus();
+    let reached = false;
+    for (let stop = 0; stop < 16; stop++) {
+      await page.keyboard.press('Tab');
+      if (await scroll.evaluate(element => element === document.activeElement)) { reached = true; break; }
+    }
+    assert(reached, 'Tab navigation must reach the named accounts scroll group');
+    await expect(scroll).toBeFocused();
+    assert(await scroll.evaluate(element => {
+      const style = getComputedStyle(element);
+      return style.outlineStyle !== 'none' && Number.parseFloat(style.outlineWidth) > 0;
+    }), 'Keyboard focus must have a visible outline');
+    await scroll.evaluate(element => { element.scrollLeft = 0; });
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => scroll.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
+    await page.keyboard.press('ArrowLeft');
+    await expect.poll(() => scroll.evaluate(element => element.scrollLeft)).toBe(0);
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#journals > details > summary:focus')).toHaveCount(1);
+    await page.keyboard.press('Shift+Tab');
+    await expect(scroll).toBeFocused();
+    await page.setViewportSize(viewport);
+  }
   await page.goto(`http://127.0.0.1:${port}/`);
   await expect(page.getByRole('region', { name: 'Balance sheet', exact: true })).toContainText('MYR 15280.00');
   await expect(page.getByRole('region', { name: 'Period income statement', exact: true })).toContainText('MYR 220.00');
@@ -25,6 +56,7 @@ try {
   await expect(journal).toContainText('MYR 5000.00'); await expect(journal).toContainText('Debit'); await expect(journal).toContainText('Credit');
   assert.deepEqual((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations, []);
   await mkdir('artifacts/phase2', { recursive: true }); await page.screenshot({ path: 'artifacts/phase2/accounting-desktop.png', fullPage: true });
+  await verifyKeyboardScroll('Ledger accounts');
   await page.getByLabel('Native currency', { exact: true }).selectOption('USD');
   await expect(page.getByText('No posted entries in this currency.', { exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Balance sheet', exact: true })).toContainText('USD 0.00');
@@ -40,10 +72,11 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
   assert.deepEqual((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations, []);
   await page.screenshot({ path: 'artifacts/phase2/accounting-mobile-ms.png', fullPage: true });
+  await verifyKeyboardScroll('Akaun lejar');
   await page.getByLabel('Sehingga', { exact: true }).fill('1999-01-01'); await page.getByLabel('Sehingga', { exact: true }).press('Tab');
   await expect(page.getByRole('alert')).toBeVisible();
   await expect(page.locator('#balance')).toBeEmpty();
   assert.deepEqual(external, []);
-  console.log('PASS accounting preview: English/Malay, native currency, stock/flow date semantics, journal detail, invalid-period stale-data clearing, mobile overflow, WCAG scans, no external requests');
+  console.log('PASS accounting preview: English/Malay, native currency, stock/flow date semantics, journal detail, invalid-period stale-data clearing, mobile overflow, WCAG scans, named keyboard scroll group, visible focus, bidirectional scrolling and Tab exit/re-entry, no external requests');
 } catch (error) { console.error(error.message); process.exitCode = 1; }
 finally { if (browser) await browser.close(); if (server.exitCode === null) { const stopped = new Promise(resolve => server.once('exit', resolve)); server.kill(); await stopped; } }
