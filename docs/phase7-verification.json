@@ -1,0 +1,411 @@
+{
+  "decision": "GO for local Phase 7 checkpoint and entry into controlled release validation; NO-GO for production readiness/public launch; all external release actions unauthorized",
+  "base": "07901a6dabfa4696be25468f6de687c7619d171d",
+  "branch": "codex/phase7-readiness",
+  "candidate": "Committed engineering source; final three-file local documentation checkpoint resolved by branch ref and final report",
+  "finalRun": {
+    "directory": "artifacts/phase7/gates-1791642386749",
+    "inputsUnchanged": true,
+    "allPassed": true,
+    "results": [
+      {
+        "command": "npm run typecheck",
+        "exitCode": 0,
+        "seconds": 22.846,
+        "path": "artifacts/phase7/gates-1791642386749/typecheck.log"
+      },
+      {
+        "command": "npm run lint",
+        "exitCode": 0,
+        "seconds": 25.303,
+        "path": "artifacts/phase7/gates-1791642386749/lint.log"
+      },
+      {
+        "command": "npm run test",
+        "exitCode": 0,
+        "seconds": 14.992,
+        "path": "artifacts/phase7/gates-1791642386749/test.log"
+      },
+      {
+        "command": "npm run build",
+        "exitCode": 0,
+        "seconds": 27.481,
+        "path": "artifacts/phase7/gates-1791642386749/build.log"
+      },
+      {
+        "command": "npm run test:db",
+        "exitCode": 0,
+        "seconds": 7.351,
+        "path": "artifacts/phase7/gates-1791642386749/test-db.log"
+      },
+      {
+        "command": "npm run test:platform-db",
+        "exitCode": 0,
+        "seconds": 5.772,
+        "path": "artifacts/phase7/gates-1791642386749/test-platform-db.log"
+      },
+      {
+        "command": "npm run test:foundations-db",
+        "exitCode": 0,
+        "seconds": 6.52,
+        "path": "artifacts/phase7/gates-1791642386749/test-foundations-db.log"
+      },
+      {
+        "command": "npm run test:period-db",
+        "exitCode": 0,
+        "seconds": 6.542,
+        "path": "artifacts/phase7/gates-1791642386749/test-period-db.log"
+      },
+      {
+        "command": "npm run test:ledger-db",
+        "exitCode": 0,
+        "seconds": 6.405,
+        "path": "artifacts/phase7/gates-1791642386749/test-ledger-db.log"
+      },
+      {
+        "command": "npm run ledger:dry-run",
+        "exitCode": 0,
+        "seconds": 0.766,
+        "path": "artifacts/phase7/gates-1791642386749/ledger-dry-run.log"
+      },
+      {
+        "command": "npm run test:ledger-review",
+        "exitCode": 0,
+        "seconds": 4.55,
+        "path": "artifacts/phase7/gates-1791642386749/test-ledger-review.log"
+      },
+      {
+        "command": "npm run test:ledger-preview",
+        "exitCode": 0,
+        "seconds": 24.762,
+        "path": "artifacts/phase7/gates-1791642386749/test-ledger-preview.log"
+      },
+      {
+        "command": "npm run test:planning-db",
+        "exitCode": 0,
+        "seconds": 12.645,
+        "path": "artifacts/phase7/gates-1791642386749/test-planning-db.log"
+      },
+      {
+        "command": "npm run test:integration-db",
+        "exitCode": 0,
+        "seconds": 53.108,
+        "path": "artifacts/phase7/gates-1791642386749/test-integration-db.log"
+      },
+      {
+        "command": "npm run test:integration-review",
+        "exitCode": 0,
+        "seconds": 0.866,
+        "path": "artifacts/phase7/gates-1791642386749/test-integration-review.log"
+      },
+      {
+        "command": "npm run test:goal-actions-db",
+        "exitCode": 0,
+        "seconds": 9.253,
+        "path": "artifacts/phase7/gates-1791642386749/test-goal-actions-db.log"
+      },
+      {
+        "command": "npm run test:actions-db",
+        "exitCode": 0,
+        "seconds": 7.191,
+        "path": "artifacts/phase7/gates-1791642386749/test-actions-db.log"
+      },
+      {
+        "command": "npm run test:actions-native",
+        "exitCode": 0,
+        "seconds": 24.985,
+        "path": "artifacts/phase7/gates-1791642386749/test-actions-native.log"
+      },
+      {
+        "command": "npm run test:actions-review",
+        "exitCode": 0,
+        "seconds": 8.441,
+        "path": "artifacts/phase7/gates-1791642386749/test-actions-review.log"
+      },
+      {
+        "command": "npm run test:intelligence-db",
+        "exitCode": 0,
+        "seconds": 15.328,
+        "path": "artifacts/phase7/gates-1791642386749/test-intelligence-db.log"
+      },
+      {
+        "command": "npm run test:intelligence-native",
+        "exitCode": 0,
+        "seconds": 21.876,
+        "path": "artifacts/phase7/gates-1791642386749/test-intelligence-native.log"
+      },
+      {
+        "command": "npm run test:intelligence-review",
+        "exitCode": 0,
+        "seconds": 1.312,
+        "path": "artifacts/phase7/gates-1791642386749/test-intelligence-review.log"
+      },
+      {
+        "command": "npm run test:postgres",
+        "exitCode": 0,
+        "seconds": 29.697,
+        "path": "artifacts/phase7/gates-1791642386749/test-postgres.log"
+      },
+      {
+        "command": "npm run test:restore",
+        "exitCode": 0,
+        "seconds": 34.765,
+        "path": "artifacts/phase7/gates-1791642386749/test-restore.log"
+      },
+      {
+        "command": "npm run test:localization",
+        "exitCode": 0,
+        "seconds": 1.56,
+        "path": "artifacts/phase7/gates-1791642386749/test-localization.log"
+      },
+      {
+        "command": "npm run test:pwa-review",
+        "exitCode": 0,
+        "seconds": 0.656,
+        "path": "artifacts/phase7/gates-1791642386749/test-pwa-review.log"
+      },
+      {
+        "command": "npm run test:release-package",
+        "exitCode": 0,
+        "seconds": 16.188,
+        "path": "artifacts/phase7/gates-1791642386749/test-release-package.log"
+      },
+      {
+        "command": "npm run test:e2e",
+        "exitCode": 0,
+        "seconds": 706.885,
+        "path": "artifacts/phase7/gates-1791642386749/test-e2e.log"
+      },
+      {
+        "command": "npm run test:pwa",
+        "exitCode": 0,
+        "seconds": 69.989,
+        "path": "artifacts/phase7/gates-1791642386749/test-pwa.log"
+      },
+      {
+        "command": "npm run test:responsive",
+        "exitCode": 0,
+        "seconds": 214.008,
+        "path": "artifacts/phase7/gates-1791642386749/test-responsive.log"
+      }
+    ]
+  },
+  "frozenEngineeringInputs": 248,
+  "frozenInputReceiptSha256": "ca28b3fcadbf202ded9d9c92acbf7528ea65206869828eac507032538a5887e1",
+  "tests": {
+    "unit": 163,
+    "unitFiles": 20,
+    "normalBrowser": 122,
+    "realWorkerBrowser": 5,
+    "responsive": {
+      "layoutChecks": 481,
+      "errors": [],
+      "evidence": "artifacts/responsive-checks.json"
+    },
+    "closedFormMoneyCases": 1000,
+    "restoredTables": 28,
+    "migrations": 17
+  },
+  "dependencyAudit": {
+    "all": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 5,
+      "critical": 0,
+      "total": 7
+    },
+    "runtime": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "sourceMapJs": "reviewed patch 1.2.1 to 1.2.2; remaining Tailwind 3 build chain risk"
+  },
+  "restore": {
+    "status": "PASS",
+    "method": "Clean shutdown; cold cluster snapshot; synthetic source erasure; restore to a separate fresh directory; exact full-table comparison and restored authorization probes",
+    "hosted": "not tested",
+    "crossVersion": "not tested"
+  },
+  "sourcePackage": {
+    "authority": "local source-allowlist rehearsal only; Vercel linked source manifest remains unverified",
+    "files": 137,
+    "seconds": 13.099,
+    "publicCache": {
+      "count": 42,
+      "rawBytes": 1835630,
+      "gzipBytes": 697330
+    }
+  },
+  "independentReview": "Separate audit/probe/oracle passes by the same agent; no separate human/agent reviewer or external certification",
+  "failures": [
+    {
+      "directory": "artifacts/phase7/gates-1791640540420",
+      "status": "failed/aborted; raw backend text expectation updated with safe alert and private-sentinel rejection"
+    },
+    {
+      "directory": "artifacts/phase7/gates-1791640732963",
+      "status": "29 gates passed; full browser 119 passed/1 failed because history guidance was generic. Specific bilingual copy and dynamic destructive labels repaired, focused 11 browser cases passed; final full run supersedes."
+    },
+    {
+      "pattern": "artifacts/phase7/pwa-results-*",
+      "status": "earlier worker/test-fixture failures retained where captured; some default test-results overwritten; superseded by final real-worker pass"
+    }
+  ],
+  "external": {
+    "githubCandidateCI": "unavailable and unrun",
+    "supabaseStudio": "selected link required; settings/advisors/catalogue not refreshed",
+    "vercelLinkedSourceManifest": "blocked because worktree unlinked",
+    "physicalInstallAndAssistiveTech": "not tested",
+    "managedRestore": "unperformed",
+    "legalAndOperationalApproval": "required"
+  },
+  "npmCi": {
+    "result": "PASS after lock patch; 410 packages",
+    "evidence": "recorded tool result, before final frozen run; dependency inputs unchanged afterward"
+  },
+  "checkpoint": {
+    "scope": "User-authorized local review, staging, commits and documentation only; no external release actions",
+    "engineeringCommit": "7b85d9f670240019c044c22ebfa3a80adf034b98",
+    "engineeringParent": "07901a6dabfa4696be25468f6de687c7619d171d",
+    "finalDocumentationCommit": "Following three-file local documentation commit; resolve codex/phase7-readiness and artifacts/phase7/checkpoint/final-report.json",
+    "completeInventoryFiles": 54,
+    "engineeringFiles": 51,
+    "documentationFiles": 3,
+    "originalApprovedManifestSha256": "acea617b3a3b6ac97d089dc8c0d64a97a8367c113b641329b4f6f7b73c80eaa3",
+    "frozenEngineeringInputs": 248,
+    "frozenRawHashesUnchanged": true,
+    "engineeringGitBindingsSha256": "8d49a5a23810276ab5fe8aea85e846bf72e4d416afc9b78acca21008d5ba5218",
+    "gitComparison": "Exact bytes for binary input; UTF-8/LF normalization only for text; all 248 accepted inputs match the engineering commit",
+    "testsRepeatedAfterCommit": false,
+    "reason": "No engineering/configuration/dependency/test bytes changed during checkpoint; only the three already reviewed documentation paths change. Final committed-source hash/isolation/secrets checks bind retained 30-gate evidence.",
+    "controlledReleaseValidationEntry": "GO for candidate entry and planning; each publication/hosted operation still needs separate authorization",
+    "productionReadiness": "NO-GO; external blocking rows in handoff section 11",
+    "ignoredReceipt": "artifacts/phase7/checkpoint/final-report.json; records exact final HEAD, tree, complete inventory and clean status without a recursive commit hash"
+  },
+  "migrationInventory": [
+    {
+      "path": "20260928000200_initial_finance_tracker.sql",
+      "normalizedSha256": "8b6edbafe0d0c8abf40f790c2bbbcf9e8333dcd05c1e600152fa8e04ca5d2dcf",
+      "gitBlob": "e65a6d09caaf377902c8a389fb5ed17966f13e88",
+      "documentedStatus": "empty-project baseline; live tables predate tracking",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928031516_personal_finance_platform.sql",
+      "normalizedSha256": "694fe175c0d84ad19d843ef307dd7f383ddaf3ac21c66d810f814793aa9e215b",
+      "gitBlob": "05e3b6c47b2c8ea116b81dfa515815030240843e",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928032448_exact_money_validation.sql",
+      "normalizedSha256": "a1ae2e71a99e01c66bba5f5173ab2d028d4143b3bcc2d730dea1f6555b6ff520",
+      "gitBlob": "b7ee77b4f9a7d6019066c66d352b33cf65dc7786",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928043611_focused_crud_integrity.sql",
+      "normalizedSha256": "09d6ff559ec89ab610ac9afa8e9e53db6aa27ff42f8f6d4940ede4b11ba544e5",
+      "gitBlob": "dcc0454e0251dc9cb67ad48f56914545e70034e9",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928082016_harden_self_delete_rpc.sql",
+      "normalizedSha256": "a15abe93ca22d798ee36a21fce9b16e3b64cafce0c5135f94fee9914f4c00255",
+      "gitBlob": "e17ee25ffc03177ff67c3bc7393d0d2e655f03f5",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930135217_financial_foundations.sql",
+      "normalizedSha256": "a17de5726e92918f98ee31e931003b56da367b59dc31e01a6b6100f6ff328a36",
+      "gitBlob": "d92bf5c8cc7be5b0efb076dd26d5bc00cdd4b91a",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930135222_reporting_and_planning.sql",
+      "normalizedSha256": "2bc5c6bcad616b2947cd0af82b50b9f53d13618077e6490e0406283f1ee5db64",
+      "gitBlob": "8057f7a447b5b0c9d875dfda8052c5d8c0fa8193",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930135716_financial_relationship_indexes.sql",
+      "normalizedSha256": "2c6d7dafb39982e0f79308b7edfb007989b016068dfdb08e54c2ec51c8db7319",
+      "gitBlob": "fbafdff0cc775c9f12461fd1349c32e4d842a093",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930141104_canonical_financial_transport.sql",
+      "normalizedSha256": "12a7de302d5d2a790419d091a00aa9df8f526b5ce0cb70d31331cd49d65039e0",
+      "gitBlob": "173e5d12e79f0f2b8f7dcd131d58b547a1fbdacf",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261001033902_analytics_drilldown_filters.sql",
+      "normalizedSha256": "7358956bf1c261e2b7035ad39848767611c98f184c5f0af2736f2bca64bdea4d",
+      "gitBlob": "0114ca73ea6b924adb5fe85a7a8c66a11b34f654",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261001083346_period_analytics_preferences.sql",
+      "normalizedSha256": "93738e0efbdf892c60b1f1e59db237a16c0ff15142cdf0902248a9981ad28854",
+      "gitBlob": "62b800c8df8117a4393f94d6c4fbac0d39d7b07e",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261001083350_present_financial_progress.sql",
+      "normalizedSha256": "2f96377f695550c63e1010df4a5e17b734cd463cf7648b1b7328f4fdab8c3d6a",
+      "gitBlob": "609803fa7196444f9d5b5046fcf0d6be396c7b2a",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261009162324_protect_debt_repayment_history.sql",
+      "normalizedSha256": "1876fd422284c7c69d60e41ca622d0a8b342ab7510c2d9bf4b888d607bb23513",
+      "gitBlob": "308d760cebcddff2867631ed12662a9741f0d473",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261009220402_shadow_double_entry_ledger.sql",
+      "normalizedSha256": "0c89ad1de837cb7ed79f9a0c0042939e1faa05b7593a96b02a049720cab840fe",
+      "gitBlob": "a631dc207ab20e9e46bc4571d54197564e26ec5e",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261010021500_malaysia_profile_defaults.sql",
+      "normalizedSha256": "dea70b1077b4a50f704359a0ea30781a9b869ac453f2844369b504eeae8a7839",
+      "gitBlob": "b63582b11d3e9d1495dc726150d14bb6ea38a28b",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261010024257_phase4_planning.sql",
+      "normalizedSha256": "93719388a1eaa50caf0c6a221dfbbfced093e7993073290d99abec637fe92f0d",
+      "gitBlob": "c383b23dcbd724985a673b8ad6981d5622bd2088",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261010062259_phase5_connected_actions.sql",
+      "normalizedSha256": "d09b8e535d491d0d9da6d699cf3c0d578cf6e49c16a82ed4945727f10e8214ee",
+      "gitBlob": "d6ddd94d8f06f802ff8bedb498b7cc8435ebc441",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    }
+  ]
+}

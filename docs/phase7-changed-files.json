@@ -1,0 +1,473 @@
+{
+  "base": "07901a6dabfa4696be25468f6de687c7619d171d",
+  "branch": "codex/phase7-readiness",
+  "commitAuthorization": true,
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "modified",
+      "baselineBlob": "07d327d68cec9c6491d35a36ca0352740bfb7540",
+      "normalizedSha256": "e447e843b631700a3f8ae864130cac5b5b5178e00cf354a49ebe8da31c886ee3"
+    },
+    {
+      "path": "docs/phase7-changed-files.json",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": null
+    },
+    {
+      "path": "docs/phase7-local-acceptance.md",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "058cead7d00832b92188f33cee0cc2352c3706e21fa0d36d7253c1f808ed29fa"
+    },
+    {
+      "path": "docs/phase7-verification.json",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "a1cef5cfd682cb03e0364db1e43d75b6280ee426881d5b2fded02f9c7ebac06b"
+    },
+    {
+      "path": "e2e/actions.spec.ts",
+      "status": "modified",
+      "baselineBlob": "3317894cebb444feeeccd8607f3f7e08050ed3d8",
+      "normalizedSha256": "7f9f611bb74a3d6d95df578ec303d989ea51c4794d0b905d28b540c4befe8cc7"
+    },
+    {
+      "path": "e2e/focused-upgrade.spec.ts",
+      "status": "modified",
+      "baselineBlob": "c4dc5bc2ca96c78b4cbbc8b4fee514328b0c420c",
+      "normalizedSha256": "96829512ffdf7cc3ac7ad7a9819f09add37d06320a09e3f3fb70b134810c71c0"
+    },
+    {
+      "path": "e2e/hardening.spec.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "0400fef75857023cd61ad7b18e24961fe264f81de198ce71da2b83043923cf8e"
+    },
+    {
+      "path": "e2e/intelligence.spec.ts",
+      "status": "modified",
+      "baselineBlob": "0bcc3f426e8d62ea96479f8ffc9981f3a790ec09",
+      "normalizedSha256": "bdea98e697310e2c1e5163e82d3d0f22e47cd0f2c15ca2eff59279ddfbc0d046"
+    },
+    {
+      "path": "e2e/phase3.spec.ts",
+      "status": "modified",
+      "baselineBlob": "ecdfbd43c5bd0eff348234a43cf2e3e79ff8776e",
+      "normalizedSha256": "549c7222f1c705ec4281185b70f7833020a3a7c35d288c91b877b0ef7e0450c2"
+    },
+    {
+      "path": "e2e/planning.spec.ts",
+      "status": "modified",
+      "baselineBlob": "a7413d395d750ddc565db511a2f04896fdb524bb",
+      "normalizedSha256": "f65e920c013c3b8c1d3498948e5c098be8414408bf0966ef4eff9aa5eeb7f4f9"
+    },
+    {
+      "path": "e2e/pwa.spec.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "4c1f1fcb50dfc6da4358cfdb7fe81df773e3ac22845e4b499e6c75d30314849d"
+    },
+    {
+      "path": "index.html",
+      "status": "modified",
+      "baselineBlob": "daec19449cae765698d3d18222c5bcf2b3eefec4",
+      "normalizedSha256": "a35aa5ce78050d406753363f3ae8311109c6f306f73d565f40bc58a7c02c19c5"
+    },
+    {
+      "path": "package-lock.json",
+      "status": "modified",
+      "baselineBlob": "78c08c3bdca94b71d53079b9c9ce116540b0b4cf",
+      "normalizedSha256": "c5d7593b0f13f61cebf0074d4f9c558f8ca7792970fe49fd1915d37e03d40923"
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "baselineBlob": "20b1c1a8ef5c265b18796fb3f7787254c1315a86",
+      "normalizedSha256": "d37e140b4bf5aaed4d181b6a2035a8553163c3025b372811c7c9d2c2e0bb4fe6"
+    },
+    {
+      "path": "playwright.config.ts",
+      "status": "modified",
+      "baselineBlob": "aa0b5aa969c40cbbd0924cc1a79b6b654b959a6b",
+      "normalizedSha256": "7ca84f40a0b7dcd5b57570b19987232a0d18acf96346da165bfafeaab53499f8"
+    },
+    {
+      "path": "public/site.webmanifest",
+      "status": "modified",
+      "baselineBlob": "e54c9825313a1f5555a50b37bfc65e69f6771f44",
+      "normalizedSha256": "bd0c8b637726118e1855cf52628acba488c74d1ff185040ad4d8f6e469c716dd"
+    },
+    {
+      "path": "pwa.playwright.config.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "ccf98cb3ccef7456e8a263808b82ea911f0cd055df2b2e7e32ba9aeb3419d358"
+    },
+    {
+      "path": "scripts/localization-audit.mjs",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "9e57810b28a431c5c5001bc8e801a0e8eeae6d7ecb042ec0dca6ad2352dd2fa9"
+    },
+    {
+      "path": "scripts/phase7-local-acceptance.mjs",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "8ec192825760989162971b7081733debf96708d6e77041dab67d84e902d8661c"
+    },
+    {
+      "path": "scripts/phase7-preflight.mjs",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "564d1c45c0e1217a57e3a2e514531191ecc558abed82df5af4d33324ae96f27a"
+    },
+    {
+      "path": "scripts/phase7-release-package.mjs",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "716788f79675d8a0b2eaef118504c299601de92d1c45ada84cad89365d891ecd"
+    },
+    {
+      "path": "scripts/phase7-restore-test.mjs",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "a8341c91244660620604f8292b5455dfafca949176d0b297d1a74387f413e238"
+    },
+    {
+      "path": "scripts/pwa-review-probes.mjs",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "b9d3b3c2ebfa99339cd94c9b5339d7208ac96739bd7060a14a6a051ee8808a28"
+    },
+    {
+      "path": "scripts/pwa-server.mjs",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "54f6373e12d0c0105d8387ef0072bd4f8857541561738d2748df9850dd4aaa32"
+    },
+    {
+      "path": "src/App.test.tsx",
+      "status": "modified",
+      "baselineBlob": "3617c309968989d977d7fa2b78e964e66e3c7245",
+      "normalizedSha256": "28dd41debc233455277899a30089bd8dc56a936e5e436be20895b1c1db41f19f"
+    },
+    {
+      "path": "src/App.tsx",
+      "status": "modified",
+      "baselineBlob": "d0dd1bce0ac95adee5f0e2862042fb4f0e210622",
+      "normalizedSha256": "8cb71f7351973d011d0b73fe148fef5f0b9421d4edf8dbe5f962f299a76be85e"
+    },
+    {
+      "path": "src/components/PwaStatus.tsx",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "89520252e18a8bcb6acfc598857cd3fd9d4676973463ddc8abd79550a4521c39"
+    },
+    {
+      "path": "src/components/auth/AuthScreen.tsx",
+      "status": "modified",
+      "baselineBlob": "0b7eba4c860cf7039aecfa8c101c734d138ce871",
+      "normalizedSha256": "730c6a1e919987759867da0f9ed68ff188eb2769f0f479080dd5558cf98177c0"
+    },
+    {
+      "path": "src/components/auth/MfaChallenge.tsx",
+      "status": "modified",
+      "baselineBlob": "00b04a772912c17981332f2db83b08b14195f747",
+      "normalizedSha256": "f7af44d9be762a4933975133ae31f3b61c1c22cd9478a8a044c9219a84661c0a"
+    },
+    {
+      "path": "src/components/auth/MfaSetup.tsx",
+      "status": "modified",
+      "baselineBlob": "4bb02347478552be256b9101fc87d7baa91ea9f3",
+      "normalizedSha256": "f51a5880bb80d284e93b5413186bfe82f5a9033a33760db8971bfc5f329e8fdb"
+    },
+    {
+      "path": "src/components/financial/AccountingLab.tsx",
+      "status": "modified",
+      "baselineBlob": "62f4798008ed614b81863b57ccd65df6e35a6ff8",
+      "normalizedSha256": "db3dea67a579cc39a841ca7f4a80c2e43b3404d15299fbd7f1260838989d99ab"
+    },
+    {
+      "path": "src/components/financial/CsvImport.tsx",
+      "status": "modified",
+      "baselineBlob": "d2552e7651235feb5af38aa4efd20c95f7a4d723",
+      "normalizedSha256": "f138da9b8ee448de0a76fb4ec6d3b23bb4c584c5682ee42ce8f5ec7ffeefd817"
+    },
+    {
+      "path": "src/components/financial/Debts.tsx",
+      "status": "modified",
+      "baselineBlob": "0c2c88a50b4a7b8aa6ea7f29825b10ad2e159d11",
+      "normalizedSha256": "1015807edc5ea789f53c1a4c5845990075f01411219b4e3bc41098516847d193"
+    },
+    {
+      "path": "src/components/financial/Settings.tsx",
+      "status": "modified",
+      "baselineBlob": "2ff49d080bf577a798ccb224bda0358d8952da01",
+      "normalizedSha256": "c67325fa09438c8689d80a28d18bf47d69d8f5112b375121912043e4b14858a7"
+    },
+    {
+      "path": "src/components/financial/copy.ts",
+      "status": "modified",
+      "baselineBlob": "f1dd058171f22025ef3d7053c2917516c6c33387",
+      "normalizedSha256": "afddbba707322ab87a38dfaff62147067d05c0991e8761ba0ae948e3994ddcef"
+    },
+    {
+      "path": "src/components/public/PublicHome.tsx",
+      "status": "modified",
+      "baselineBlob": "33d62bc0e35cf6f1381f0f2c28a9090a19f9491e",
+      "normalizedSha256": "588c842fa211eebb915e4f444c4b7c352b31df054b6fe70ee411e23e5a9a34fb"
+    },
+    {
+      "path": "src/hooks/useAuth.tsx",
+      "status": "modified",
+      "baselineBlob": "6fd6c39368754ab2cd2a1845300b1a1ebd156c6e",
+      "normalizedSha256": "24d4533a358eccbb52ac11a309d538f38f03062090828c02881894950f7792ec"
+    },
+    {
+      "path": "src/i18n.ts",
+      "status": "modified",
+      "baselineBlob": "bc18e00eba4f3ffdb65094813296017c347708c4",
+      "normalizedSha256": "8463eecd223d834354bd6ec46a131245fcf87ba7b4aa2a203607e405d470b30a"
+    },
+    {
+      "path": "src/lib/connectivity.test.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "46bfbcc3af8ae9d94c67319b269a94aca4e87499f35430a3c525445c9ad815a4"
+    },
+    {
+      "path": "src/lib/connectivity.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "3fbe8426bac5de6280670112bb1e904670b8f9f060e9686111de1af4ff45731f"
+    },
+    {
+      "path": "src/lib/errorCopy.test.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "6df0eddb0a96ab149fd80ed77e47ff905128cbc3159e13aeb9d0e292bb2b426f"
+    },
+    {
+      "path": "src/lib/errorCopy.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "c9fba821ffad2e3afe1211678a45d446a533dc4bc619ce3fe32e1aa6c01bba84"
+    },
+    {
+      "path": "src/lib/localization.test.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "c8932c93056376a48dddee2479467d95fc13cdeff25680340e0f83f2ce736e66"
+    },
+    {
+      "path": "src/lib/pwa.ts",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "d56eb203ec08fabfe1f57641583ab50e8e910570617a22f5ebff0136f10a9290"
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "status": "modified",
+      "baselineBlob": "b9c6bf35b037b7177e358ea21e016ec59f119baa",
+      "normalizedSha256": "7969b35506cb15ac99005fd109c9baa2caf3a178bdb65d84fbbb81971bae452b"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "status": "modified",
+      "baselineBlob": "c6aa88fee56c36bb8f9358190cb75a27dcfe2b3a",
+      "normalizedSha256": "c7374990537dfe43bd98a25e4bb0d4dc72597e1c730f870385485b81b55f91e0"
+    },
+    {
+      "path": "src/main.tsx",
+      "status": "modified",
+      "baselineBlob": "784397b2ed62d0ef90dda15fe408c222aa3ae990",
+      "normalizedSha256": "57e8d7c4932cba729101f095499e4703353ff6adcb3e358dff9aa32e37cdc61f"
+    },
+    {
+      "path": "src/pwa/offline.css",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "aaa3546c2cbac46f38734364007aacbcdb2993d33db8c1a2ec434e139ce82bb3"
+    },
+    {
+      "path": "src/pwa/offline.html",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "e453cb8520243cdb6eac4085e5d75457c8b444cc28140fd2f1f53440cc76b1e2"
+    },
+    {
+      "path": "src/pwa/offline.js",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "b8d4e248e8d07dfef3e57ce0532d3d9410b970a9ee7d543b1615bd79b33b6a5d"
+    },
+    {
+      "path": "src/pwa/service-worker.js",
+      "status": "added",
+      "baselineBlob": null,
+      "normalizedSha256": "6e2aef1c8c80b4b5654a1425692d51e1f2e435ba9fb672cc0ca9a89f52220361"
+    },
+    {
+      "path": "src/styles.css",
+      "status": "modified",
+      "baselineBlob": "d1a7e9ee3f68033bc4cb7f44233e7e43a14d8cce",
+      "normalizedSha256": "7640affc06f31ba4f833eee41915b88cf8076d41bca6e11fc94cb9db1db32dd5"
+    },
+    {
+      "path": "vercel.json",
+      "status": "modified",
+      "baselineBlob": "09571551612170419dab63f961982a4632c44921",
+      "normalizedSha256": "f77938ba17f3eb74106b551f1f2d768500e59d71a2688edb4a98f5b9d673dc07"
+    },
+    {
+      "path": "vite.config.ts",
+      "status": "modified",
+      "baselineBlob": "4eab8659e11d8714c1cf2ebb3669a2224960927b",
+      "normalizedSha256": "856ba0f952c3a362e0275e83e5890a88fe5efc24628c1b58096fc56fd09b5174"
+    }
+  ],
+  "note": "Complete reviewed 54-file Phase 7 inventory relative to exact Phase 6 base. All 51 engineering files match accepted source. Three original documentation paths include the authorized checkpoint/RC handoff. Self hash is intentionally null. Final doc commit cannot embed its own SHA; resolve branch ref and ignored final-report receipt.",
+  "authorizationScope": "User-authorized local review, staging, commits and documentation only; no external release actions",
+  "checkpoint": {
+    "scope": "User-authorized local review, staging, commits and documentation only; no external release actions",
+    "engineeringCommit": "7b85d9f670240019c044c22ebfa3a80adf034b98",
+    "engineeringParent": "07901a6dabfa4696be25468f6de687c7619d171d",
+    "finalDocumentationCommit": "Following three-file local documentation commit; resolve codex/phase7-readiness and artifacts/phase7/checkpoint/final-report.json",
+    "completeInventoryFiles": 54,
+    "engineeringFiles": 51,
+    "documentationFiles": 3,
+    "originalApprovedManifestSha256": "acea617b3a3b6ac97d089dc8c0d64a97a8367c113b641329b4f6f7b73c80eaa3",
+    "frozenEngineeringInputs": 248,
+    "frozenRawHashesUnchanged": true,
+    "engineeringGitBindingsSha256": "8d49a5a23810276ab5fe8aea85e846bf72e4d416afc9b78acca21008d5ba5218",
+    "gitComparison": "Exact bytes for binary input; UTF-8/LF normalization only for text; all 248 accepted inputs match the engineering commit",
+    "testsRepeatedAfterCommit": false,
+    "reason": "No engineering/configuration/dependency/test bytes changed during checkpoint; only the three already reviewed documentation paths change. Final committed-source hash/isolation/secrets checks bind retained 30-gate evidence.",
+    "controlledReleaseValidationEntry": "GO for candidate entry and planning; each publication/hosted operation still needs separate authorization",
+    "productionReadiness": "NO-GO; external blocking rows in handoff section 11",
+    "ignoredReceipt": "artifacts/phase7/checkpoint/final-report.json; records exact final HEAD, tree, complete inventory and clean status without a recursive commit hash"
+  },
+  "migrations": [
+    {
+      "path": "20260928000200_initial_finance_tracker.sql",
+      "normalizedSha256": "8b6edbafe0d0c8abf40f790c2bbbcf9e8333dcd05c1e600152fa8e04ca5d2dcf",
+      "gitBlob": "e65a6d09caaf377902c8a389fb5ed17966f13e88",
+      "documentedStatus": "empty-project baseline; live tables predate tracking",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928031516_personal_finance_platform.sql",
+      "normalizedSha256": "694fe175c0d84ad19d843ef307dd7f383ddaf3ac21c66d810f814793aa9e215b",
+      "gitBlob": "05e3b6c47b2c8ea116b81dfa515815030240843e",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928032448_exact_money_validation.sql",
+      "normalizedSha256": "a1ae2e71a99e01c66bba5f5173ab2d028d4143b3bcc2d730dea1f6555b6ff520",
+      "gitBlob": "b7ee77b4f9a7d6019066c66d352b33cf65dc7786",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928043611_focused_crud_integrity.sql",
+      "normalizedSha256": "09d6ff559ec89ab610ac9afa8e9e53db6aa27ff42f8f6d4940ede4b11ba544e5",
+      "gitBlob": "dcc0454e0251dc9cb67ad48f56914545e70034e9",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260928082016_harden_self_delete_rpc.sql",
+      "normalizedSha256": "a15abe93ca22d798ee36a21fce9b16e3b64cafce0c5135f94fee9914f4c00255",
+      "gitBlob": "e17ee25ffc03177ff67c3bc7393d0d2e655f03f5",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930135217_financial_foundations.sql",
+      "normalizedSha256": "a17de5726e92918f98ee31e931003b56da367b59dc31e01a6b6100f6ff328a36",
+      "gitBlob": "d92bf5c8cc7be5b0efb076dd26d5bc00cdd4b91a",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930135222_reporting_and_planning.sql",
+      "normalizedSha256": "2bc5c6bcad616b2947cd0af82b50b9f53d13618077e6490e0406283f1ee5db64",
+      "gitBlob": "8057f7a447b5b0c9d875dfda8052c5d8c0fa8193",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930135716_financial_relationship_indexes.sql",
+      "normalizedSha256": "2c6d7dafb39982e0f79308b7edfb007989b016068dfdb08e54c2ec51c8db7319",
+      "gitBlob": "fbafdff0cc775c9f12461fd1349c32e4d842a093",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20260930141104_canonical_financial_transport.sql",
+      "normalizedSha256": "12a7de302d5d2a790419d091a00aa9df8f526b5ce0cb70d31331cd49d65039e0",
+      "gitBlob": "173e5d12e79f0f2b8f7dcd131d58b547a1fbdacf",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261001033902_analytics_drilldown_filters.sql",
+      "normalizedSha256": "7358956bf1c261e2b7035ad39848767611c98f184c5f0af2736f2bca64bdea4d",
+      "gitBlob": "0114ca73ea6b924adb5fe85a7a8c66a11b34f654",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261001083346_period_analytics_preferences.sql",
+      "normalizedSha256": "93738e0efbdf892c60b1f1e59db237a16c0ff15142cdf0902248a9981ad28854",
+      "gitBlob": "62b800c8df8117a4393f94d6c4fbac0d39d7b07e",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261001083350_present_financial_progress.sql",
+      "normalizedSha256": "2f96377f695550c63e1010df4a5e17b734cd463cf7648b1b7328f4fdab8c3d6a",
+      "gitBlob": "609803fa7196444f9d5b5046fcf0d6be396c7b2a",
+      "documentedStatus": "historically applied; hosted receipt aliases as documented in handoff",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261009162324_protect_debt_repayment_history.sql",
+      "normalizedSha256": "1876fd422284c7c69d60e41ca622d0a8b342ab7510c2d9bf4b888d607bb23513",
+      "gitBlob": "308d760cebcddff2867631ed12662a9741f0d473",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261009220402_shadow_double_entry_ledger.sql",
+      "normalizedSha256": "0c89ad1de837cb7ed79f9a0c0042939e1faa05b7593a96b02a049720cab840fe",
+      "gitBlob": "a631dc207ab20e9e46bc4571d54197564e26ec5e",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261010021500_malaysia_profile_defaults.sql",
+      "normalizedSha256": "dea70b1077b4a50f704359a0ea30781a9b869ac453f2844369b504eeae8a7839",
+      "gitBlob": "b63582b11d3e9d1495dc726150d14bb6ea38a28b",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261010024257_phase4_planning.sql",
+      "normalizedSha256": "93719388a1eaa50caf0c6a221dfbbfced093e7993073290d99abec637fe92f0d",
+      "gitBlob": "c383b23dcbd724985a673b8ad6981d5622bd2088",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    },
+    {
+      "path": "20261010062259_phase5_connected_actions.sql",
+      "normalizedSha256": "d09b8e535d491d0d9da6d699cf3c0d578cf6e49c16a82ed4945727f10e8214ee",
+      "gitBlob": "d6ddd94d8f06f802ff8bedb498b7cc8435ebc441",
+      "documentedStatus": "documented unapplied local proposal; actual hosted status unrefreshed",
+      "dependencyReview": "See section 11 complete migration inventory and supabase/migrations/README.md; validated chronological clean/upgrade replay order, not a claim that all earlier phases are direct dependencies"
+    }
+  ]
+}
