@@ -95,3 +95,44 @@ code rollback or table drop is not a financial data recovery plan.
 `20261010024257_phase4_planning.sql` adds budget rollover/threshold options, owner-scoped reserve and debt assumption tables, exact security-invoker views, and guards preserving existing debt repayment history. It introduces no financial posting RPC, counter, backfill or accrual. The authenticated app role cannot delete/rewrite repayments or recast a debt with repayment history; confirmed privileged account erasure is preserved. Review these semantics before rollout.
 
 See `../../docs/phase4-budgeting-debt.md` for the entry decision (Phase 2 absent), synthetic replay/HTTP verification, file manifest, acceptance boundaries and release/recovery plan. **Not applied to hosted Supabase.** Reconcile historical versions first and apply only this new forward file after separate approval, backup/restore verification and a disposable staging rehearsal. Deploy the matching client only after the schema is present.
+
+
+## Phase 5 connected actions (local, unapplied)
+
+`20261010062259_phase5_connected_actions.sql` adds owned goal cadence plans,
+plain-text financial notes, wall-clock reminders, private occurrence receipts
+and in-app preferences. Composite foreign keys enforce owner alignment;
+reference deletion nulls only the link and retains the note/reminder. Grants,
+RLS and restrictive session/MFA checks protect each table; cadence amounts use
+an exact-text invoker view. The invoker contribution RPC uses a stable retry
+identity and the existing transfer/financial guards.
+
+The existing exact contribution view retains its columns and permissions while
+excluding future linked source movements from effective present progress. No
+stored financial amounts, posting history, profile preferences or legacy
+migration bytes are rewritten. Notes, receipts and reminders never post money.
+
+This migration is **unapplied remotely** and depends on the authoritative
+Phases 1–4 integration chain. Its normalized hash is recorded in
+[the Phase 5 inventory](../../docs/phase5-migration-inventory.json); complete
+local evidence and recovery/authorization gates are in
+[the Phase 5 handoff](../../docs/phase5-actions.md).
+
+Do not replay the initial baseline against an existing project. Reconcile actual
+hosted catalogue/receipts and historical timestamp aliases first, then rehearse
+only approved missing forward files in order on an isolated authorized target.
+Verify PostgreSQL 17 behavior, RLS/Auth/MFA, exact HTTP text, CORS count headers,
+orphan handling and the matched client before deployment. No hosted application
+or release is authorized here.
+
+A failure before commit rolls back the whole migration; native injected-failure
+probes test retry and preservation of all thirteen legacy tables and exact cash.
+After a successful application, prefer a reviewed forward fix. Disabling the
+new routes can pause use while preserving private data. Dropping the new tables
+would erase notes/reminders/receipts and requires a separate backup/export,
+restore rehearsal and approval. Reverting a client or dropping a table cannot
+undo posted financial history. Hosted backup/PITR and recovery remain unverified.
+
+The authorized Phase 1–5 local Git checkpoint and Phase 6 entry checklist are
+recorded in [the Phase 5 handoff](../../docs/phase5-actions.md#8-phase-15-checkpoint-and-phase-6-entry-checklist).
+Local commit acceptance does not authorize applying this migration to a hosted target.

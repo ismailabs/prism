@@ -1,0 +1,360 @@
+{
+  "baselineHead": "7a92a4174455750869133dc6dc65828da08bcae0",
+  "branch": "codex/phase5-actions",
+  "worktree": "C:/Users/moham/.codex/worktrees/phase5-intelligence/prism-finance-baseline",
+  "generatedUtc": "2026-10-10T08:37:15.604987+00:00",
+  "commitMade": true,
+  "packageLockSha256": "87684E891EBDEC9518E3FFDAE0ACB1421D26AF1FF160351F76A4B3BE41CD1EDA",
+  "hashPolicy": "SHA-256 of UTF-8 bytes with CRLF normalized to LF; self hash omitted to avoid a recursive dependency. Ignored artifacts/caches/dependencies excluded.",
+  "fileCount": 47,
+  "groups": {
+    "implementation": 27,
+    "tests-and-tooling": 16,
+    "documentation": 4
+  },
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "9e0b7fa69456b853eded52f585083db1dee745fc",
+      "normalizedSha256": "0E81CB86BD9053CF7E75F05F48D7E390ECCFA74B05D3B2CBFE1842BC495BEE6F"
+    },
+    {
+      "path": "docs/phase5-actions.md",
+      "group": "documentation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "00B5B088121E2833410710C810505947410FAB92278E5904AC361C1D49800141"
+    },
+    {
+      "path": "docs/phase5-changed-files.json",
+      "group": "documentation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": null
+    },
+    {
+      "path": "docs/phase5-migration-inventory.json",
+      "group": "documentation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "9090BEDC3653DC5B8A34F6C31641FD194A687C1FA63E5B94EA7B2E17B9B8B829"
+    },
+    {
+      "path": "e2e/actions.spec.ts",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "2A2934B4693C7204CE1F9524AE249D67394533847BC5F57E747A5737F20A4B53"
+    },
+    {
+      "path": "e2e/auth-routing.spec.ts",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "82d448500acad2d52418ddb17bc6df02bc16d8c9",
+      "normalizedSha256": "F255E863B5F1B5ACB17EFCDBAA56CA71900063FD4996023C0D29DC1285A11633"
+    },
+    {
+      "path": "e2e/fixtures.ts",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "69682d4833dabc755f8d115d6adaddba9ef84ec5",
+      "normalizedSha256": "F1754306D0BE3FE43C687D2A4D39E08550FCA349239E9472F63AC7F75DA95CAF"
+    },
+    {
+      "path": "package.json",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "21138223f87002391b8451f4f053e6ff84ff21f4",
+      "normalizedSha256": "5B4B1A3DF1FCB1E3A9EE2F4CF0F706A6B0213DAFC909C60A9781E0D1FF7FEAC7"
+    },
+    {
+      "path": "scripts/actions-db-test.mjs",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "91857278F86B1F46B99027FB237621B52D8225D311B5515A0722BCE6D088AEE0"
+    },
+    {
+      "path": "scripts/actions-native-test.mjs",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "C3BAD8133B3EB6EC81DA885AC4AEA1B5573A5B9ED5D330047EFE2B64005C5A78"
+    },
+    {
+      "path": "scripts/goal-actions-db-test.mjs",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "990377B1682FC0338D285BE3186DBD1D68CF7FA312CE2221611B49229E400BB6"
+    },
+    {
+      "path": "scripts/integration-db-test.mjs",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "7e3470ec5511aae20d4bda5d0a50857176b9af70",
+      "normalizedSha256": "0A354E006C33034860C92DD38B6502053FDFE27F1C2CF5D83F6A49969C748483"
+    },
+    {
+      "path": "scripts/phase5-review-probes.mjs",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "79E1807B3363610A906AC577353B20AA453B13BA7A6617A469888A9CF4E450B7"
+    },
+    {
+      "path": "scripts/verify-responsive.mjs",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "c3da5dfa24a0507475737a00e379b4df8887432d",
+      "normalizedSha256": "DB65CF3919B189B582AFD1B3D01E0C85899AE347DD2F3DBF767D3A5481773C74"
+    },
+    {
+      "path": "src/App.test.tsx",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "fde3ef074df97d25cf68ed397e32e66f35295737",
+      "normalizedSha256": "BC06FAA8AC0C90C87D21B548708FA35E42A8B2B31459AA308EC17758A796BA9C"
+    },
+    {
+      "path": "src/components/CommandPalette.tsx",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "d0d57ccf05f861fd0162d4ecbe073292755550e3",
+      "normalizedSha256": "F36561F824EAE39E31F188B16F225F044041B3350B6C2211FB37EE719EF9417B"
+    },
+    {
+      "path": "src/components/Workspace.tsx",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "118a436c0209499cd54b05980eb00b45c3fb1783",
+      "normalizedSha256": "B67F9AFAE76C1506387AED10179384DF7D8C28679DF2D328304A214CA4816AA9"
+    },
+    {
+      "path": "src/components/financial/ActionLinkPicker.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "FF7E131E2FA7277C57E5879F4C9A062E34FCF6AC9DF25907113FBCB393ED6847"
+    },
+    {
+      "path": "src/components/financial/ActionSourceContext.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "4FBA2E364F237FDBBBDFAE24113065302752D6C4E64D439C6B22EE6E12A9F92D"
+    },
+    {
+      "path": "src/components/financial/ActionTimelineList.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "F0E0E990D99E5E0683C6D7AFA3A810048682281BDE77C16DE2C36D163E4E63CD"
+    },
+    {
+      "path": "src/components/financial/Calendar.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "5E2BD0FC0FA6FCCBDBECE83753139578EC18A98EE5C54F79726B8AD41BA776AE"
+    },
+    {
+      "path": "src/components/financial/Debts.tsx",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "d274699607805b1941374e7ce4b8349a97d19d7c",
+      "normalizedSha256": "67CB35F24BB4B0392926A28F7D706CED2D0E43ECFB8E74373CEBCDB91CC73D5B"
+    },
+    {
+      "path": "src/components/financial/GoalActionPlan.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "219ADB1B42CBB671C9CC25806C596F03CA1B1EA00B841183ED4BA4C20D4170D1"
+    },
+    {
+      "path": "src/components/financial/Notes.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "9541D1BEDB13B15FFF2117B946F5D527005FBCF683C115BBC7472EF63AEBFE35"
+    },
+    {
+      "path": "src/components/financial/Notifications.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "4C8964E0ACF01A92017C7F9328CAD68F4C23B9EE09155D10DB32C16115B10E0C"
+    },
+    {
+      "path": "src/components/financial/Objectives.tsx",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "fa0a792748a09d66f4dd1ac592f95f2c8eb5b314",
+      "normalizedSha256": "ABA33748C893539F12459049CAFAAAA5CB700B72F553223D34F13116F1D1BA59"
+    },
+    {
+      "path": "src/components/financial/Reminders.tsx",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "FC5B45EC472A82D2E2A755B9F11AD78A03DE337AB400431C843029EEEA9A8D2E"
+    },
+    {
+      "path": "src/components/financial/copy.ts",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "586d2101ff779e1756ec5b37e4f33cae9d2cebdb",
+      "normalizedSha256": "119A2B8E8B570AB8DECE15DD499FD3F90C8578097842FECF04796FF170AA229F"
+    },
+    {
+      "path": "src/domain/action-links.ts",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "A3459E7DEE88049FF9A654C3B34D7B7D434CF6EA7FC7F2E56FFDE726F2354C6D"
+    },
+    {
+      "path": "src/domain/actions.test.ts",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "8E50AE89455BC88D044A29D9E0EE18CB57C3D4DB8A9786A3F2255DB165CD3FE8"
+    },
+    {
+      "path": "src/domain/actions.ts",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "FC816F54F1B95F7526939CA78E2CAEA38237BF85EC0DEF8263905A00098E61E6"
+    },
+    {
+      "path": "src/domain/dates.ts",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "08e02ea8f5552cbf4fb3a7320a46645ec027ee77",
+      "normalizedSha256": "93C4E97F748DCCC3D1D75A56D511DDFF318339A21BD0FD7E1FA25BF4B2506901"
+    },
+    {
+      "path": "src/domain/goal-actions.test.ts",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "EF52E8719ADD9893EF5552380D2441D453B375200B07CCABFF9BEE9FD9260108"
+    },
+    {
+      "path": "src/domain/goal-actions.ts",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "437D83DC48919C329F80665C7CAC5C10D052BB36678D188C5A53B76C8A80C788"
+    },
+    {
+      "path": "src/hooks/useActionData.ts",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "2BB1FC6020E51717ADEFA55DECB05D9E14956F4BB5F8874332641448F5A6E218"
+    },
+    {
+      "path": "src/hooks/useActionTimeline.ts",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "EBB872A4056693250CB995E220B39236C34BBFC295DA0B5734D03F18E473D13E"
+    },
+    {
+      "path": "src/hooks/useGoalActions.ts",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "1E2AA7D8FCF16A200579A481406CB9C4D095C7B4B730C9B19AE03966FA8FF96E"
+    },
+    {
+      "path": "src/i18n.ts",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "d4832273726b03d17c90c5e1b258f7cf0940018b",
+      "normalizedSha256": "50C512F7B93B8EDD75515457DC5B5AE2D92B440F4F322000DFBD5F14DEAC9DF0"
+    },
+    {
+      "path": "src/lib/privateCache.test.ts",
+      "group": "tests-and-tooling",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "E2FF506C26C70330D4A6819BF5D009C237297A412095AC8E11EAE183EB99F8C2"
+    },
+    {
+      "path": "src/lib/privateCache.ts",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "175cdc10e734eb5e3c9fd8935f00e4a59675e17f",
+      "normalizedSha256": "5B5FCE2A761FC1FDC2C64CC9463A399A79082212A6D22F5A501E260A6DDD68E1"
+    },
+    {
+      "path": "src/lib/routes.test.ts",
+      "group": "tests-and-tooling",
+      "change": "modified",
+      "baselineGitBlob": "fa340452b377a2765f87a110e01f84c66d01759e",
+      "normalizedSha256": "D6ED9BDE7EB08CF3BFEE3F3B159442143399A72EC1C103D38BD2EB549E3DAA27"
+    },
+    {
+      "path": "src/lib/routes.ts",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "f04b35c37dceca15a97f6640dd7536359e9349d7",
+      "normalizedSha256": "DA5795FFF7EB5171A8ADBB9EFC0661397284F1B40DE893E9EFCACBB5A69DA5E7"
+    },
+    {
+      "path": "src/types/actions.ts",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "7C46E931BFA12F00E9038B350B238E640DB0AD08E26C72359F37DB7939B25837"
+    },
+    {
+      "path": "src/types/database.ts",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "d322b03c34c33b01897c3c8c1a286330ebf0d623",
+      "normalizedSha256": "5FAD43A48F09629602216A168AD21C124C9CFB05D7A7B3F8F948766E615A591A"
+    },
+    {
+      "path": "src/types/index.ts",
+      "group": "implementation",
+      "change": "modified",
+      "baselineGitBlob": "7e7c8fb8f26da2cb2ba5b28b75cbce046ec291a1",
+      "normalizedSha256": "715DA85D6E940ABF8E7B87591F861A6DDCA0343ED3E724E952A358987393034C"
+    },
+    {
+      "path": "supabase/migrations/20261010062259_phase5_connected_actions.sql",
+      "group": "implementation",
+      "change": "added",
+      "baselineGitBlob": null,
+      "normalizedSha256": "D09B8E535D491D0D9DA6D699CF3C0D578CF6E49C16A82ED4945727F10E8214EE"
+    },
+    {
+      "path": "supabase/migrations/README.md",
+      "group": "documentation",
+      "change": "modified",
+      "baselineGitBlob": "6a4e347a1dddb2639686d9870943d81d1d0966b9",
+      "normalizedSha256": "27D5DED88F6E514E3A75BB4B0F085FAED50E0752CC4562CF9ED19F1A9C271381"
+    }
+  ],
+  "headAtAcceptedVerification": "7a92a4174455750869133dc6dc65828da08bcae0",
+  "acceptedInventoryGeneratedUtc": "2026-10-10T08:23:17.204158+00:00",
+  "implementationCommit": "8290906deefd68f59e86e3e19f521e4882769bd5",
+  "finalHeadLocator": "git rev-parse codex/phase5-actions",
+  "checkpointCommitSubject": "docs: record Phase 1-5 local checkpoint and Phase 6 entry gates",
+  "finalCommitReceipt": "artifacts/phase5/final-local-checkpoint.json (ignored local evidence)",
+  "verificationBinding": {
+    "unchangedAcceptedPaths": 44,
+    "checkpointDocumentationPaths": 3,
+    "acceptedInputsFingerprintSha256": "D2963F9E653B492F62FA6D4ED7ADFDD72B9EF4CF0C59C939F769B2BAD74FA355",
+    "fingerprintPolicy": "SHA-256 of sorted path + NUL + accepted normalizedSha256 + LF for the 44 unchanged paths",
+    "functionalRerunRequired": false,
+    "reason": "Only checkpoint documents changed after accepted verification; committed implementation, fixtures, tests, tooling, SQL and locked dependencies match accepted inputs."
+  }
+}
