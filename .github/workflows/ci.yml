@@ -40,6 +40,7 @@ jobs:
       - run: npm run test:planning-db 2>&1 | tee artifacts/ci/planning-db.log
       - run: npm run test:integration-db 2>&1 | tee artifacts/ci/integration-db.log
       - run: npm run test:integration-review 2>&1 | tee artifacts/ci/integration-review.log
+      - run: npm run test:deletion-security 2>&1 | tee artifacts/ci/deletion-security.log
       - name: Install PostgREST test binary
         run: |
           curl -fsSL https://github.com/PostgREST/postgrest/releases/download/v16.4/postgrest-v16.4-linux-static-x86-64.tar.xz -o /tmp/postgrest.tar.xz
