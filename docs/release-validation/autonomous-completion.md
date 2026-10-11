@@ -1,5 +1,7 @@
 # PRISM autonomous readiness continuation
 
+Historical record. The later [production mission](production-mission-2026-10-11.md) starts from `27ff892b16f7e1015b693b885f1b85e60d0d365f`, supersedes this mission's action restrictions with conditional standing authorization, and records the actual hosted deletion privilege repair. Earlier test receipts remain valid only for their stated source and environment.
+
 11 October 2026, Asia/Kuala_Lumpur. Governing mission: fully read `C:/Users/moham/OneDrive/Desktop/notes/prompt.md`, accepted starting HEAD `7bb1f35813328d95c355fa890a1e1f7f5173fc22`, existing `codex/phase7-readiness` worktree. Strict RM0; production deployment, main changes, PRs and hosted mutations remain prohibited.
 
 ## Evidence status

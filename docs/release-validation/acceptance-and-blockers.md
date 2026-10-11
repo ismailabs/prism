@@ -1,5 +1,7 @@
 # PRISM release validation — acceptance and external blockers
 
+Historical record. Current production status, permissions, recovery constraints and standing authority are recorded in the [production mission](production-mission-2026-10-11.md). The hosted deletion ACL discrepancy described below was subsequently repaired and verified; the other unaccepted hosted/human/recovery gates are still distinct.
+
 The continuation from accepted `7bb1f35813328d95c355fa890a1e1f7f5173fc22` is recorded in [autonomous completion](autonomous-completion.md). The receipts below describe the preceding accepted mission and are historical. Current dependency disposition is [here](dependency-disposition.md); the revised deletion proposals and committed regression now cover indirect, SET-only and ADMIN-only role access. Privacy/operations drafts and human acceptance forms are [here](privacy-and-operations-draft.md). Hosted deletion remains inconclusive.
 
 11 October 2026, Asia/Kuala_Lumpur. Budget RM0. Governing authority: the user's release-validation request and fully read `C:/Users/moham/OneDrive/Desktop/notes/prompt.md`. The original Gate 4B local-only handoff is historical evidence; its earlier commit/publication restrictions are superseded by this mission's explicit, conditional authorization. Production deployment, main changes, PRs, hosted mutations, customer-data access and paid operations remain forbidden.

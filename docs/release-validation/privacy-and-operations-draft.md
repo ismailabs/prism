@@ -1,5 +1,7 @@
 # PRISM privacy and operations acceptance packet
 
+The subsequent [production mission](production-mission-2026-10-11.md) supplies current hosted security facts and conditional release authorization. That authorization does not approve this draft's unresolved organizational facts, retention policy, human acceptance or legal conclusions. References below to the earlier mission's action restrictions are historical.
+
 11 October 2026, Asia/Kuala_Lumpur. Internal draft only; **not approved for publication**. This packet supplies executable acceptance work without inventing owner facts or legal approval. The [manual device procedure](acceptance-and-blockers.md#manual-acceptance-procedure--every-result-unverified) remains applicable.
 
 ## Owner facts required before publishing a notice
