@@ -44,4 +44,3 @@ from pg_default_acl d left join pg_namespace n on n.oid=d.defaclnamespace
 where d.defaclobjtype='f' and (d.defaclnamespace=0 or n.nspname in ('public','prism_private'))
 order by 1,2;
 rollback;
-
