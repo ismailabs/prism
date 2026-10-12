@@ -51,6 +51,8 @@ Frontend/worker rollback must use an approved compatible artifact, verify header
 
 ## Human acceptance form
 
+Recovery processor update for owner/legal review: on 12 October, the connected owner's Google Drive received only OpenPGP-encrypted recovery data and sanitized restoration/deployment context, with owner-only ACLs and verified retrieval/member hashes. No private decryption key or Windows DPAPI material was uploaded. The packet's point is 11 October 15:54:22 UTC; private provider/key custody and current recovery remain incomplete. Account storage region, contractual basis, retention/re-erasure and account-access recovery must be accepted by the actual owner/reviewer; none is invented. Standard Drive API operations did not add a subscription or purchase.
+
 One form per candidate and supported combination; all rows start UNVERIFIED. Record actual observations instead of copying automated results.
 
 | Field | Required entry |

@@ -21,6 +21,10 @@ The upgraded release is not publicly launched. This packet requests external acc
 
 If the private Auth export cannot recover the existing Turnstile server secret, provide the existing PRISM widget's secret through a masked local input as part of this same access session. Do not send it in chat. Server enforcement is staged only after the compatible new frontend is live, so it cannot strand existing users on the old Auth page. No CAPTCHA or email protection is disabled to pass tests.
 
+```powershell
+& 'C:/Users/moham/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe' 'C:/Users/moham/AppData/Local/PRISM/production-recovery/20261011T1526-access/capture-turnstile-secret.py'
+```
+
 ## Owner facts and one final human acceptance session
 
 Return actual facts and reviewers for the existing [privacy/operations form](privacy-and-operations-draft.md): controller legal name/jurisdiction, monitored support/privacy contacts, intended users, retention/deletion/backup re-erasure policy, incident roles, recovery objectives and custodians, and an RM0 usage/registration-pause policy. These are currently unprovided facts, not ordinary implementation choices the agent can manufacture.
