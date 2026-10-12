@@ -2,7 +2,7 @@ import { clearPrivateQueries } from '@/lib/privateCache';
 import type { Session,User } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,type ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
+import { clearAuthLinkParameters, initialAuthCallback, initialAuthLinkError, supabase } from '../lib/supabase';
 import { errorMessage } from '@/lib/utils';
 
 export interface AuthContextValue {
@@ -11,6 +11,7 @@ export interface AuthContextValue {
   loading: boolean;
   requiresMfa: boolean;
   authError: string | null;
+  authLinkError?: boolean;
   recovery?: boolean;
   completeRecovery: () => void;
   refreshMfa: () => Promise<void>;
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
   const [requiresMfa, setRequiresMfa] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authLinkError, setAuthLinkError] = useState(initialAuthLinkError);
   const revision = useRef(0);
   const mounted = useRef(true);
 
@@ -66,8 +68,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     mounted.current = true;
+    let disposed = false;
     const timers = new Set<ReturnType<typeof setTimeout>>();
+    // The SDK removes a successfully exchanged code. It can ignore a PKCE link
+    // from another browser (missing verifier), or return an expired-code error.
+    // Wait for initialization, preserve any existing session, and expose only
+    // safe localized feedback while removing failed credentials from history.
+    if (initialAuthCallback) {
+      const invalidLink = () => {
+        if (disposed) return;
+        clearAuthLinkParameters();
+        setAuthLinkError(true);
+      };
+      void supabase.auth.initialize().then(({ error }) => {
+        const url = new URL(window.location.href);
+        if (error || url.searchParams.has('code') || new URLSearchParams(url.hash.slice(1)).has('access_token')) invalidLink();
+      }).catch(invalidLink);
+    }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') setAuthLinkError(false);
       if(event==='PASSWORD_RECOVERY')setRecovery(true);
       const nextUserId = nextSession?.user.id ?? null;
       if (activeUserId.current !== nextUserId || (nextSession?.access_token && nextSession.access_token !== sessionToken.current)) {
@@ -89,6 +108,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       timers.add(timer);
     });
     return () => {
+      disposed = true;
       mounted.current = false; revision.current += 1;
       subscription.unsubscribe(); timers.forEach(clearTimeout);
     };
@@ -99,7 +119,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) throw error;
   }, []);
 
-  const value = useMemo<AuthContextValue>(() => ({ user: session?.user ?? null, session, loading, requiresMfa, authError, recovery, completeRecovery, refreshMfa, signOut }), [session, loading, requiresMfa, authError, recovery, completeRecovery, refreshMfa, signOut]);
+  const value = useMemo<AuthContextValue>(() => ({ user: session?.user ?? null, session, loading, requiresMfa, authError, authLinkError, recovery, completeRecovery, refreshMfa, signOut }), [session, loading, requiresMfa, authError, authLinkError, recovery, completeRecovery, refreshMfa, signOut]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

@@ -87,9 +87,15 @@ const messages: Record<string, string> = {
   'Choose a CSV file.': 'Pilih fail CSV.',
 };
 const auth: Record<string, [string, string]> = {
+  captcha_failed: ['The security check could not be verified. Complete a new check and try again.', 'Semakan keselamatan tidak dapat disahkan. Lengkapkan semakan baharu dan cuba lagi.'],
+  signup_disabled: ['New account registration is currently unavailable. Existing members can still sign in.', 'Pendaftaran akaun baharu tidak tersedia buat masa ini. Ahli sedia ada masih boleh log masuk.'],
+  over_email_send_rate_limit: ['Too many email requests. Wait before requesting another email.', 'Terlalu banyak permintaan e-mel. Tunggu sebelum meminta e-mel lain.'],
+  over_request_rate_limit: ['Too many requests. Please try again later.', 'Terlalu banyak permintaan. Sila cuba lagi kemudian.'],
+  email_address_not_authorized: ['Account email delivery is currently unavailable. Please try again later.', 'Penghantaran e-mel akaun tidak tersedia buat masa ini. Sila cuba lagi kemudian.'],
+  email_address_invalid: ['Enter a valid email address.', 'Masukkan alamat e-mel yang sah.'],
+  otp_expired: ['This account link is invalid or has expired. Request a new email.', 'Pautan akaun ini tidak sah atau telah tamat tempoh. Minta e-mel baharu.'],
   invalid_credentials: ['Email or password is incorrect.', 'E-mel atau kata laluan tidak betul.'],
   email_not_confirmed: ['Confirm your email before signing in.', 'Sahkan e-mel anda sebelum log masuk.'],
-  over_request_rate_limit: ['Too many requests. Please try again later.', 'Terlalu banyak permintaan. Sila cuba lagi kemudian.'],
   mfa_verification_failed: ['The authenticator code could not be verified. Try a new code.', 'Kod pengesah tidak dapat disahkan. Cuba kod baharu.'],
   weak_password: ['Choose a stronger password that meets the password requirements.', 'Pilih kata laluan lebih kukuh yang memenuhi syarat kata laluan.'],
   '42501': ['This request is not authorized. Sign in and verify your session.', 'Permintaan ini tidak dibenarkan. Log masuk dan sahkan sesi anda.'],

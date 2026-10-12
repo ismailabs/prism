@@ -49,7 +49,9 @@ npm run dev
 | --- | --- | --- |
 | `VITE_SUPABASE_URL` | Public | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | Public | Public client key; sessions remain protected by RLS |
-| `EXCHANGE_RATE_API_KEY` | Server only, optional | Rate provider; public fallback is available |
+| `VITE_TURNSTILE_SITE_KEY` | Public, optional | Existing widget's public site key; enforce the matching secret in Supabase Auth before public signup |
+| `EXCHANGE_RATE_PROVIDER` | Server only, optional | Defaults to free Frankfurter; `exchangerate-api` requires independent RM0 plan verification |
+| `EXCHANGE_RATE_API_KEY` | Server only, optional | Used only when the keyed provider is explicitly selected; Frankfurter remains the fallback |
 
 Vite serves the frontend. Use `vercel dev` for `/api/rates`. Configure Supabase Site URL/redirect allowlist for local and deployed origins, confirmations/SMTP, Google, and TOTP. Recovery returns to the origin with `?recovery=1`.
 

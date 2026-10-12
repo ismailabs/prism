@@ -1,12 +1,16 @@
 import { useTranslation } from 'react-i18next';
 
 const english = {
+  captchaLabel: 'Security check', captchaHelp: 'Complete the security check before continuing.',
+  captchaFailed: 'The security check expired or could not load. Try again.', captchaRetry: 'Retry security check',
+  resend: 'Resend confirmation email', resendNotice: 'If this address needs confirmation, a new link has been requested. Check your inbox.',
+  invalidLink: 'This account link is invalid or has expired. Request a new confirmation or password recovery email.',
   welcome: 'Your money. A clearer picture.', subtitle: 'Sign in to your personal financial workspace.',
   signIn: 'Sign in', signUp: 'Create account', email: 'Email address', password: 'Password', username: 'Your name',
   google: 'Continue with Google', or: 'or continue with email', emailHint: 'you@example.com', nameHint: 'How should we call you?',
   passwordHint: 'At least 8 characters', waiting: 'Please wait…', createIntro: 'A little clarity goes a long way.',
   createSubtitle: 'Create your account to start tracking what matters.', checkEmail: 'Check your email to confirm your account, then sign in.',
-  privacy: 'Your finances stay private. Only you can access your workspace.', invalidEmail: 'Enter a valid email address.',
+  privacy: 'Your workspace is protected by account access controls.', invalidEmail: 'Enter a valid email address.',
   invalidPassword: 'Use at least 8 characters, including a letter and a number.', requiredPassword: 'Enter your password.',
   invalidName: 'Enter a name between 1 and 60 characters.', failed: 'Something went wrong. Please try again.',
   verifyTitle: 'One more layer of security.', verifySubtitle: 'Enter the six-digit code from your authenticator app to unlock your workspace.',
@@ -24,12 +28,16 @@ const english = {
 } as const;
 
 const malay: Record<keyof typeof english, string> = {
+  captchaLabel: 'Semakan keselamatan', captchaHelp: 'Lengkapkan semakan keselamatan sebelum meneruskan.',
+  captchaFailed: 'Semakan keselamatan telah tamat tempoh atau tidak dapat dimuatkan. Cuba lagi.', captchaRetry: 'Cuba semula semakan keselamatan',
+  resend: 'Hantar semula e-mel pengesahan', resendNotice: 'Jika alamat ini memerlukan pengesahan, pautan baharu telah diminta. Semak peti masuk anda.',
+  invalidLink: 'Pautan akaun ini tidak sah atau telah tamat tempoh. Minta e-mel pengesahan atau pemulihan kata laluan baharu.',
   welcome: 'Wang anda. Gambaran lebih jelas.', subtitle: 'Log masuk ke ruang kewangan peribadi anda.',
   signIn: 'Log masuk', signUp: 'Cipta akaun', email: 'Alamat e-mel', password: 'Kata laluan', username: 'Nama anda',
   google: 'Teruskan dengan Google', or: 'atau teruskan dengan e-mel', emailHint: 'anda@contoh.com', nameHint: 'Apakah nama panggilan anda?',
   passwordHint: 'Sekurang-kurangnya 8 aksara', waiting: 'Sila tunggu…', createIntro: 'Kejelasan kecil membawa perubahan besar.',
   createSubtitle: 'Cipta akaun untuk mula menjejak kewangan anda.', checkEmail: 'Semak e-mel untuk mengesahkan akaun, kemudian log masuk.',
-  privacy: 'Kewangan anda kekal peribadi. Hanya anda boleh mengakses ruang anda.', invalidEmail: 'Masukkan alamat e-mel yang sah.',
+  privacy: 'Ruang kerja anda dilindungi oleh kawalan akses akaun.', invalidEmail: 'Masukkan alamat e-mel yang sah.',
   invalidPassword: 'Gunakan sekurang-kurangnya 8 aksara, termasuk huruf dan nombor.', requiredPassword: 'Masukkan kata laluan anda.',
   invalidName: 'Masukkan nama antara 1 hingga 60 aksara.', failed: 'Ralat berlaku. Sila cuba lagi.',
   verifyTitle: 'Satu lagi lapisan keselamatan.', verifySubtitle: 'Masukkan kod enam digit daripada aplikasi pengesah untuk membuka ruang anda.',

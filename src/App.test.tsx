@@ -29,7 +29,7 @@ vi.mock('./hooks/usePlatformData', () => ({
 vi.mock('./hooks/useFinancialReports',()=>({useAnalyticsReport:()=>({data:[],isPending:false,error:null}),useFinancialReport:()=>({data:undefined,isPending:false,error:null}),useTransactionPage:()=>({data:{rows:[{id:'tx-1',user_id:'test-user',description:'Coffee',amount:'7.00',currency:'USD',type:'expense',category_id:null,payment_method_id:null,transaction_date:'2026-09-19T10:00:00Z',created_at:''}],total:1},isPending:false,error:null})}));
 vi.mock('./hooks/usePlanningData',()=>({usePlanningData:()=>({budgets:{data:[],isPending:false,error:null},rules:{data:[],isPending:false,error:null},importRows:{isPending:false}})}));
 vi.mock('./hooks/useGoalActions',()=>({useGoalActions:()=>({plans:{data:[],isPending:false,error:null,refetch:vi.fn()},save:{isPending:false},remove:{isPending:false},contribute:{isPending:false}})}));
-vi.mock('./lib/supabase', () => ({ supabase: { auth: {} } }));
+vi.mock('./lib/supabase', () => ({ initialAuthLinkError: false, initialAuthCallback: false, clearAuthLinkParameters: vi.fn(), supabase: { auth: {} } }));
 vi.mock('./hooks/useFinanceData', () => ({
   useTransactions: () => ({ data: [{ id: 'tx-1', description: 'Coffee', amount: '7.00', currency: 'USD', type: 'expense', transaction_date: '2026-09-19T10:00:00Z' }], isPending: false, error: fixture.error }),
   useListUsage: () => ({data:[],isPending:false}),

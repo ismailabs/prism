@@ -4,11 +4,13 @@ import { fileURLToPath, URL } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 let providerOrigin = '';
+let captchaOrigin = '';
 
 export default defineConfig({
   plugins: [react(), {
     name: 'prism-public-pwa',
     configResolved(config) {
+      captchaOrigin = config.env.VITE_TURNSTILE_SITE_KEY?.trim() ? ' https://challenges.cloudflare.com' : '';
       const endpoint = config.env.VITE_SUPABASE_URL?.trim();
       if (config.command === 'build' && (!endpoint || !config.env.VITE_SUPABASE_ANON_KEY?.trim())) throw new Error('Build requires VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
       if (endpoint) {
@@ -20,7 +22,7 @@ export default defineConfig({
     transformIndexHtml() {
       // A second policy intersects the hosting policy, narrowing the wildcard
       // to this build's public provider origin without hardcoding staging URLs.
-      return providerOrigin ? [{ tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: `connect-src 'self' ${providerOrigin} ${providerOrigin.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:')}` }, injectTo: 'head-prepend' as const }] : [];
+      return providerOrigin ? [{ tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: `connect-src 'self' ${providerOrigin} ${providerOrigin.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:')}${captchaOrigin}` }, injectTo: 'head-prepend' as const }] : [];
     },
     generateBundle(_options, bundle) {
       const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');

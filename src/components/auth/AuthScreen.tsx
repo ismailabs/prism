@@ -3,13 +3,16 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowRight,Eye,EyeOff,LoaderCircle,LockKeyhole } from 'lucide-react';
 import { useState,type FormEvent } from 'react';
 import { z } from 'zod';
-import { supabase } from '../../lib/supabase';
+import { initialAuthLinkError, supabase } from '@/lib/supabase';
 import { useAuthCopy } from './copy';
 import { PasswordRecovery } from './PasswordRecovery';
 import { authCallback } from '@/lib/routes';
+import { AuthCaptcha, captchaSiteKey } from './AuthCaptcha';
+import { useAuth } from '@/hooks/useAuth';
 
 export function AuthScreen() {
   const copy = useAuthCopy();
+  const { authLinkError } = useAuth();
   const [forgot,setForgot]=useState(false);
   const ms=useAppStore(s=>s.locale)==='ms';
   const [mode, setMode] = useState<'signin' | 'signup'>(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signup' ? 'signup' : 'signin');
@@ -18,7 +21,9 @@ export function AuthScreen() {
   const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
+  const [error, setError] = useState(initialAuthLinkError ? copy.invalidLink : '');
   const [notice, setNotice] = useState(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('notice') === 'password-updated' ? (ms ? 'Kata laluan dikemas kini. Log masuk dengan kata laluan baharu.' : 'Password updated. Sign in with your new password.') : '');
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -32,18 +37,34 @@ export function AuthScreen() {
     });
     const result = schema.safeParse({ email, password, username });
     if (!result.success) { setError(result.error.issues[0]?.message ?? copy.failed); return; }
+    if (busy) return;
+    if (captchaSiteKey && !captchaToken) { setError(copy.captchaHelp); return; }
     setBusy(true);
     try {
       if (mode === 'signup') {
-        const { data, error: authError } = await supabase.auth.signUp({ email: result.data.email, password: result.data.password, options: { data: { username: result.data.username, prism_setup_preferences: { currency: 'MYR', financial_timezone: 'Asia/Kuala_Lumpur', language: useAppStore.getState().locale } }, emailRedirectTo: authCallback() } });
+        const { data, error: authError } = await supabase.auth.signUp({ email: result.data.email, password: result.data.password, options: { captchaToken: captchaToken || undefined, data: { username: result.data.username, prism_setup_preferences: { currency: 'MYR', financial_timezone: 'Asia/Kuala_Lumpur', language: useAppStore.getState().locale } }, emailRedirectTo: authCallback() } });
         if (authError) throw authError;
         if (!data.session) { setNotice(copy.checkEmail); setMode('signin'); setPassword(''); }
       } else {
-        const { error: authError } = await supabase.auth.signInWithPassword({ email: result.data.email, password: result.data.password });
+        const { error: authError } = await supabase.auth.signInWithPassword({ email: result.data.email, password: result.data.password, options: { captchaToken: captchaToken || undefined } });
         if (authError) throw authError;
       }
     } catch (cause) { setError(errorMessage(cause)); }
-    finally { setBusy(false); }
+    finally { setBusy(false); setCaptchaToken(''); setCaptchaAttempt(value => value + 1); }
+  }
+
+  async function resendConfirmation() {
+    if (busy) return;
+    setError(''); setNotice('');
+    if (!z.email().safeParse(email.trim()).success) { setError(copy.invalidEmail); return; }
+    if (captchaSiteKey && !captchaToken) { setError(copy.captchaHelp); return; }
+    setBusy(true);
+    try {
+      const { error: authError } = await supabase.auth.resend({ type: 'signup', email: email.trim(), options: { emailRedirectTo: authCallback(), captchaToken: captchaToken || undefined } });
+      if (authError) throw authError;
+      setNotice(copy.resendNotice);
+    } catch (cause) { setError(errorMessage(cause)); }
+    finally { setBusy(false); setCaptchaToken(''); setCaptchaAttempt(value => value + 1); }
   }
 
   async function googleSignIn() {
@@ -66,11 +87,12 @@ export function AuthScreen() {
       {mode === 'signup' && <label className="form-field flex flex-col gap-2 text-sm" htmlFor="auth-name">{copy.username}<input id="auth-name" className="input" autoComplete="nickname" value={username} disabled={busy} maxLength={60} onChange={event => setUsername(event.target.value)} placeholder={copy.nameHint} required /></label>}
       <label className="form-field flex flex-col gap-2 text-sm" htmlFor="auth-email">{copy.email}<input id="auth-email" className="input" type="email" autoComplete="email" value={email} disabled={busy} onChange={event => setEmail(event.target.value)} placeholder={copy.emailHint} required /></label>
       <label className="form-field flex flex-col gap-2 text-sm" htmlFor="auth-password">{copy.password}<span className="relative block"><input id="auth-password" className="input w-full pr-12" type={showPassword ? 'text' : 'password'} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} value={password} disabled={busy} onChange={event => setPassword(event.target.value)} placeholder={mode === 'signup' ? copy.passwordHint : '••••••••'} required /><button type="button" className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground" aria-label={showPassword ? (ms ? 'Sembunyikan kata laluan' : 'Hide password') : (ms ? 'Tunjukkan kata laluan' : 'Show password')} onClick={() => setShowPassword(value => !value)}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></span></label>
-      {error && <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300" role="alert">{error}</p>}
+      {(error || authLinkError) && <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300" role="alert">{error || copy.invalidLink}</p>}
       {notice && <p className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-300" role="status">{notice}</p>}
+      <AuthCaptcha key={`${mode}-${captchaAttempt}`} onToken={setCaptchaToken} />
       <button type="submit" className="btn-primary flex w-full items-center justify-center gap-2" disabled={busy}>{busy ? <><LoaderCircle size={17} className="animate-spin" />{copy.waiting}</> : <>{mode === 'signin' ? copy.signIn : copy.signUp}<ArrowRight size={17} /></>}</button>
     </form>
-    <button type="button" className="text-link" onClick={()=>setForgot(true)}>{ms?'Lupa kata laluan?':'Forgot password?'}</button>
+    <div className="flex flex-wrap gap-4"><button type="button" className="text-link" disabled={busy} onClick={()=>setForgot(true)}>{ms?'Lupa kata laluan?':'Forgot password?'}</button><button type="button" className="text-link" disabled={busy} onClick={() => void resendConfirmation()}>{copy.resend}</button></div>
     <p className="flex items-start justify-center gap-2 text-center text-xs leading-relaxed text-muted-foreground"><LockKeyhole size={14} className="mt-0.5 shrink-0" />{copy.privacy}</p>
   </section>;
 }

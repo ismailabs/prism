@@ -54,7 +54,11 @@ export async function getExchangeRates(base: Currency): Promise<ExchangeRates> {
     let value: ExchangeRates;
     try {
       const key = process.env.EXCHANGE_RATE_API_KEY?.trim();
-      value = key ? await primaryRates(base, key).catch(() => fallbackRates(base)) : await fallbackRates(base);
+      // Existing credentials do not establish a free provider plan. Use the
+      // public no-key provider unless a separately verified provider is opted in.
+      value = process.env.EXCHANGE_RATE_PROVIDER === 'exchangerate-api' && key
+        ? await primaryRates(base, key).catch(() => fallbackRates(base))
+        : await fallbackRates(base);
       if (!Number.isFinite(value.updatedAt) || Date.now() - value.updatedAt > maximumAgeMs) {
         throw new Error('Exchange rates are too old.');
       }

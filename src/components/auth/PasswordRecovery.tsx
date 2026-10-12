@@ -5,6 +5,8 @@ import { useAppStore } from "@/store/useAppStore";
 import { loginPath, navigatePath, safeDestination } from '@/lib/routes';
 import { useState, type FormEvent } from "react";
 import { Button } from "../ui/button";
+import { AuthCaptcha, captchaSiteKey } from './AuthCaptcha';
+import { useAuthCopy } from './copy';
 export function PasswordRecovery({
   reset,
   onBack,
@@ -20,8 +22,13 @@ export function PasswordRecovery({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
+  const copy = useAuthCopy();
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (busy) return;
+    if (!reset && captchaSiteKey && !captchaToken) { setError(copy.captchaHelp); return; }
     setBusy(true);
     setError("");
     try {
@@ -46,7 +53,7 @@ export function PasswordRecovery({
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(
           email.trim(),
-          { redirectTo: `${window.location.origin}/?recovery=1` },
+          { redirectTo: `${window.location.origin}/?recovery=1`, captchaToken: captchaToken || undefined },
         );
         if (error) throw error;
       }
@@ -55,6 +62,7 @@ export function PasswordRecovery({
       setError(errorMessage(e));
     } finally {
       setBusy(false);
+      setCaptchaToken(''); setCaptchaAttempt(value => value + 1);
     }
   }
   return (
@@ -125,6 +133,7 @@ export function PasswordRecovery({
               {error}
             </p>
           )}
+          {!reset && <AuthCaptcha key={captchaAttempt} onToken={setCaptchaToken} />}
           <Button disabled={busy}>
             {reset
               ? ms
