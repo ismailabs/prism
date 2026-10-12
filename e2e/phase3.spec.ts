@@ -103,7 +103,8 @@ test('signup CTA and confirmation keep the safe callback destination', async ({ 
   await page.getByLabel('Email address', { exact: true }).fill('signup@example.invalid');
   await page.getByLabel('Password', { exact: true }).fill('FixturePassword123');
   await page.locator('form').getByRole('button', { name: 'Create account', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('email');
+  const confirmationNotice = 'Check your inbox and spam folder to confirm your account, then sign in.';
+  await expect(page.getByRole('status').filter({ hasText: confirmationNotice })).toHaveText(confirmationNotice);
   expect(body.email).toBe('signup@example.invalid');
   expect(body.data).toMatchObject({ prism_setup_preferences: { currency: 'MYR', financial_timezone: 'Asia/Kuala_Lumpur', language: 'en' } });
   expect(new URL(callback).pathname).toBe('/login');

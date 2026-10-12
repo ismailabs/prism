@@ -17,10 +17,28 @@ test('authentication guard protects workspace routes and sign-in UI is keyboard 
   expect(errors).toEqual([]);
 });
 
-test('forgot-password entry sends a recovery request with the app redirect',async({page})=>{
- let body:Record<string,unknown>|undefined;let endpoint='';
- await page.route(supabaseUrl+'/auth/v1/recover*',async route=>{body=route.request().postDataJSON();endpoint=route.request().url();await route.fulfill({json:{}});});
- await page.goto('/login');await page.getByRole('button',{name:'Forgot password?'}).click();await page.getByLabel('Email address').fill('prism-test@example.invalid');await page.getByRole('button',{name:'Send recovery email'}).click();await expect(page.getByRole('status').filter({hasText:'recovery email has been sent'})).toBeVisible();expect(body?.email).toBe('prism-test@example.invalid');expect(decodeURIComponent(endpoint)).toContain('/?recovery=1');
+for (const locale of ['en', 'ms'] as const) test(`forgot-password entry requests recovery with the app redirect and complete ${locale} feedback`, async ({ page }) => {
+  await page.addInitScript(language => localStorage.setItem('prism-preferences', JSON.stringify({ state: { locale: language }, version: 1 })), locale);
+  const requests: { body: Record<string, unknown>; endpoint: string }[] = [];
+  await page.route(supabaseUrl + '/auth/v1/recover*', async route => {
+    requests.push({ body: route.request().postDataJSON(), endpoint: route.request().url() });
+    await route.fulfill({ json: {} });
+  });
+  await page.goto('/login');
+  const expectedRedirect = `${new URL(page.url()).origin}/?recovery=1`;
+  await page.getByRole('button', { name: locale === 'ms' ? 'Lupa kata laluan?' : 'Forgot password?', exact: true }).click();
+  await page.getByLabel(locale === 'ms' ? 'Alamat e-mel' : 'Email address', { exact: true }).fill('prism-test@example.invalid');
+  await page.getByRole('button', { name: locale === 'ms' ? 'Hantar e-mel pemulihan' : 'Send recovery email', exact: true }).click();
+  const notice = locale === 'ms'
+    ? 'Jika akaun wujud, e-mel pemulihan telah diminta. Semak peti masuk dan folder spam anda.'
+    : 'If an account exists, a recovery email has been requested. Check your inbox and spam folder.';
+  await expect(page.getByRole('status').filter({ hasText: notice })).toHaveText(notice);
+  expect(requests).toHaveLength(1);
+  expect(requests[0].body.email).toBe('prism-test@example.invalid');
+  const endpoint = new URL(requests[0].endpoint);
+  expect(endpoint.origin).toBe(supabaseUrl);
+  expect(endpoint.pathname).toBe('/auth/v1/recover');
+  expect(endpoint.searchParams.get('redirect_to')).toBe(expectedRedirect);
 });
 
 test('PKCE recovery redirects to a new-password form and signs out after updating',async({page})=>{
