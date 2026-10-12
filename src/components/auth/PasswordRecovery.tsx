@@ -83,8 +83,8 @@ export function PasswordRecovery({
               ? "Kata laluan dikemas kini. Log masuk dengan kata laluan baharu."
               : "Password updated. Sign in with your new password."
             : ms
-              ? "Jika akaun wujud, e-mel pemulihan telah dihantar. Semak peti masuk anda."
-              : "If an account exists, a recovery email has been sent. Check your inbox."}
+              ? "Jika akaun wujud, e-mel pemulihan telah diminta. Semak peti masuk dan folder spam anda."
+              : "If an account exists, a recovery email has been requested. Check your inbox and spam folder."}
         </p>
       ) : (
         <form className="space-y-4" onSubmit={(e) => void submit(e)}>

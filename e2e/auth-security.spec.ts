@@ -22,9 +22,9 @@ async function challenge(page: Page, failsToLoad = false) {
       remove(id) { widgets.get(id)?.replaceChildren(); widgets.delete(id); }
     };` }));
 }
-async function fillLogin(page: Page) {
-  await page.getByLabel('Email address', { exact: true }).fill('new-prism-fixture@example.invalid');
-  await page.getByLabel('Password', { exact: true }).fill('SyntheticPassword123');
+async function fillLogin(page: Page, locale: 'en' | 'ms' = 'en') {
+  await page.getByLabel(locale === 'ms' ? 'Alamat e-mel' : 'Email address', { exact: true }).fill('new-prism-fixture@example.invalid');
+  await page.getByLabel(locale === 'ms' ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticPassword123');
 }
 
 for (const locale of ['en', 'ms']) for (const hasVerifier of [false, true]) test(`failed PKCE link is sanitized in ${locale}, verifier ${hasVerifier}`, async ({ page }) => {
@@ -66,32 +66,37 @@ for (const locale of ['en', 'ms']) test(`configured security check fits 320px re
   expect((await widget.boundingBox())?.width).toBe(150);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
-test('signup requires a fresh token, preserves confirmation and clears consumed tokens', async ({ page }) => {
+for (const locale of ['en', 'ms'] as const) test(`signup requires a fresh token, preserves confirmation and clears consumed tokens in ${locale}`, async ({ page }) => {
   await challenge(page);
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.addInitScript(language => localStorage.setItem('prism-preferences', JSON.stringify({ state: { locale: language }, version: 1 })), locale);
+  const captchaHelp = locale === 'ms' ? 'Lengkapkan semakan keselamatan sebelum meneruskan.' : 'Complete the security check before continuing.';
+  const confirmationText = locale === 'ms' ? 'Semak peti masuk dan folder spam untuk mengesahkan akaun, kemudian log masuk.' : 'Check your inbox and spam folder to confirm your account, then sign in.';
   const requests: Record<string, unknown>[] = [];
   await page.route(supabaseUrl + '/auth/v1/signup*', route => {
     requests.push(route.request().postDataJSON());
     return route.fulfill({ json: { id: 'synthetic-unconfirmed', identities: [] } });
   });
   await page.goto('/login?mode=signup');
-  await page.getByLabel('Your name', { exact: true }).fill('Synthetic member');
-  await fillLogin(page);
-  const submit = page.locator('form').getByRole('button', { name: 'Create account', exact: true });
+  await page.getByLabel(locale === 'ms' ? 'Nama anda' : 'Your name', { exact: true }).fill('Synthetic member');
+  await fillLogin(page, locale);
+  const submit = page.locator('form').getByRole('button', { name: locale === 'ms' ? 'Cipta akaun' : 'Create account', exact: true });
   await submit.click();
-  await expect(page.getByRole('alert')).toContainText('Complete the security check');
+  await expect(page.getByRole('alert')).toHaveText(captchaHelp);
   expect(requests).toHaveLength(0);
   await page.getByRole('button', { name: 'Complete synthetic security check' }).click();
   await page.getByRole('button', { name: 'Expire synthetic security check' }).click();
   await submit.click(); expect(requests).toHaveLength(0);
   await page.getByRole('button', { name: 'Complete synthetic security check' }).click();
   await submit.click();
-  await expect(page.getByRole('status').filter({ hasText: 'Check your email' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: confirmationText })).toHaveText(confirmationText);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(requests).toHaveLength(1);
   expect(requests[0].gotrue_meta_security).toMatchObject({ captcha_token: expect.stringMatching(/^fixture-token-/) });
   await expect(page.locator('.app-shell')).toHaveCount(0);
-  await expect(page.getByLabel('Password', { exact: true })).toHaveValue('');
-  await page.getByRole('button', { name: 'Resend confirmation email' }).click();
-  await expect(page.getByRole('alert')).toContainText('Complete the security check');
+  await expect(page.getByLabel(locale === 'ms' ? 'Kata laluan' : 'Password', { exact: true })).toHaveValue('');
+  await page.getByRole('button', { name: locale === 'ms' ? 'Hantar semula e-mel pengesahan' : 'Resend confirmation email' }).click();
+  await expect(page.getByRole('alert')).toHaveText(captchaHelp);
   expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain('fixture-token-');
 });
 test('sign-in consumes tokens even when Auth rejects the request', async ({ page }) => {
