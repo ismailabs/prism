@@ -1,6 +1,6 @@
 # PRISM seven-phase production acceptance matrix
 
-Updated 12 October 2026 MYT. Production is still the older deployment, with eleven historical database receipts. The upgraded application is not deployed. `BLOCKED` means a known required dependency is missing; `PENDING` means the actual production journey has not passed. Automated fixture tests are implementation evidence only. Previously recorded hosted baseline tests remain historical and must be repeated after upgrade with new isolated identities.
+Updated 13 October 2026 MYT. Production is still the older deployment, with eleven historical database receipts. The upgraded application is not deployed. Current GitHub Free usage and the $0 Actions stop are now directly verified; required exact-SHA CI results remain pending. The owner's three-read-only-capability Supabase token is correctly scoped in the dashboard, but entered values have not authenticated, so private provider capture remains pending. `BLOCKED` means a known required dependency is missing; `PENDING` means the actual production journey has not passed. Automated fixture tests are implementation evidence only. Previously recorded hosted baseline tests remain historical and must be repeated after upgrade with new isolated identities.
 
 | Feature | Phase | Entry point | Backend dependency | Automated implementation evidence | Required human evidence | Actual production outcome |
 |---|---|---|---|---|---|---|
