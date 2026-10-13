@@ -14,6 +14,7 @@ import { usePlatformText } from "./copy";
 import { Failure, ProgressBar, currencies, money, positive } from "./shared";
 import { DebtPlanner } from './DebtPlanner';
 export function DebtsPage() {
+  const privateMode = useAppStore(s => s.personalization.privacyMode);
   const L = usePlatformText();
   const timezone = useAppStore((s) => s.financialTimezone);
   const accounts = usePlatformTable("accounts");
@@ -197,8 +198,7 @@ export function DebtsPage() {
                     <ProgressBar value={p.percent} tone="debt" />
                   </div>
                   <p className="mt-2 text-xs text-subtle">
-                    {p.percent.toFixed(1)}
-                    {L("% repaid")}
+                    {privateMode ? '•••' : `${p.percent.toFixed(1)}${L('% repaid')}`}
                     {d.due_date ? L(` · due ${d.due_date}`) : ""}
                   </p>
                 </button>

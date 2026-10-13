@@ -4,6 +4,7 @@ import { useTransactions } from "@/hooks/useFinanceData";
 import { usePlatformMutation, usePlatformTable } from "@/hooks/usePlatformData";
 import { errorMessage } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
+import { drillTransactions } from '@/lib/navigation';
 import type { Account, Currency, Transaction } from "@/types";
 import { Plus, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
@@ -11,7 +12,7 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
 import { usePlatformText } from "./copy";
-import { Failure, currencies, money } from "./shared";
+import { Failure, currencies, money, useFinancialCopy } from "./shared";
 import { Transfers } from "./Transfers";
 function hasLinks(account: Account, transactions: Transaction[]) {
   return (
@@ -21,6 +22,7 @@ function hasLinks(account: Account, transactions: Transaction[]) {
 }
 export function AccountsPage() {
   const L = usePlatformText();
+  const c = useFinancialCopy();
   const accounts = usePlatformTable("accounts");
   const transactions = useTransactions();
   const mutations = usePlatformMutation("accounts");
@@ -155,6 +157,7 @@ export function AccountsPage() {
                     .length}{" "}
                 {L("linked transactions")}
               </p>
+              <button className="text-link mt-3 mr-4" onClick={() => drillTransactions({ account: a.id, currency: a.currency })}>{c('View transactions', 'Lihat transaksi')}</button>
               <button
                 className="mt-4 text-link"
                 onClick={() =>

@@ -7,8 +7,8 @@
   "description": "Personal finance in English and Bahasa Melayu. An internet connection is required for your finances.",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#146556",
-  "background_color": "#f5f6f3",
+  "theme_color": "#176b58",
+  "background_color": "#f6f7f4",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -19,7 +19,7 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }

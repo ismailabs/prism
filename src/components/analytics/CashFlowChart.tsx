@@ -60,7 +60,7 @@ export function cashPoints(
     };
   });
 }
-export function CashFlowChart({ points }: { points: CashPoint[] }) {
+export function CashFlowChart({ points, description }: { points: CashPoint[]; description?: string }) {
   const { t } = useTranslation();
   const { currency, locale, personalization } = useAppStore();
   const reduced = useReducedMotion();
@@ -78,7 +78,7 @@ export function CashFlowChart({ points }: { points: CashPoint[] }) {
       <div className="card-heading">
         <div>
           <h3>{t("cashFlow")}</h3>
-          <p>{t("cashFlowDescription")}</p>
+          <p>{description ?? t("cashFlowDescription")}</p>
         </div>
         <div className="chart-legend">
           <span className="cash-flow-income">
@@ -159,7 +159,7 @@ export function CashFlowChart({ points }: { points: CashPoint[] }) {
             <Bar
               dataKey="expense"
               name={t("expenses")}
-              fill="var(--cash-expense)"
+            fill="var(--data-spending)"
               radius={[3, 3, 0, 0]}
               maxBarSize={24}
               isAnimationActive={false}

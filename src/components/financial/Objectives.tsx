@@ -16,6 +16,7 @@ import { Modal } from "../ui/dialog";
 import { usePlatformText } from "./copy";
 import { Failure, ProgressBar, currencies, money, positive, useFinancialCopy } from "./shared";
 export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
+  const privateMode = useAppStore(s => s.personalization.privacyMode);
   const L = usePlatformText();
   const c = useFinancialCopy();
   const goalActions = useGoalActions();
@@ -254,7 +255,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                                 : L("Active")}
                       </p>
                     </div>
-                    <strong>{p.percent.toFixed(0)}%</strong>
+                    <strong>{privateMode ? '•••' : `${p.percent.toFixed(0)}%`}</strong>
                   </div>
                   <div className="mt-4">
                     <ProgressBar value={p.percent} />
@@ -313,7 +314,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                         {money(p.funded, current.currency)}
                       </strong>
                       <span className="text-sm text-subtle">
-                        {p.percent.toFixed(1)}%
+                        {privateMode ? '•••' : `${p.percent.toFixed(1)}%`}
                       </span>
                     </div>
                     <div className="mt-3">

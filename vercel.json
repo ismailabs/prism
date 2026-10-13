@@ -3,6 +3,11 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "git": {
+    "deploymentEnabled": {
+      "codex/calm-precision-20261013": false
+    }
+  },
   "functions": {
     "api/**/*.ts": {
       "maxDuration": 60
