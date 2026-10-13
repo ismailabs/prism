@@ -79,6 +79,6 @@ export function PublicHome({ demoOnly = false }: { demoOnly?: boolean }) {
         <section className="public-closing public-container"><p className="public-eyebrow">{c('A LITTLE CLARITY, EVERY DAY', 'SEDIKIT KEJELASAN, SETIAP HARI')}</p><h2>{c('Start with what you know.', 'Mulakan dengan apa yang anda tahu.')}</h2><p>{c('One account. One record. A clearer perspective.', 'Satu akaun. Satu rekod. Perspektif lebih jelas.')}</p><a className="public-cta" href={signup}>{c('Create your space', 'Cipta ruang anda')}<ArrowRight size={18} /></a></section>
       </>}
     </main>
-    <footer className="public-footer public-container"><span>PRISM · Personal Resource Insight & Spectrum Manager</span><a href="/demo">{c('Synthetic preview', 'Pratonton sintetik')}</a><span>{c('Built by Ismail', 'Dibina oleh Ismail')}</span></footer>
+    <footer className="public-footer public-container"><span>PRISM · Personal Resource Insight & Spectrum Manager</span><a href="/demo">{c('Synthetic preview', 'Pratonton sintetik')}</a><a href="/privacy">{c('Privacy notice', 'Notis privasi')}</a><a href="/terms">{c('Terms of use', 'Syarat penggunaan')}</a><span>{c('Built by Ismail', 'Dibina oleh Ismail')}</span></footer>
   </div>;
 }

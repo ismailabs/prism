@@ -90,6 +90,10 @@
 .public-closing .public-cta { margin-top:20px; }
 .public-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:15px; border-top:1px solid var(--border); padding-block:25px; font-size:10px; color:var(--subtle); }
 .public-footer a { min-height:44px; display:inline-flex; align-items:center; }
+.public-policy { max-width:56rem; padding-block:3rem; line-height:1.75; overflow-wrap:anywhere; }
+.public-policy h1 { font-size:clamp(2rem,5vw,3rem); line-height:1.2; margin-bottom:1rem; }
+.public-policy section { margin-top:2rem; }
+.public-policy h2 { font-size:1.25rem; margin-bottom:.5rem; }
 @media(max-width:1000px) { .public-nav { display:none; } .public-hero { gap:20px; padding-block:50px 75px; } .public-job-grid { grid-template-columns:repeat(2,1fr); } }
 @media(max-width:900px) { .public-hero { grid-template-columns:1fr; } .hero-copy h1 { max-width:660px; } .hero-preview { margin-top:20px; } }
 @media(max-width:700px) { .public-header { flex-wrap:wrap; gap:16px; padding-block:20px; } .public-controls { width:100%; justify-content:space-between; } .public-controls select { width:145px; } .public-hero { grid-template-columns:1fr; padding-block:30px 65px; } .hero-copy h1 { font-size:clamp(38px,8vw,56px); max-width:540px; } .hero-preview { margin-top:20px; padding:12px 0; } .public-preview { width:100%; padding:20px; } .public-horizons { grid-template-columns:1fr; gap:18px; border-radius:0; } .public-layer-list li { grid-template-columns:28px 1fr; gap:10px; } .public-layer-list p { grid-column:2; } .public-section,.public-story { padding-block:45px; } .public-trust { gap:15px; } .public-trust h2 { font-size:28px; } .public-job-grid { gap:20px; } .demo-metric strong { font-size:30px; } }

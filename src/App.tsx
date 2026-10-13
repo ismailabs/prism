@@ -5,6 +5,7 @@ import { MfaChallenge } from '@/components/auth/MfaChallenge';
 import { PasswordRecovery } from '@/components/auth/PasswordRecovery';
 import { LoadingState } from '@/components/LoadingState';
 import { PublicHome } from '@/components/public/PublicHome';
+import { PublicPolicy } from '@/components/public/PublicPolicy';
 import { useAuth } from '@/hooks/useAuth';
 import { loginPath, navigatePath, pathTab, safeDestination } from '@/lib/routes';
 import { useAppStore } from '@/store/useAppStore';
@@ -25,7 +26,8 @@ export default function App() {
   const syncing = useRef(false);
   const params = new URLSearchParams(location.search);
   const callback = params.has('code') || params.get('recovery') === '1' || recovery;
-  const publicPage = location.path === '/demo' || (location.path === '/' && !user && !callback);
+  const policyPage = location.path === '/privacy' || location.path === '/terms';
+  const publicPage = policyPage || location.path === '/demo' || (location.path === '/' && !user && !callback);
   const known = publicPage || location.path === '/' || location.path === '/login' || pathTab(location.path);
   const allowed = user && !loading && !requiresMfa && !authError && !recovery;
 
@@ -68,11 +70,13 @@ export default function App() {
     document.documentElement.dataset.motion = personalization.motion;
   }, [personalization.accent, personalization.density, personalization.motion]);
   useEffect(() => {
-    document.title = publicPage ? (locale === 'ms' ? 'PRISM · Kejelasan kewangan, mengikut cara anda' : 'PRISM · Financial clarity, on your terms') : `P.R.I.S.M. · ${location.path === '/login' ? t('signIn') : t(activeTab)}`;
-  }, [activeTab, locale, location.path, publicPage, t]);
+    const policyTitle = location.path === '/privacy' ? (locale === 'ms' ? 'Notis privasi' : 'Privacy notice') : (locale === 'ms' ? 'Syarat penggunaan' : 'Terms of use');
+    document.title = policyPage ? `PRISM · ${policyTitle}` : publicPage ? (locale === 'ms' ? 'PRISM · Kejelasan kewangan, mengikut cara anda' : 'PRISM · Financial clarity, on your terms') : `P.R.I.S.M. · ${location.path === '/login' ? t('signIn') : t(activeTab)}`;
+  }, [activeTab, locale, location.path, policyPage, publicPage, t]);
 
   if (!online) return <OfflineScreen />;
   if (!known) return <main className="grid min-h-screen place-items-center p-6"><div className="text-center"><h1 className="text-2xl font-semibold">{t('notFound')}</h1><a className="text-link mt-4" href="/">{t('backHome')}</a></div></main>;
+  if (policyPage) return <PublicPolicy kind={location.path === '/privacy' ? 'privacy' : 'terms'} />;
   if (publicPage) return <PublicHome demoOnly={location.path === '/demo'} />;
   if (loading) return <main className="grid min-h-screen place-items-center"><div className="w-full max-w-4xl p-6"><LoadingState /></div></main>;
   if (!user) return <main className="auth-layout">
@@ -84,7 +88,7 @@ export default function App() {
     </aside>
     <div className="auth-form-side">
       <div className="auth-preferences"><select className="input" aria-label={t('language')} value={locale} onChange={event => useAppStore.getState().setLocale(event.target.value === 'ms' ? 'ms' : 'en')}><option value="en">English</option><option value="ms">Bahasa Melayu</option></select><select className="input" aria-label={t('theme')} value={theme} onChange={event => useAppStore.getState().setTheme(event.target.value as 'system' | 'light' | 'dark')}><option value="system">{t('system')}</option><option value="light">{t('light')}</option><option value="dark">{t('dark')}</option></select></div>
-      <div className="auth-form"><AuthScreen /></div><a className="text-link mt-5" href="/">{t('backHome')}</a>
+      <div className="auth-form"><AuthScreen /></div><div className="mt-5 flex flex-wrap gap-4 text-sm"><a className="text-link" href="/">{t('backHome')}</a><a className="text-link" href="/privacy">{locale === 'ms' ? 'Notis privasi' : 'Privacy notice'}</a><a className="text-link" href="/terms">{locale === 'ms' ? 'Syarat penggunaan' : 'Terms of use'}</a></div>
       <img src="/built-by-ismail.png" alt="Built by Ismail" className="auth-credit" />
     </div>
   </main>;

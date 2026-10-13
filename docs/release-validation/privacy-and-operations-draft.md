@@ -8,6 +8,8 @@ The subsequent [production mission](production-mission-2026-10-11.md) supplies c
 
 ## Owner facts required before publishing a notice
 
+Current supplied facts: **Ismail, Malaysia**. The owner requested omission of postal address and email; honor that preference and do not request them again. A verified existing public contact route at `https://www.ismailstudio.my/#contact` provides an alternative without publishing those details in PRISM. Current app notice/terms wording is in `src/components/public/PublicPolicy.tsx`, with functional EN/MS routes and public/auth entry links. Human review, contact monitoring and unresolved operating facts are not inferred from this technical implementation. Older address/email placeholders below are historical draft fields, superseded by this explicit publication choice.
+
 | Item | Required evidence | Status |
 |---|---|---|
 | Controller and jurisdiction | Legal entity/name, postal address, authority and applicable service markets | UNVERIFIED |

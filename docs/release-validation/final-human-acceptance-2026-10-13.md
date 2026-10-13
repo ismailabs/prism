@@ -27,6 +27,8 @@ Supply the actual owner facts in the [privacy and operations draft](privacy-and-
 
 Do not supply secrets. Contacts and controller details intended for publication must be explicitly approved for that purpose. No applicable-law exemption or professional review is inferred. If a fact or reviewer is unavailable, record the exact missing item rather than signing for another person.
 
+**13 October supplied facts and publication preference:** The owner supplied **Ismail** and **Malaysia** and explicitly requested that postal address and email be skipped. Those fields are intentionally omitted, not requested again or filled from private account data. The existing public operator website `https://www.ismailstudio.my/` was actually inspected and contains its established WhatsApp contact route. The prepared `/privacy` and `/terms` pages link to its contact section with no referrer and ask for a brief request/opaque reference, never financial exports or credentials. The private PRISM repository cannot be used as a general-public contact route. Receipt/monitoring of support/privacy messages and genuine human acceptance remain separate, unverified facts; the code does not claim monitoring, legal approval or a response-time promise.
+
 ## 2. One physical-device and accessibility session
 
 Use only synthetic records and the existing designated test identity whose password you privately set. Do not send its password here. The current browser is already signed in. On other devices, sign in normally and complete CAPTCHA privately. Public signup will be tested after the approved cutover. Use the [matrix procedures](production-acceptance-matrix.md#executable-final-human-acceptance); record a row for every supported combination.
