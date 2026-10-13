@@ -86,7 +86,7 @@ test('category color create/edit/delete uses current identity on every chart, le
     await page.goto('/settings');await page.getByRole('button',{name:theme==='dark'?'Dark':'Light',exact:true}).click();await page.getByRole('button',{name:'Save changes',exact:true}).click();
     await page.getByRole('link',{name:'Analytics',exact:true}).click();await page.getByLabel('Period',{exact:true}).selectOption('all-time');await verify();
   }
-  await page.goto('/transactions');await expect(page.locator('.category-badge').filter({hasText:'Investment'}).first().locator('span').first()).toHaveCSS('background-color','rgb(168, 85, 247)',{timeout:20_000});
+  await page.goto('/transactions');const investmentDots=page.getByRole('table').locator('.category-badge').filter({hasText:'Investment'}).locator('.category-dot');await expect(investmentDots).toHaveCount(3);for(const dot of await investmentDots.all())await expect(dot).toHaveCSS('background-color','rgb(168, 85, 247)');
   await page.goto('/categories');await page.getByRole('button',{name:'Add category',exact:true}).click();await page.getByLabel('Name',{exact:true}).fill('Temporary QA');await page.getByRole('dialog').locator('input[pattern]').fill('#000000');await page.getByRole('dialog').getByRole('button',{name:'Create',exact:true}).click();
   await page.getByRole('button',{name:'Delete Temporary QA',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'Delete',exact:true}).click();await expect(page.getByText('Temporary QA',{exact:true})).toHaveCount(0);
   await page.route(supabaseUrl+'/rest/v1/categories*',route=>route.request().method()==='DELETE'?route.fulfill({status:409,json:{code:'23503',message:'foreign key violation'}}):route.fallback());

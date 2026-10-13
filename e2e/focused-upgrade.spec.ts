@@ -1,5 +1,5 @@
 import {expect,test} from '@playwright/test';
-import {mockSignedInApp, rows, supabaseUrl} from './fixtures';
+import {mockSignedInApp, rows, supabaseUrl, userId} from './fixtures';
 test.beforeEach(async ({ page }) => { await mockSignedInApp(page); });
 
 for (const language of ['en', 'ms']) test(`debt history blocks parent deletion in ${language}`, async ({page}) => {
@@ -30,7 +30,9 @@ for (const language of ['en', 'ms']) test(`debt deletion checks server history w
 });
 
 test('dashboard hierarchy, semantic cash-flow colors, transaction accounts, and mobile drawer', async ({ page }) => {
-  await page.goto('/');
+  const recorded=page.waitForResponse(response=>{const url=new URL(response.url());return url.origin===supabaseUrl&&url.pathname==='/rest/v1/finance_daily_totals'&&url.searchParams.get('user_id')===`eq.${userId}`&&response.status()===200;});
+  await Promise.all([recorded,page.goto('/')]);
+  await page.locator('.loading-state').waitFor({state:'hidden'});
   await expect(page.getByText('Tracked net flow', {exact:false})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Your accounts'})).toBeVisible();
   await expect(page.getByText('YOUR DIRECTION')).toHaveCount(0);
@@ -38,10 +40,11 @@ test('dashboard hierarchy, semantic cash-flow colors, transaction accounts, and 
   const order = await page.locator('.app-main').evaluate(main => ({ kpi:main.querySelector('.snapshot')?.getBoundingClientRect().top, summary:main.querySelector('[aria-label="Financial summary"]')?.getBoundingClientRect().top, chart:main.querySelector('.module-cashFlow')?.getBoundingClientRect().top }));
   expect(order.kpi).toBeLessThan(order.chart!); expect(order.chart).toBeLessThan(order.summary!);
   await expect(page.locator('.cash-flow-income i')).toHaveCSS('background-color','rgb(8, 119, 95)');
-  await expect(page.locator('.cash-flow-expense i')).toHaveCSS('background-color','rgb(180, 66, 66)');
+  await expect(page.locator('.cash-flow-expense i')).toHaveCSS('background-color','rgb(105, 143, 116)');
   await page.getByRole('link',{name:'Transactions'}).click();
   await expect(page.getByRole('heading',{name:'Accounts'})).toBeVisible();
-  await expect(page.getByText('Everyday account')).toBeVisible();
+  await expect(page.getByRole('region', {name:'Accounts', exact:true}).getByText('Everyday account', {exact:true})).toBeVisible();
+  await expect(page.getByRole('table').getByText('Everyday account', {exact:true})).toBeVisible();
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('.app-nav')).toBeHidden();
   await page.getByRole('button',{name:'Open navigation'}).click();

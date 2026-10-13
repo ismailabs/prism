@@ -101,5 +101,7 @@ jobs:
             artifacts/phase7/*.png
             artifacts/phase7/pwa-results-*/
             artifacts/qa-failure.png
+            artifacts/calm-precision/screens/*.png
+            artifacts/calm-precision/screens/a11y-*.json
             test-results/
             playwright-report/
