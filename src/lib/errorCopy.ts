@@ -2,6 +2,14 @@ import type { Locale } from '@/types';
 // Only known validation messages are shown. Database details, rejected row values,
 // tokens and unknown provider messages must never become customer-facing text.
 const messages: Record<string, string> = {
+  'Ledger records changed while loading. Refresh to load a complete report.': 'Rekod lejar berubah semasa dimuatkan. Muat semula untuk mendapatkan laporan lengkap.',
+  'A complete private ledger read is required.': 'Bacaan lejar peribadi yang lengkap diperlukan.',
+  'Invalid private ledger ownership.': 'Pemilikan lejar peribadi tidak sah.',
+  'Incomplete exact ledger data.': 'Data lejar tepat tidak lengkap.',
+  'Incomplete exact ledger journal.': 'Jurnal lejar tepat tidak lengkap.',
+  'Unbalanced or incomplete ledger journal.': 'Jurnal lejar tidak seimbang atau tidak lengkap.',
+  'Incomplete exact allocation data.': 'Data peruntukan tepat tidak lengkap.',
+  'Incomplete posted ledger event.': 'Peristiwa lejar yang dicatat tidak lengkap.',
   'Debt has repayment history. Keep this record until reversal support is available.': 'Hutang mempunyai sejarah bayaran balik. Kekalkan rekod ini sehingga sokongan pembalikan tersedia.',
   'A verified session is required.': 'Sesi yang disahkan diperlukan.',
   'A verified sign-in is required.': 'Log masuk yang disahkan diperlukan.',

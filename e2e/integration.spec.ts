@@ -68,6 +68,7 @@ for(const locale of ['en','ms'] as const) test(`integrated synthetic accounting 
   page.on('request',request=>{if(request.url().includes('/rest/v1/')&&request.method()!=='GET')writes.push(request.url());});
   await page.goto('/accounting');
   await expect(page.getByRole('heading',{name:locale==='en'?'Accounting laboratory':'Makmal perakaunan',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:locale==='en'?'Synthetic example':'Contoh rekaan',exact:true}).click();
   await expect(page.getByRole('region',{name:locale==='en'?'Balance sheet':'Kunci kira-kira'})).toContainText('15,280.00');
   const equation=page.getByRole('status').filter({hasText:locale==='en'?'Exact equation difference':'Perbezaan persamaan tepat'});
   await expect(equation).toContainText('0.00');
