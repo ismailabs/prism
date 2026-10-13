@@ -15,15 +15,16 @@ import { exerciseLedger, exerciseHistoricalLedger, exerciseLedgerBoundaries } fr
 // Only fresh native databases on loopback, synthetic inputs and random passwords.
 // The receipt map below is a test oracle, not a hosted migration history repair.
 const files = (await readdir('supabase/migrations')).filter(f => f.endsWith('.sql')).sort();
-assert.equal(files.length, 17, 'Review any change to the accepted migration chain');
+assert.equal(files.length, 18, 'Review any change to the accepted migration chain');
 assert.equal(new Set(files.map(f => f.split('_')[0])).size, files.length);
 const audit = JSON.parse(await readFile('docs/phases1-4-audit-evidence.json', 'utf8'));
 const phase5 = JSON.parse(await readFile('docs/phase5-migration-inventory.json','utf8'));
+const repairs = JSON.parse(await readFile('docs/release-validation/production-migration-repairs.json', 'utf8'));
 const migrations = [];
 for (const file of files) {
   const sql = await readFile(`supabase/migrations/${file}`, 'utf8');
   const hash = createHash('sha256').update(sql.replaceAll('\r\n', '\n')).digest('hex').toUpperCase();
-  const expected = audit.normalizedMigrationContent.find(m => m.file === file && m.phase === 'phase1') ?? audit.normalizedMigrationContent.find(m => m.file === file) ?? phase5.migrations.find(m => m.file === file);
+  const expected = audit.normalizedMigrationContent.find(m => m.file === file && m.phase === 'phase1') ?? audit.normalizedMigrationContent.find(m => m.file === file) ?? phase5.migrations.find(m => m.file === file) ?? repairs.migrations.find(m => m.file === file);
   assert(expected, `Unreviewed migration: ${file}`);
   assert.equal(hash, expected.normalizedSha256, `Accepted SQL bytes changed: ${file}`);
   migrations.push({ file, sql, hash });

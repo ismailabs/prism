@@ -1,0 +1,12 @@
+{
+  "migrations": [
+    {
+      "file": "20261013031257_enforce_hosted_transaction_currency_precision.sql",
+      "normalizedSha256": "539B86BE8E6E1912CFE9251B290E3DF32847254ED2BC312FF281AB4602D3FCB9",
+      "hostedVersion": "20261013031755",
+      "name": "enforce_hosted_transaction_currency_precision",
+      "purpose": "Add the missing historical transaction currency-scale invariant without modifying existing financial data",
+      "rehearsal": "Actual restored production clone, late-failure rollback, exact row preservation and four-currency valid/invalid acceptance passed"
+    }
+  ]
+}

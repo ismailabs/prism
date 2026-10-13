@@ -28,6 +28,7 @@ jobs:
       - run: npm run lint 2>&1 | tee artifacts/ci/lint.log
       - run: npm run test 2>&1 | tee artifacts/ci/unit.log
       - run: npm run test:db 2>&1 | tee artifacts/ci/finance-db.log
+      - run: node scripts/transaction-precision-repair-test.mjs 2>&1 | tee artifacts/ci/transaction-precision-repair.log
       - run: npm run test:platform-db 2>&1 | tee artifacts/ci/platform-db.log
       - run: npm run test:foundations-db 2>&1 | tee artifacts/ci/foundations-db.log
       - run: npm run test:period-db 2>&1 | tee artifacts/ci/period-db.log
@@ -67,8 +68,14 @@ jobs:
           VITE_SUPABASE_ANON_KEY: fixture-anon-key
       # Only this local fixture job may upload traces. Never reuse this allowlist
       # for hosted authenticated tests or add env files, database dirs or state.
-      - name: Preserve synthetic verification evidence, including failures
+      - name: Preserve fixture receipts in Actions logs, including failures
         if: always()
+        run: node scripts/ci-evidence-log-fallback.mjs
+      - name: Preserve optional synthetic binary evidence archive
+        if: always()
+        # Tests and the required log receipts still fail normally. Artifact
+        # storage is capped at RM0; an unavailable binary copy is disclosed.
+        continue-on-error: true
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2, Node 24
         with:
           name: prism-local-verification-${{ github.run_id }}-${{ github.run_attempt }}

@@ -40,7 +40,7 @@ let source = cluster(sourceDir), restored, client;
 try {
   await source.initialise(); await source.start(); client = source.getPgClient('postgres', '127.0.0.1'); await client.connect();
   const bootstrap = await readFile('supabase/tests/auth-fixture.sql', 'utf8'); await client.query(bootstrap);
-  const migrations = (await readdir('supabase/migrations')).filter(path => path.endsWith('.sql')).sort(); assert.equal(migrations.length, 17);
+  const migrations = (await readdir('supabase/migrations')).filter(path => path.endsWith('.sql')).sort(); assert.equal(migrations.length, 18);
   for (const path of migrations) await client.query(await readFile(`supabase/migrations/${path}`, 'utf8'));
   const db = { exec: sql => client.query(sql), query: (sql, args) => client.query(sql, args) };
   await exerciseLedger(db); const before = await snapshot(client);
@@ -57,5 +57,5 @@ try {
   await exerciseLedgerBoundaries({ exec: sql => client.query(sql), query: (sql, args) => client.query(sql, args) });
   await mkdir('artifacts/phase7', { recursive: true });
   await writeFile('artifacts/phase7/restore-rehearsal.json', JSON.stringify({ status: 'PASS', method: 'Clean shutdown; cold cluster snapshot; synthetic source erasure; restore to a separate fresh directory; exact full-table comparison and restored authorization probes', environment: 'disposable native PostgreSQL 18; loopback only', migrations: migrations.length, tables: before, hostedRestore: 'not tested', crossVersionRestore: 'not tested' }, null, 2));
-  console.log(`PASS cold snapshot/restore: all ${before.length} public/Auth/private tables, 17 migrations, exact financial text and restored owner/session/MFA boundaries`);
+  console.log(`PASS cold snapshot/restore: all ${before.length} public/Auth/private tables, ${migrations.length} migrations, exact financial text and restored owner/session/MFA boundaries`);
 } finally { if (client) await client.end(); if (restored) await restored.stop(); await source.stop(); }

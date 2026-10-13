@@ -1,6 +1,6 @@
 // Synthetic only: no connection string, hosted credentials or RPC transport.
 import assert from 'node:assert/strict';
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { randomUUID, createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
@@ -129,6 +129,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     await replay(db);
     const receipt = await exerciseDeletionSecurity(db);
     await mkdir('artifacts/phase7', { recursive: true });
-    await writeFile('artifacts/phase7/deletion-security-review.json', JSON.stringify({ ...receipt, environment: 'isolated in-memory PGlite; 17 migrations; synthetic Auth' }, null, 2));
+    await writeFile('artifacts/phase7/deletion-security-review.json', JSON.stringify({ ...receipt, environment: `isolated in-memory PGlite; ${(await readdir('supabase/migrations')).filter(file => file.endsWith('.sql')).length} migrations; synthetic Auth` }, null, 2));
   } finally { await db.close(); }
 }
