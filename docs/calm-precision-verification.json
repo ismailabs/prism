@@ -1,0 +1,828 @@
+{
+  "status": "PASS",
+  "authority": "isolated local development verification only; not a deployment or hosted/human launch certification",
+  "verifiedAt": "2026-10-13T22:44:44.319Z",
+  "baseline": "d1438197a33d179cedd6c54bad3bfcf9a06db31f",
+  "branch": "codex/calm-precision-20261013",
+  "environment": {
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "platform": "win32",
+    "browser": "headless Microsoft Edge",
+    "postgres": "18 disposable",
+    "postgrest": "16.4 local"
+  },
+  "commands": [
+    {
+      "group": "core",
+      "command": "npm run typecheck",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 38.427,
+      "log": "artifacts/calm-precision/core/typecheck.log",
+      "logSha256": "a823e0b26d08978ff2998a0ddc09cef503f28af38df93a62f400f42718979e50"
+    },
+    {
+      "group": "core",
+      "command": "npm run lint",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 144.729,
+      "log": "artifacts/calm-precision/core/lint.log",
+      "logSha256": "ab022acf3c98b916690d37a8189e492b7d555cf704b6ac5bf3120746f9af44a5"
+    },
+    {
+      "group": "core",
+      "command": "npm run test",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 68.41,
+      "log": "artifacts/calm-precision/core/test.log",
+      "logSha256": "593cd8d92fab9861a056f2d4463c89be5435574bc48a2c7922fc380fb61477ff"
+    },
+    {
+      "group": "core",
+      "command": "npm run build",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 44.576,
+      "log": "artifacts/calm-precision/core/build.log",
+      "logSha256": "c918d105befea159eb30d1424644623287d3aa90701a7339451eb9c6cb8ed1c3"
+    },
+    {
+      "group": "core",
+      "command": "npm run test:localization",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 2.255,
+      "log": "artifacts/calm-precision/core/test-localization.log",
+      "logSha256": "4b2f6745aa99b044a9095a82f7eef5fef3d41f4db8087045b2749d22c49d54ed"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 9.558,
+      "log": "artifacts/calm-precision/database/test-db.log",
+      "logSha256": "ffdb51fd1e0b0de19afac9d17d12223dd777031a90e411ddfc8bcca10fef7592"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:platform-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 8.243,
+      "log": "artifacts/calm-precision/database/test-platform-db.log",
+      "logSha256": "5e99ce468c3da1051b7d257a4ba02410224fe497d285dd104a07f4a958458022"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:foundations-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 10.768,
+      "log": "artifacts/calm-precision/database/test-foundations-db.log",
+      "logSha256": "4735b2a1df5157057651adecbc7bb6df99b625cb32b0991aa0e5503ab178f533"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:period-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 8.832,
+      "log": "artifacts/calm-precision/database/test-period-db.log",
+      "logSha256": "4de25fb4d6dea305d2498c6f7c2d23b9c176a72e00e26e680c7b0f1370a7a12c"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:ledger-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 6.998,
+      "log": "artifacts/calm-precision/database/test-ledger-db.log",
+      "logSha256": "72b7c3965a1fe03db99690592a3428312d25b8767e827da49dbe1d7d1ea95b53"
+    },
+    {
+      "group": "database",
+      "command": "npm run ledger:dry-run",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 0.691,
+      "log": "artifacts/calm-precision/database/ledger-dry-run.log",
+      "logSha256": "317eb73d33979e0b7252474d91d61c3745df03a51e4f30200d5df0952c9598ba"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:ledger-review",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 3.771,
+      "log": "artifacts/calm-precision/database/test-ledger-review.log",
+      "logSha256": "bbeb9fbfc193bc5ff60451a35e891e4e6404fdcecf2cb2d20b0a105334e68539"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:planning-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 6.692,
+      "log": "artifacts/calm-precision/database/test-planning-db.log",
+      "logSha256": "492949be270dc2b7f1637fba3989f52fbf88a8f6094b5295c93c814059c1213a"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:goal-actions-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 6.234,
+      "log": "artifacts/calm-precision/database/test-goal-actions-db.log",
+      "logSha256": "4b1c1134bf8e728bcf30142b3d77702c8b685eca2a80867acf23e9faa2db8009"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:actions-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 5.69,
+      "log": "artifacts/calm-precision/database/test-actions-db.log",
+      "logSha256": "8912107e04dd18a05633d54ebb68ffeecc26cde28307925baa9269eb3584e527"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:integration-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 33.132,
+      "log": "artifacts/calm-precision/database/test-integration-db.log",
+      "logSha256": "c7b742cc9987a82c36d023c4c712496efabe09d2ec3b45056931d05f475515ad"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:integration-review",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 0.683,
+      "log": "artifacts/calm-precision/database/test-integration-review.log",
+      "logSha256": "2df16b61a7dc885a9b61df4bcfa001c416dafec0b4a576f2550d79c382cb1712"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:deletion-security",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 6.109,
+      "log": "artifacts/calm-precision/database/test-deletion-security.log",
+      "logSha256": "bea6f21a89de1a74952e3cf45588d4fcc96e194ef03bffb1f3ed23241dc000b2"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:intelligence-db",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 8.517,
+      "log": "artifacts/calm-precision/database/test-intelligence-db.log",
+      "logSha256": "ec8c86adacb0ffd26e342618364cee0bcda3a7deeed086bf53a784469ac4c438"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:intelligence-review",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 1.248,
+      "log": "artifacts/calm-precision/database/test-intelligence-review.log",
+      "logSha256": "9bc42b1c73490489fec840350411fa2aeac3d5dde377143ae3d15c95a88ab007"
+    },
+    {
+      "group": "database",
+      "command": "npm run test:actions-review",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 5.29,
+      "log": "artifacts/calm-precision/database/test-actions-review.log",
+      "logSha256": "a41d4fff186341b60ceec68073fdac53e72f432b6b91502bbecb4e92d4081e1b"
+    },
+    {
+      "group": "native",
+      "command": "npm run test:postgres",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 58.354,
+      "log": "artifacts/calm-precision/native/test-postgres.log",
+      "logSha256": "0cabb9d65c226dcd74d2725dc36b56682d4eff26aa43b28d130d1ab093f22892"
+    },
+    {
+      "group": "native",
+      "command": "npm run test:actions-native",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 105.902,
+      "log": "artifacts/calm-precision/native/test-actions-native.log",
+      "logSha256": "1f53fe03c223b076d2b3b61af540524b461a7d7274a9281296a01f9294f0ad41"
+    },
+    {
+      "group": "native",
+      "command": "npm run test:intelligence-native",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 71.823,
+      "log": "artifacts/calm-precision/native/test-intelligence-native.log",
+      "logSha256": "c37b89b14b877dc010985905dd62934bc2b573a8a5dc7b43bfe06a084f9bfe80"
+    },
+    {
+      "group": "browser",
+      "command": "npm run test:e2e",
+      "code": 1,
+      "status": "FAIL",
+      "seconds": 3501.71,
+      "log": "artifacts/calm-precision/browser/test-e2e.log",
+      "logSha256": "9e560f661c5f84ed6e4e588105070c982851f4d0ec46939662de0c20287a3264",
+      "resolution": {
+        "status": "PASS",
+        "method": "Retain the 243/248 failed attempt and all five complete remediation runs. After final review, refresh the full phase3/focused suites and four added chart-contrast cases. No uninterrupted full-catalog local pass is claimed.",
+        "remediatedCases": 99,
+        "finalFiles": [
+          {
+            "file": "actions.spec.ts",
+            "expected": 7,
+            "passed": 7,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 119.424,
+            "sourceSha256": "b7d436bdb75849330ed50bc02ee74b895d1018df6af6371b039a9b8daa572a27",
+            "log": "artifacts/calm-precision/remediation/actions.spec.ts.log",
+            "logSha256": "2c5553fd835eb805aeffd4798687033c07204698fd439595a0ef56b4bd7114ff"
+          },
+          {
+            "file": "auth-routing.spec.ts",
+            "expected": 4,
+            "passed": 4,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 79.021,
+            "log": "artifacts/calm-precision/browser-files/auth-routing.spec.ts.log",
+            "logSha256": "70c39cbe09e50f698e8e668a66af1d65ca81ca32ad6a9aed20be01edfac4665d"
+          },
+          {
+            "file": "calm-precision.spec.ts",
+            "expected": 77,
+            "passed": 77,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 1286.773,
+            "log": "artifacts/calm-precision/browser-files/calm-precision.spec.ts.log",
+            "coverage": "73 original cases plus four added rendered-contrast cases; separate actual runs, not one 77-case run",
+            "additionalRun": {
+              "file": "calm-precision.spec.ts",
+              "expected": 4,
+              "passed": 4,
+              "code": 0,
+              "status": "PASS",
+              "seconds": 114.3,
+              "sourceSha256": "18d750da7acd11ff5bec407edda547ded6e475a57166491bccd23f61e9102173",
+              "filter": "chart marks retain graphical contrast",
+              "log": "artifacts/calm-precision/final-browser/calm-precision.spec.ts.log",
+              "logSha256": "7b1a00ce8e6543661181d429f55b7e2ee634f58f9e8f371b7e12f477b587499f"
+            },
+            "logSha256": "b3d9a09ec501d481f1b0926c143dc192d0c9c1ff6c95c0c9316602dafc4d6432"
+          },
+          {
+            "file": "enhancements.spec.ts",
+            "expected": 50,
+            "passed": 50,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 454.589,
+            "sourceSha256": "1f8e3ba5d26037861cbff1a4222371e9326bddc457bd0649e3d1454dab68868d",
+            "log": "artifacts/calm-precision/remediation/enhancements.spec.ts.log",
+            "logSha256": "87e6bf2db33f8136ffc8d805bf7cc6b800b3cc20e2befb4cb2b3e90133777cc0"
+          },
+          {
+            "file": "focused-upgrade.spec.ts",
+            "expected": 7,
+            "passed": 7,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 120.003,
+            "sourceSha256": "40548a42754740abd13e3284781fa131580272b28d757a268fbd8a15a238d6c7",
+            "log": "artifacts/calm-precision/final-browser/focused-upgrade.spec.ts.log",
+            "logSha256": "234e23554d3c341b512bde18286a89c4e762953a9d649a262895fd14be90a9d4"
+          },
+          {
+            "file": "foundations.spec.ts",
+            "expected": 6,
+            "passed": 6,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 68.391,
+            "log": "artifacts/calm-precision/browser-files/foundations.spec.ts.log",
+            "logSha256": "4a743b374f739cf50e70ee9f9cc2e956b6422fe69553ac621e77ae3501a496a3"
+          },
+          {
+            "file": "hardening.spec.ts",
+            "expected": 4,
+            "passed": 4,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 61.839,
+            "log": "artifacts/calm-precision/browser-files/hardening.spec.ts.log",
+            "logSha256": "218c9d1ad6a1ef942dcd75df5a2330d5d0415b5b10ab504f7fc6b5bbd9b75688"
+          },
+          {
+            "file": "hosted-ledger.spec.ts",
+            "expected": 10,
+            "passed": 10,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 77.579,
+            "log": "artifacts/calm-precision/browser-files/hosted-ledger.spec.ts.log",
+            "logSha256": "d4be6e77bd57e88b419554d3de67b7e7e8e7cafea4876ebcd5360d06e989c9e1"
+          },
+          {
+            "file": "integration.spec.ts",
+            "expected": 6,
+            "passed": 6,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 77.361,
+            "sourceSha256": "868dfd87c1237a2447181987f091d3aad5005be33525514ef2d9f6917135e1df",
+            "log": "artifacts/calm-precision/remediation/integration.spec.ts.log",
+            "logSha256": "1fce58661ce879d7cf3d5be43f5e49de05bdb488df48638ffdab036cdf651b52"
+          },
+          {
+            "file": "intelligence.spec.ts",
+            "expected": 8,
+            "passed": 8,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 67.293,
+            "log": "artifacts/calm-precision/browser-files/intelligence.spec.ts.log",
+            "logSha256": "f61fd7b4316ce1a62112a8f6082990e818c4a56c8b86d63eb824d567023b9334"
+          },
+          {
+            "file": "modal-focus.spec.ts",
+            "expected": 29,
+            "passed": 29,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 195.781,
+            "sourceSha256": "5bdf3b3508732972af0c6b4df2211e965c28c4981b08f57d6c7d50a3e7f4b3f2",
+            "log": "artifacts/calm-precision/remediation/modal-focus.spec.ts.log",
+            "logSha256": "45f2be4ecff4b8bc39e157ea5fa0a6f0b251f11d26948968ad51b884bfa5b2ff"
+          },
+          {
+            "file": "pagination.spec.ts",
+            "expected": 1,
+            "passed": 1,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 31.786,
+            "log": "artifacts/calm-precision/browser-files/pagination.spec.ts.log",
+            "logSha256": "174e18bc10a56391eaa4bea961717f021f98d913b0ae4ea254cbded014f67cb1"
+          },
+          {
+            "file": "periods-colors.spec.ts",
+            "expected": 5,
+            "passed": 5,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 128.492,
+            "log": "artifacts/calm-precision/browser-files/periods-colors.spec.ts.log",
+            "logSha256": "09c55e28090ee71985d11d0c473eda632cc6f844fa809d3f619c019b8df94837"
+          },
+          {
+            "file": "phase3.spec.ts",
+            "expected": 19,
+            "passed": 19,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 209.078,
+            "sourceSha256": "4463b4c5d4e5bc6a834e4489518ea16625745ee6a680b1571d80634035bd8c3d",
+            "log": "artifacts/calm-precision/final-browser/phase3.spec.ts.log",
+            "logSha256": "bb3982f07ecf32d9aad52dc22692921b6069b03800721ddcbcaeeb76ca3046c9"
+          },
+          {
+            "file": "planning.spec.ts",
+            "expected": 6,
+            "passed": 6,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 69.986,
+            "log": "artifacts/calm-precision/browser-files/planning.spec.ts.log",
+            "logSha256": "07e6f5be058cbf41323ff932e8fda8bb1f892813012808516bc5bdc7ed311f1c"
+          },
+          {
+            "file": "public-policy.spec.ts",
+            "expected": 3,
+            "passed": 3,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 60.409,
+            "log": "artifacts/calm-precision/browser-files/public-policy.spec.ts.log",
+            "logSha256": "a58ba5b8b5643ddd1a1c13dbad548ec768a529552723908a0c0ee3d116c21e02"
+          },
+          {
+            "file": "redesign.spec.ts",
+            "expected": 2,
+            "passed": 2,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 83.916,
+            "log": "artifacts/calm-precision/browser-files/redesign.spec.ts.log",
+            "logSha256": "fa8ebd161a4f9c4cb51e75bcdded9770a64ede2712768ec7954bea7059a81847"
+          },
+          {
+            "file": "transaction-amount.spec.ts",
+            "expected": 10,
+            "passed": 10,
+            "code": 0,
+            "status": "PASS",
+            "seconds": 183.388,
+            "log": "artifacts/calm-precision/browser-files/transaction-amount.spec.ts.log",
+            "logSha256": "91e9e3373bd6482ccf2e3b48881855e62edb741e8a1972375feb242a747a8e6a"
+          }
+        ]
+      }
+    },
+    {
+      "group": "browser",
+      "command": "npm run test:auth-security",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 83.78,
+      "log": "artifacts/calm-precision/browser/test-auth-security.log",
+      "logSha256": "60c7b80b089687183140d28a5ec2c9e53a534288d550a536f29e2fe00e842c52"
+    },
+    {
+      "group": "browser",
+      "command": "npm run test:ledger-preview",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 30.929,
+      "log": "artifacts/calm-precision/browser/test-ledger-preview.log",
+      "logSha256": "e1e9643c6c007f05b218e4fbadda74bde270bacb81314493fb398b6c9677f621"
+    },
+    {
+      "group": "browser",
+      "command": "npm run test:pwa",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 230.656,
+      "log": "artifacts/calm-precision/browser/test-pwa.log",
+      "logSha256": "33640fe04dcf09b74c49770d7b91f654e95ad1ca694d7db84a18fc2053682d45"
+    },
+    {
+      "group": "browser",
+      "command": "npm run test:responsive",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 305.09,
+      "log": "artifacts/calm-precision/browser/test-responsive.log",
+      "logSha256": "07eeb03f97e5554e59a9414221052f57620221214338d0944242ecf304929f9f"
+    },
+    {
+      "group": "safety",
+      "command": "npm run test:pwa-review",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 1.203,
+      "log": "artifacts/calm-precision/safety/test-pwa-review.log",
+      "logSha256": "590a0f1ee73f660db169f5d5274b7d6934099445ee06a59bbe63f5c2f56881b0"
+    },
+    {
+      "group": "safety",
+      "command": "npm run test:restore",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 54.299,
+      "log": "artifacts/calm-precision/safety/test-restore.log",
+      "logSha256": "06b853b39f62f56a4896521b20c2b6cb2eedceccbc964ca31b344ca246e20d14"
+    },
+    {
+      "group": "safety",
+      "command": "npm run test:release-package",
+      "code": 0,
+      "status": "PASS",
+      "seconds": 17.171,
+      "log": "artifacts/calm-precision/safety/test-release-package.log",
+      "logSha256": "63ba3e8d605e6943958c762b43653da9d5c6996f871833afc50a29fdcf14c899"
+    }
+  ],
+  "finalBrowserRefresh": [
+    {
+      "file": "phase3.spec.ts",
+      "expected": 19,
+      "passed": 19,
+      "code": 0,
+      "status": "PASS",
+      "seconds": 209.078,
+      "sourceSha256": "4463b4c5d4e5bc6a834e4489518ea16625745ee6a680b1571d80634035bd8c3d",
+      "log": "artifacts/calm-precision/final-browser/phase3.spec.ts.log",
+      "logSha256": "bb3982f07ecf32d9aad52dc22692921b6069b03800721ddcbcaeeb76ca3046c9"
+    },
+    {
+      "file": "focused-upgrade.spec.ts",
+      "expected": 7,
+      "passed": 7,
+      "code": 0,
+      "status": "PASS",
+      "seconds": 120.003,
+      "sourceSha256": "40548a42754740abd13e3284781fa131580272b28d757a268fbd8a15a238d6c7",
+      "log": "artifacts/calm-precision/final-browser/focused-upgrade.spec.ts.log",
+      "logSha256": "234e23554d3c341b512bde18286a89c4e762953a9d649a262895fd14be90a9d4"
+    },
+    {
+      "file": "calm-precision.spec.ts",
+      "expected": 4,
+      "passed": 4,
+      "code": 0,
+      "status": "PASS",
+      "seconds": 114.3,
+      "sourceSha256": "18d750da7acd11ff5bec407edda547ded6e475a57166491bccd23f61e9102173",
+      "filter": "chart marks retain graphical contrast",
+      "log": "artifacts/calm-precision/final-browser/calm-precision.spec.ts.log",
+      "logSha256": "7b1a00ce8e6543661181d429f55b7e2ee634f58f9e8f371b7e12f477b587499f"
+    }
+  ],
+  "checks": {
+    "unitTests": 166,
+    "unitFiles": 21,
+    "browserTests": 254,
+    "browserEvidence": "Complete case coverage across actual original, remediation and added-case runs. Original complete local command: 243 passed / 5 failed retained. Separate full phase3/focused refresh and four new contrast passes.",
+    "responsiveLayouts": 481,
+    "routeAxeScans": 64,
+    "routeAxeViolations": 0,
+    "graphicalContrast": [
+      {
+        "locale": "en",
+        "theme": "dark",
+        "minimum": 8.344248188888598,
+        "ratios": [
+          8.344248188888598,
+          8.394309769820799,
+          8.344248188888598,
+          8.394309769820799
+        ]
+      },
+      {
+        "locale": "en",
+        "theme": "light",
+        "minimum": 3.6320701605546257,
+        "ratios": [
+          5.5055976820619,
+          3.6320701605546257,
+          5.5055976820619,
+          3.6320701605546257
+        ]
+      },
+      {
+        "locale": "ms",
+        "theme": "dark",
+        "minimum": 8.344248188888598,
+        "ratios": [
+          8.344248188888598,
+          8.394309769820799,
+          8.344248188888598,
+          8.394309769820799
+        ]
+      },
+      {
+        "locale": "ms",
+        "theme": "light",
+        "minimum": 3.6320701605546257,
+        "ratios": [
+          5.5055976820619,
+          3.6320701605546257,
+          5.5055976820619,
+          3.6320701605546257
+        ]
+      }
+    ],
+    "currentCollection": {
+      "tests": 254,
+      "files": 18,
+      "sha256": "d0519b83576ef759eea5e0994e88d2893b1fafb89a668fa6eafedbd6d78434ce"
+    }
+  },
+  "reviewedEngineeringBlobs": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "blob": "19256ef67a96e6b5ccac92b872a5b9ce2f38fdb2"
+    },
+    {
+      "path": "README.md",
+      "blob": "81e84b19a392692a323ff5c6bea3e24f9d7c30f8"
+    },
+    {
+      "path": "auth-security.playwright.config.ts",
+      "blob": "53a68f45e8dcbf407ac15fc0beee032d88736322"
+    },
+    {
+      "path": "e2e/actions.spec.ts",
+      "blob": "33d9a44de863c1fa5e2c8a6ecf891478423a839d"
+    },
+    {
+      "path": "e2e/calm-precision.spec.ts",
+      "blob": "ee09b2a0a6147addcf98b2767e392416cfc5bc47"
+    },
+    {
+      "path": "e2e/focused-upgrade.spec.ts",
+      "blob": "935973c236e5bb9da78a5a2f9472711cb02b006c"
+    },
+    {
+      "path": "e2e/foundations.spec.ts",
+      "blob": "b0f7b51ab0961735cdc1b4cdfd4b3ce3c654f850"
+    },
+    {
+      "path": "e2e/integration.spec.ts",
+      "blob": "3cdca6f9db5fc847689065793fd42573686cc357"
+    },
+    {
+      "path": "e2e/intelligence.spec.ts",
+      "blob": "832d7d0bd577d599c2a158cc1fc5ad300222d802"
+    },
+    {
+      "path": "e2e/modal-focus.spec.ts",
+      "blob": "1bd3f2469372c0b17389745018ac39fc6661ebff"
+    },
+    {
+      "path": "e2e/periods-colors.spec.ts",
+      "blob": "b8674443bf5324ac4bb35a3542fd4a07c2962dce"
+    },
+    {
+      "path": "e2e/phase3.spec.ts",
+      "blob": "1e3e43ed91c70d65b963d4682be124e74a6a7309"
+    },
+    {
+      "path": "e2e/transaction-amount.spec.ts",
+      "blob": "2cfe10e855a74f284ec52501317ad296d531367e"
+    },
+    {
+      "path": "index.html",
+      "blob": "da04a0438a3d800b69b958083311bc867dbdaa42"
+    },
+    {
+      "path": "package.json",
+      "blob": "e043648f12a9e85745d57f8471a1c9cf0a00919f"
+    },
+    {
+      "path": "playwright.config.ts",
+      "blob": "734d0975c12a2a804d4afa10c3be44c101a4e8de"
+    },
+    {
+      "path": "public/apple-touch-icon.png",
+      "blob": "c76956b2eeddd3a0f67db7bad50e8a54e9a4bae7"
+    },
+    {
+      "path": "public/favicon-32.png",
+      "blob": "fecc3bf8df17d58837a861af3ccd9bce5ef25fb9"
+    },
+    {
+      "path": "public/favicon.ico",
+      "blob": "3c132b14fb409e0ce4e4b63b57d8162543bace3e"
+    },
+    {
+      "path": "public/favicon.svg",
+      "blob": "730adaae47f565cc719de5731628e0e0626753ec"
+    },
+    {
+      "path": "public/icon-192.png",
+      "blob": "e55a1e9aa85459bba90b8ac6419e0776614cd6b2"
+    },
+    {
+      "path": "public/icon-512.png",
+      "blob": "ce7f57f2446115a2023786661a4edf57d8eb58b3"
+    },
+    {
+      "path": "public/prism.svg",
+      "blob": "730adaae47f565cc719de5731628e0e0626753ec"
+    },
+    {
+      "path": "public/site.webmanifest",
+      "blob": "fed3cb7fd766e1864a9634723b284aab6013908a"
+    },
+    {
+      "path": "scripts/browser-test.mjs",
+      "blob": "1fc9f5c082b5e8f4182fd31cd1d03b39b2b6184d"
+    },
+    {
+      "path": "scripts/calm-precision-capture.mjs",
+      "blob": "f40ba5d9b8650917d7b4e80f1d9f35813291bea8"
+    },
+    {
+      "path": "scripts/calm-precision-verify.mjs",
+      "blob": "2817d9f0ce43fec624fdb80efc994f2d880f7a63"
+    },
+    {
+      "path": "scripts/render-prism-icons.mjs",
+      "blob": "bb57f37e15306aa3c354e829697a417727669a70"
+    },
+    {
+      "path": "src/components/Dashboard.tsx",
+      "blob": "0a330d08d246e1dc36e83a825b86d5917ee62444"
+    },
+    {
+      "path": "src/components/TransactionDialog.tsx",
+      "blob": "c7819afdf946e6bc821329c21aa4fb584d46fcec"
+    },
+    {
+      "path": "src/components/TransactionTable.tsx",
+      "blob": "e1525c2d13e42bb8844e0b30f4db94b36ce43156"
+    },
+    {
+      "path": "src/components/Transactions.tsx",
+      "blob": "1284f73e9d8bb32e16fc02eec8113035fed68611"
+    },
+    {
+      "path": "src/components/Workspace.tsx",
+      "blob": "76bda7e909cab454c96b7db732337012b3b98dc8"
+    },
+    {
+      "path": "src/components/analytics/CashFlowChart.tsx",
+      "blob": "b5d88e166ab24556e4ba3f9890e00767ac4fdbdd"
+    },
+    {
+      "path": "src/components/analytics/FinancialPulse.tsx",
+      "blob": "9d95f4dc933c51a4648f3fe7c1679e6e27fcc266"
+    },
+    {
+      "path": "src/components/analytics/OverviewTrend.tsx",
+      "blob": "c448390c648e91e39804b96726f1b20dbedcf271"
+    },
+    {
+      "path": "src/components/app-shell/Navigation.tsx",
+      "blob": "acf1b5fcf50f7f85c48f74b7f9547340b8a3e68e"
+    },
+    {
+      "path": "src/components/app-shell/pageCopy.ts",
+      "blob": "efcaa42fb8eb7fe78c5d4eccf91664d895287f3f"
+    },
+    {
+      "path": "src/components/financial/Accounts.tsx",
+      "blob": "4529ad56d9708e3bf2b75d71baa59536aa8ee20d"
+    },
+    {
+      "path": "src/components/financial/Debts.tsx",
+      "blob": "95cf5f92f121e04e5396ea41a6de0a25f2980e33"
+    },
+    {
+      "path": "src/components/financial/Objectives.tsx",
+      "blob": "7d365141e330cc6c9dfba867ced4aba475596aef"
+    },
+    {
+      "path": "src/components/financial/Onboarding.tsx",
+      "blob": "dde7320c530815c51b2f62effba681ecd3249939"
+    },
+    {
+      "path": "src/components/financial/shared.tsx",
+      "blob": "bcce79c0b90401b48ae9611e956d1e1d16cda34c"
+    },
+    {
+      "path": "src/components/public/public.css",
+      "blob": "807cb96ff7856d9b4342d64a918e044ff5d90daf"
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "blob": "a8611db831d9ca54d37256063c6700eb16f5d2b1"
+    },
+    {
+      "path": "src/enhancementCopy.ts",
+      "blob": "4d7f74a47dca694080960c60fa60c42e7739d75b"
+    },
+    {
+      "path": "src/hooks/useNavigationGestures.ts",
+      "blob": "e593ddfd66e32ea160f0b2571f59e6574906b0d4"
+    },
+    {
+      "path": "src/lib/navigation.ts",
+      "blob": "a907791c2e01afc266e268b1c2a8f51d6a0d8917"
+    },
+    {
+      "path": "src/pwa/offline.css",
+      "blob": "38e75b6f0fe71fe771bb8824b0a07c150fa07bb8"
+    },
+    {
+      "path": "src/store/personalization.ts",
+      "blob": "0fd58a1368b70ae14624e3ac6339944dc6c1369e"
+    },
+    {
+      "path": "src/styles.css",
+      "blob": "b05aa9fdd7284521db1a4e39cb0318b6aa0c8844"
+    },
+    {
+      "path": "vercel.json",
+      "blob": "412afbb47bb419f1726c0486e5a5992c5188cc19"
+    },
+    {
+      "path": "vitest.config.ts",
+      "blob": "0ddb3f90297bb0395f3bd02dc7a5356460c4122b"
+    }
+  ],
+  "limitations": [
+    "physical device and human assistive technology",
+    "real OS zoom/virtual keyboard",
+    "hosted PostgreSQL 17/Auth/OAuth/MFA/email/CAPTCHA",
+    "operator/legal/recovery/launch approval",
+    "existing five high development-chain findings; zero runtime audit findings"
+  ]
+}
