@@ -31,7 +31,15 @@ PKCE code exchange and redirect fallback, real A/B ownership and invoker views,
 exact decimal transport/precision rejection, TOTP challenge/AAL restrictions,
 recovery/password change and prior-session/global sign-out denial.
 
-Status is **PENDING actual exact-head CI** until that job and the existing complete
+The first actual local-stack run on candidate `0989ddb5` started five real services
+with three loopback-only published ports. Seven acceptance groups passed, including
+real signup/confirmation, A/B ownership, exact money, TOTP/AAL and recovery revocation.
+It failed at PKCE because the harness expected HTTP 302 while pinned GoTrue returned
+HTTP 303 See Other. The correction retains the strict status, callback origin, code
+exchange and resulting identity/session assertions. The original failed receipt is
+preserved in [the CI run](https://github.com/ismailabs/prism/actions/runs/38536631129).
+
+Status is **PENDING actual exact-head retest** until that job and the existing complete
 verification job finish successfully. Read the current PR #6 head/checks and its
 redacted receipt; source and prepared commands alone are never a test result.
 All failures must remain recorded and affected acceptance must be repeated after

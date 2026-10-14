@@ -196,7 +196,7 @@ try {
   verifyLink.searchParams.set('type', redirectAction.type);
   verifyLink.searchParams.set('redirect_to', redirectAction.redirect);
   const redirectResponse = await fetch(verifyLink, { redirect: 'manual', signal: AbortSignal.timeout(5_000) });
-  assert.equal(redirectResponse.status, 302, 'Actual PKCE confirmation link must redirect');
+  assert.equal(redirectResponse.status, 303, 'Pinned GoTrue PKCE confirmation uses HTTP See Other');
   const callback = new URL(redirectResponse.headers.get('location'));
   assert.equal(callback.origin, 'http://127.0.0.1:5173', 'Actual callback must stay on the local allowlist');
   const code = callback.searchParams.get('code');
