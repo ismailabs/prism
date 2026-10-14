@@ -1,70 +1,58 @@
-# PRISM hosted continuation and owner handoff
+# PRISM hosted continuation checkpoint
 
-**LAUNCH BLOCKED.** The owner explicitly retained server-enforced breached-password protection as mandatory. Supabase Free does not provide it. No purchase, security waiver, production merge/build/promotion or public-launch claim is authorized. Provider, human, operator and recovery acceptance remain open.
+**LAUNCH BLOCKED.** Required server breached-password protection is unavailable on Supabase Free and the owner explicitly retained it. No purchase or waiver is authorized. Missing native hosted PWA, provider, human/operator and recovery evidence also prevents release.
 
-This committed checkpoint records evidence collected on **14 October 2026 UTC** (15 October in Malaysia). Its hosted source baseline is **5e9d034cdd6bf516fc7bf335cf4fcbca7efae784**. This revision adds mobile sign-out, accurate deletion wording, real hosted acceptance harnesses and owner handoffs. The subsequently published head, CI, refreshed preview and affected retests must be independently matched through the current [PR #6](https://github.com/ismailabs/prism/pull/6) description and local `artifacts/public-launch/final-ledger.json`. Earlier green checks do not certify a later candidate. This checkpoint does not predeclare those results or provide GO.
+Checkpoint **2026-10-14T21:38:12.273Z**; tested application **f42a359cffcef91b688568dc936c11c367c2e3db**, [PR6](https://github.com/ismailabs/prism/pull/6), verified latest [PR5](https://github.com/ismailabs/prism/pull/5) ancestor **345d26caa904c088c76f5c40c4435f6509260ffc**. This harness/documentation publication preserves application, financial/Auth and migration source. Its subsequent exact published head, four CI jobs and preview identity must be independently verified in the PR description and local final ledger; this snapshot cannot predeclare those results.
 
-## Actual progress
+## Real hosted evidence
 
-- Supabase **zwqcdfzfsudqccclficx**, `prism-staging`, is isolated, ACTIVE_HEALTHY, in the expected Free organization. Its initially empty database/Auth were verified before applying **18 reviewed, ordered canonical migrations**. No customer data was imported or production migration history changed.
-- A separate Vercel project **prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe** serves [protected staging](https://prism-staging-acceptance-ismailstudio.vercel.app/). Preview/Development variables use staging only; Production variables are absent. Git is unlinked, automatic domain assignment is off, anonymous access is denied and permitted share-session access succeeds. The public production domain was never assigned to staging.
-- Genuine hosted backend acceptance passed **10 finance groups** and **4 security groups** with ordinary, inbox-confirmed A/B identities. Exact MYR/USD/EUR/JPY, A/B CRUD denial, 25 tables/19 invoker views, sensitive RPC/private-schema denial, recurrence deduplication, import atomicity, planning/actions, real TOTP assurance and revoked-session denial have receipts. No privileged user key proves RLS.
-- Real Gmail confirmation, PKCE/sign-in and confirmation-reuse denial succeeded. Recovery passed **5 checks**, including weak-update denial, new/old password behavior, reused-link denial and revoked sessions. Three direct weak-password signup requests returned server denials. These controls do not reject a strong but breached password.
-- The safer hosted public runner passed **37 checks**, **100 viewport widths** and **20 axe scans with zero violations** using unchanged, real protected provider responses. These are browser emulation, not physical-device/AT sign-off.
-- A workspace run completed **72 checks**, **68 zero-violation axe scans** and **128 responsive widths**, then failed: it is not a complete PASS. Focused tests subsequently passed the cash oracle, mobile focus/privacy and real PWA install, public-only cache, offline private-screen denial, restart and reconnect. They exposed a real mobile defect: existing sign-out controls were hidden. The drawer now has a localized action using the existing Auth handler. **21 phase-3 tests passed**, including two new EN/MS session/history/deep-link regressions. Complete final-artifact hosted acceptance is still required.
-- Typecheck/lint passed. The complete unchanged unit suite passed **166/166** with two workers after a retained overloaded-Windows timeout; assertions/deadlines were unchanged. Runtime audit is zero. **Five inherited high build-tool findings remain documented**, not patched or described as a clean full audit.
-- A free staging Turnstile widget was created for the stable hostname. Private Supabase server setup, genuine human success/denial testing and Google client/consent acceptance remain owner/provider dependencies.
-- Email quota previously returned actual 429 denials. C's normal signup and real INBOX receipt later succeeded at **16:27 UTC**, without a policy change or session issuance. Its expired-link check is reserved until after **17:28:44 UTC**, never predeclared successful.
+Separate Supabase **zwqcdfzfsudqccclficx**, prism-staging, ACTIVE_HEALTHY;18 reviewed ordered migrations applied only after empty identity/DB isolation proof. No customer import. Separate Vercel **prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe**, [protected staging](https://prism-staging-acceptance-ismailstudio.vercel.app/), **dpl_EvDB2x8MjzHpdcYXeKHRv9DPgyeK**, f42 source. Scoped Preview/Development variables, no Production variables/Git link, domain auto-assignment off, development trust withdrawn. Canonical production domain never assigned to staging.
 
-## Actual credential incident
+- **10 hosted finance groups/4 security groups PASS** with ordinary confirmed A/B users, exact four-currency input/denials, ownership CRUD/RPC/private-schema isolation, recurrence/import deduplication, budgets/plans/actions, real TOTP assurance, refresh and revoked-session denial. Exact oracle: MYR cash2840.00/2200.00, ordinary flow2140.00, notional goal60%, debt principal900.00. No service-role proof of user authorization.
+- Corrected public **37 checks/20 axe scans/100 widths PASS**; declared non-PWA workspace **75 checks/69 scans/128 widths PASS**, zero runtime/foreign/transport errors and ordinary fixture cleanup. All16 destinations, EN/MS/light/dark, precise saves/transfers, CSV formula/deduplication, interrupted-save recovery, focus/privacy, real mobile signout/history/private-link denial. UI observed **1119** responses, median/p95 **275/950ms**; this constrained synthetic run is not a production/mobile SLO.
+- Real inbox confirmations, timely B PKCE and reused-link denial, recovery5, expired-confirmation4, three server weak-password denials. C first use after3662seconds rejected under unchanged3600second policy. D public form/inbox/normal signin/own MYR10.01/ordinary typed deletion verified; exact synthetic erasure counts allzero and former credentials denied. D callback/post-deletion browser-observation failures retained; no timely D PKCE or missing storage observation claimed.
+- Four f42 CI jobs PASS: **166 unit,264 browser,14 Auth fixture,5 local PWA,481 responsive,64 zero-violation scans,10 real local Supabase groups**. Actual downloaded ZIP digests and merge/candidate tree correspondence verified. Local/fixture evidence remains separate from hosted.
+- Mobile signout, accurate deletion/backup wording and readable180ms movement were repaired with meaningful EN/MS logout and animation-frame contrast regressions. Current harness awaits actual profile PATCH responses, owns cleanup state per context, and preserves absent cookies instead of implicit API-cookie authentication. Active failures, original coverage/deadlines and ordinary fixture cleanup stay mandatory. Failure/quota/PKCE/contrast/cleanup receipts are preserved.
+- Runtime audit zero; five inherited high development-tool findings documented with exposure scope, unpatched.
 
-A staging browser-test teardown printed a temporary development OIDC header in an unhandled error. Both development admission rules were removed from that **staging project's** Trusted Sources. The exposed credential returned **403** on the alias and immutable preview. Its expiry is **15 October 01:04:12 UTC**; global JWT revocation is not claimed. Keep development admission withdrawn. No Supabase password/session, service-role or production key was printed by that failure; no production operation occurred during containment. See the [incident record](public-launch-staging-credential-incident.md).
+## Native PWA and credential incident
 
-## Mandatory gate checkpoint
+G08 remains BLOCKED: native credentialless public-cache assets redirect to Vercel login. Earlier relayed PWA observations could be authenticated by the API cookie jar and do not satisfy native hosted acceptance. Worker/protection contracts were not weakened. Cloudflare alternative investigated: Access not enabled(9999), subscription verification denied(10000); no alternative resource created. See [PWA disposition and exact owner action](public-launch-hosted-pwa-disposition.md).
 
-The [machine register](public-launch-evidence.json) records environments, source, dates, receipts, outcomes, actions and human responsibility. Publication/CI/artifact verification is pending at this committed checkpoint. Later authoritative local receipts and the PR description must supersede these states.
+A staging teardown previously printed a temporary development OIDC header. Both development admission rules removed; exposed credential actually returned403. Expiry **2026-10-15T01:04:12Z**; global JWT revocation not claimed. Keep development trust withdrawn. No Supabase password/session/service-role or production key was printed by that failure. [Incident](public-launch-staging-credential-incident.md).
 
-| Gate | Checkpoint state | Remaining requirement |
+## Mandatory register
+
+| Gate | State | Actual outcome |
 | --- | --- | --- |
-| G01 | BLOCKED | Final published immutable head, reviewed diff and current rules/reviews |
-| G02 | PASS | Previously verified release freeze; production access is now restricted by owner |
-| G03 | BLOCKED | Full four-job CI/artifact review on the final immutable head |
-| G04 | BLOCKED | Retained mandatory breached-password protection; final scans/incident review |
-| G05 | BLOCKED | Isolation established; refreshed preview must match final reviewed candidate |
-| G06 | BLOCKED | Expired link, Google, genuine CAPTCHA/server denials and final provider evidence |
-| G07 | PASS | Ordinary hosted A/B denial/catalog receipts; verify unchanged final source correspondence |
-| G08 | FAIL | Mobile sign-out repaired locally; complete final hosted workflow/PWA verification |
-| G09 | BLOCKED | Actual Windows/Android/iPhone, screen-reader and Malay observations |
-| G10 | BLOCKED | Operator/contact/privacy/retention, incident responsibility and provider eligibility |
-| G11 | BLOCKED | Current recovery point/frequency, permissions, custody and feasible targets |
-| G12 | BLOCKED | Retained breach requirement and real configured signup controls |
-| G13 | BLOCKED | Every mandatory gate PASS and fresh permissible release scope |
-| L01-L04 | BLOCKED | Candidate is not publicly released; production smoke/monitoring reserved until GO |
+| G01 | PASS | Latest PR5 ancestor and f42 remote candidate verified; main unprotected, no effective rules or required review submissions. |
+| G02 | BLOCKED | Dated freeze proof retained; current owner prohibits production provider access. No continuation production action. |
+| G03 | PASS | Four f42 jobs PASS; actual downloaded archives/digests and merge/candidate tree correspondence verified. |
+| G04 | BLOCKED | Owner retained server breach protection, unavailable Free. Runtime audit zero; five inherited build-tool findings documented. Staging incident admission contained. |
+| G05 | PASS | Empty-start stage,18 reviewed migrations, scoped client/env/key, no customer imports, protected READY f42 artifact; health independently verified. |
+| G06 | BLOCKED | Real inbox/timely B PKCE/reuse, recovery5, expiry4, MFA/refresh/revocation and password denials PASS. Google/CAPTCHA not accepted; transport parity unclaimed. |
+| G07 | PASS | Ordinary A/B concrete CRUD/RPC denial across25 tables/19 views and reviewed catalog PASS. Guarded financial/Auth/migration source unchanged. |
+| G08 | BLOCKED | Public37 and declared non-PWA workspace75 PASS,89 zero-violation scans/228 widths. Native PWA blocked by preview protection; prior relay-cookie observations superseded. |
+| G09 | BLOCKED | No actual physical Windows/Android/iPhone, screen-reader or Malay-reviewer observations. |
+| G10 | BLOCKED | Objective policy/deletion consistency and ordinary signup/deletion verified; owner/contact/retention/support/provider-use acceptance absent. |
+| G11 | BLOCKED | 40 historical hashes and declared-key signature valid; old point/config drift, current frequency/custody/permissions UNKNOWN, targets unapproved. |
+| G12 | BLOCKED | Mandatory breach protection and actual configured public-signup integrations unsatisfied. |
+| G13 | BLOCKED | All mandatory gates are not PASS; production merge/build/promotion unauthorized. |
+| L01 | BLOCKED | Candidate not released; no candidate public smoke or monitoring. |
+| L02 | BLOCKED | Candidate not released; no candidate public smoke or monitoring. |
+| L03 | BLOCKED | Candidate not released; no candidate public smoke or monitoring. |
+| L04 | BLOCKED | Candidate not released; no candidate public smoke or monitoring. |
+
+[Machine register](public-launch-evidence.json) contains environment/SHA/date/evidence/action/human responsibility. Subsequent final-head receipts supersede this dated checkpoint; no GO.
 
 ## Production and recovery
 
-Last verified production: **dpl_7ybY6ao53z2BG6yhhyrDpKX7CGNk**, main SHA **d1438197a33d179cedd6c54bad3bfcf9a06db31f**, [public domain](https://prism.ismailstudio.my/). October 14 receipts record automatic domain assignment off and Git deployments disabled. No continuation merge, production deployment/data operation, purchase or upgrade occurred. Current owner instructions prohibit production access for integration work; this state is explicitly historical, not a new production observation.
+Main unchanged **d1438197a33d179cedd6c54bad3bfcf9a06db31f**; PR6 open/unmerged. Last-known serving [canonical URL](https://prism.ismailstudio.my/): **dpl_7ybY6ao53z2BG6yhhyrDpKX7CGNk**, same SHA. Dated October14 provider freeze receipts retained. Latest owner scope prohibits production access; current live health/control state not newly verified. Continuation production operations/customer rows/export/decryption/restore/purchases/upgrades: **zero**.
 
-The October 13 encrypted bundle has **40 matching hashes** and a valid detached signature by its declared bundled public key. Nothing was decrypted/restored. The old data point, historic Auth discrepancy and unknown frequency/custody/permissions cannot prove a current recovery point. Proposed **30-minute app rollback, 24-hour RPO and 24-hour full-recovery RTO are unapproved and unproven**. Deployment rollback does not restore database/Auth or reverse accepted writes. Use the [conditional playbook](public-launch-deployment-playbook.md); production financial restoration/deletion is unauthorized.
+Historical encrypted bundle:40 matching hashes, valid detached signature by declared bundled key; DB point13October02:11:48UTC, Authdelta06:41:50UTC. Stale point and config drift do not prove current frequency/custody/permissions. **30min deployment rollback/24h RPO/24h full-recovery RTO remain provisional, unapproved and unproven**. Deployment rollback does not restore DB/Auth or reverse accepted writes. Preserve last-known compatible candidate; [conditional playbook](public-launch-deployment-playbook.md) requires future actual permission/compatibility before any release or deployment-only rollback. Production financial restoration is unauthorized.
 
-## Owner handoff and resume trigger
+## Consolidated owner handoff
 
-Use the [single 14-check acceptance form](public-launch-owner-acceptance.md) and [exact private provider guide](public-launch-provider-handoff.md). Return actual dated observations and non-secret responsibility/custody records. Send no keys, passwords, email links, MFA secrets, customer rows or private storage URLs. No human PASS has been inferred. [Owner decisions](public-launch-owner-decisions.md) retain the breach blocker; integrations or this form cannot waive it.
+[Exact provider setup](public-launch-provider-handoff.md): existing free Turnstile widget, staging-only secret/site-key placement, Google test client/origin/callback, actual success/denials. [One14-check form](public-launch-owner-acceptance.md): real devices/AT/Malay, contact/privacy/retention/provider-use responsibilities and current non-secret recovery evidence. [Native PWA option](public-launch-hosted-pwa-disposition.md): owner-only Free account activation/cost verification before a protected alternate host can be provisioned. Send no credentials, links, keys, financial exports or private payment details.
 
-Engineering continues through publication, CI and affected isolated hosted tests. After those tasks, a supported breach control within authorized cost, genuine provider acceptance and actual owner/device/recovery records are the resume triggers. A future severe released-app failure permits only an approved compatible deployment rollback; database/Auth restoration needs separate authority. No indefinite/background continuation is promised.
-
-## Follow-up after the first publication
-
-Commit7364ada was independently published, built only in staging and passed its
-complete push CI. Its PR CI retained one real WCAG failure: page-label contrast
-4.46:1 during the parent's entrance fade. This revision preserves the180ms movement
-with full-opacity content. The original eight-scan case and a new four-frame EN/MS
-regression passed locally without weakening assertions or deadlines. Final-head
-CI and protected hosted checks remain required for this follow-up.
-
-At17:28:46 UTC the first-use real confirmation link for C was rejected after3662
-seconds; unconfirmed signin remained denied and an unsupported redirect had been
-confined to staging. All four expiry/redirect/inbox checks passed. D registered
-through the actual public product form, received real INBOX confirmation and later
-signed in normally. Its browser callback/cleanup failures are retained, not
-described as a timely PKCE success; B's timely PKCE receipt remains separate.
+Required breach protection remains mandatory by [owner decision](public-launch-owner-decisions.md). Resume dependent work only on actual supported protection/provider/account or owner evidence. Every pre-release gate must PASS and current release scope/control permit actions before production merge/build/promotion. No human PASS or background continuation is invented.

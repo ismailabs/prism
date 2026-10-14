@@ -82,3 +82,12 @@ new production access or modification. Keep the dated production freeze receipt
 as historical evidence (**14 October 2026, 09:47 UTC**, see the playbook), and do
 not merge/build/promote production until every
 mandatory gate genuinely PASS and current owner/provider controls allow it.
+
+## Superseding acceptance boundary
+
+See public-launch-final-report.md and the final ledger for the current source and
+provider evidence. Earlier relayed PWA observations in this historical checkpoint
+cannot certify native credentialless cache installation. Actual native requests
+redirect to preview authentication; G08 remains BLOCKED. Public37 and explicitly
+non-PWA workspace75 checks are separately passing subsets, with no invented
+physical-device, AT, operator, provider or recovery acceptance.

@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {createHash,randomUUID} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {chromium,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
@@ -18,14 +19,15 @@ const redact=value=>{
  return result.replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g,'[private address]').replace(/https?:\/\/\S+/g,'[url]').replace(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g,'[token]').replace(/\bsb_(?:secret|publishable)_[\w-]+\b/g,'[key]').slice(0,700);
 };
 const load=async name=>{const raw=await readFile('.cache/'+name+'.json','utf8');try{return JSON.parse(raw);}catch{throw new Error('Invalid private input file '+name+'; values withheld');}};
-const receipt={startedAt:new Date().toISOString(),environment:'STAGING-HOSTED',origin,stagingRef,syntheticOnly:true,productionContacted:false,serviceRoleUsed:false,credentialsOrStorageStatePublished:false,protectionAccess:'approved temporary share-link session',checks:[],axe:[],limits:['Browser viewport tests are emulation, not physical devices or assistive technology.','Public routes and anonymous private-route guards do not prove signed-in financial workflows.','Service workers are blocked in these public UI contexts; genuine hosted PWA acceptance is recorded separately.']};
+const receipt={startedAt:new Date().toISOString(),environment:'STAGING-HOSTED',origin,stagingRef,checkoutSHA:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),harnessSHA256:createHash('sha256').update(await readFile(new URL(import.meta.url))).digest('hex'),syntheticOnly:true,productionContacted:false,serviceRoleUsed:false,credentialsOrStorageStatePublished:false,protectionAccess:'approved temporary share-link session',checks:[],axe:[],limits:['Browser viewport tests are emulation, not physical devices or assistive technology.','Public routes and anonymous private-route guards do not prove signed-in financial workflows.','Service workers are blocked in these public UI contexts; genuine hosted PWA acceptance is recorded separately.']};
 const contexts=new Map();
 let active='protected preview and asset isolation';
 let browser;
 const teardown=async context=>{
  const state=contexts.get(context);
- try{await context.unrouteAll({behavior:'wait'});}catch{state.errors.push('guarded-route-teardown-failed');}
- try{await context.close();}catch{state.errors.push('browser-context-close-failed');}
+ state.closing=true;
+ try{await bounded(context.unrouteAll({behavior:'ignoreErrors'}),30000,'Intentional background route cancellation');}catch{state.errors.push('guarded-route-teardown-failed');}
+ try{await bounded(context.close(),30000,'Browser context close');}catch{state.errors.push('browser-context-close-failed');}
  contexts.delete(context);
  return state;
 };
@@ -52,17 +54,20 @@ try{
  assert.ok(/^[a-f0-9]{40}$/.test(manifest.candidateSHA),'Candidate identity must be a complete commit SHA');
  Object.assign(receipt,{deploymentId:manifest.deploymentId,vercelProjectId:manifest.vercelProjectId,candidateSHA:manifest.candidateSHA});
  const allowedOrigins=new Set([origin,client.url,'https://challenges.cloudflare.com']);
- const abortSafely=async(route,state)=>{try{await route.abort();}catch{state.errors.push('guarded-route-abort-failed');}};
+ const abortSafely=async(route,state)=>{try{await route.abort();}catch{if(!state.closing)state.errors.push('guarded-route-abort-failed');}};
  const rememberCookies=async context=>{for(const cookie of await context.cookies()){remember(cookie.value);remember(encodeURIComponent(cookie.value));}};
  const protectedContext=async options=>{
   const context=await browser.newContext({...options,serviceWorkers:'block'});
-  const state={forbidden:[],errors:[]};contexts.set(context,state);
+  const state={forbidden:[],errors:[],closing:false};contexts.set(context,state);
   await context.route('**/*',async route=>{
    let actual;
    try{
     const url=new URL(route.request().url());
     if(!allowedOrigins.has(url.origin)||url.username||url.password){state.forbidden.push('unapproved-origin');await abortSafely(route,state);return;}
     const forwarded={...await route.request().allHeaders()};
+    // API transport has its own shared cookie jar. Explicitly preserve an
+    // absent browser Cookie header, including credentials:'omit' requests.
+    forwarded.cookie=forwarded.cookie??'';
     // Native cookies authenticate only their own origin. Never reuse the
     // contained development OIDC token or an injected protection header.
     for(const name of Object.keys(forwarded))if(/^x-vercel-(?:trusted-oidc-idp-token|protection-bypass)$/i.test(name))delete forwarded[name];
@@ -74,8 +79,8 @@ try{
     }
     // Preserve the actual provider status, headers and body without fixtures.
     await route.fulfill({response:actual});
-   }catch{state.errors.push('guarded-route-operation-failed');await abortSafely(route,state);}
-   finally{if(actual)try{await actual.dispose();}catch{state.errors.push('guarded-response-dispose-failed');}}
+   }catch{if(!state.closing)state.errors.push('guarded-route-operation-failed');await abortSafely(route,state);}
+   finally{if(actual)try{await actual.dispose();}catch{if(!state.closing)state.errors.push('guarded-response-dispose-failed');}}
   });
   const page=await context.newPage();page.on('pageerror',()=>state.errors.push('pageerror'));
   await page.goto(share.href,{waitUntil:'domcontentloaded',timeout:30000});
@@ -110,7 +115,7 @@ try{
  const scopedKey=await fetch(client.url+'/auth/v1/settings',{headers:{apikey:client.anonKey},redirect:'error',signal:AbortSignal.timeout(20000)});
  assert.equal(scopedKey.status,200,'The declared public key must be accepted by isolated staging');
  await teardown(assets.context);assert.equal(assets.state.forbidden.length,0,'No unapproved artifact origin or redirect');assert.equal(assets.state.errors.length,0,'No artifact bootstrap or teardown error');
- receipt.checks.push({label:'protected preview, security headers, staging-only published API/key and no privileged key',status:'PASS',anonymousStatus:anonymous.status,assets:seen.size,keyKind,stagingKeyScopeStatus:scopedKey.status,entryHash:createHash('sha256').update(sources[0]).digest('hex')});
+ receipt.checks.push({label:'protected preview, security headers, staging-only published API/key and no privileged key',status:'PASS',anonymousStatus:anonymous.status,assets:seen.size,keyKind,stagingKeyScopeStatus:scopedKey.status,entryHash:createHash('sha256').update(sources[0]).digest('hex'),publishedJavaScriptSHA256:createHash('sha256').update(code).digest('hex')});
  console.log('PASS hosted public: artifact isolation and protection');
  await mkdir('artifacts/public-launch/hosted-public',{recursive:true});
  for(const locale of ['en','ms'])for(const theme of ['light','dark']){
@@ -141,9 +146,11 @@ try{
   }
   if(locale==='en'&&theme==='light')for(const tab of ['dashboard','transactions','analytics','accounting','accounts','plans','goals','savings','debts','categories','payments','settings','notes','reminders','notifications','calendar']){
    active='anonymous private route /'+tab;await page.goto(origin+'/'+tab,{waitUntil:'domcontentloaded',timeout:30000});
+   await expect(page).toHaveURL(u=>u.origin===origin&&u.pathname==='/login'&&u.searchParams.get('next')==='/'+tab,{timeout:30000});
    await expect(page.getByRole('heading',{name:'Your money. A clearer picture.',exact:true})).toBeVisible();
    const u=new URL(page.url());assert.equal(u.pathname,'/login');assert.equal(u.searchParams.get('next'),'/'+tab);
    receipt.checks.push({label:active,status:'PASS'});
+   console.log('PASS hosted anonymous guard: /'+tab);
   }
   await teardown(context);assert.equal(state.forbidden.length,0,'No unapproved origin or redirect');assert.equal(state.errors.length,0,'No page, route or teardown error');
   console.log('PASS hosted public: '+locale+'/'+theme);
@@ -152,7 +159,7 @@ try{
 }catch(error){receipt.status='FAIL';receipt.failure={step:active,message:redact(error.message)};console.error('FAIL hosted public:',receipt.failure.step);process.exitCode=1;}
 finally{
  for(const context of [...contexts.keys()]){const state=await teardown(context);if(state.errors.length||state.forbidden.length){receipt.status='FAIL';receipt.teardownFailure='Guarded browser cleanup failed; private details withheld';process.exitCode=1;}}
- try{await browser?.close();}catch{receipt.status='FAIL';receipt.teardownFailure='Browser cleanup failed; private details withheld';process.exitCode=1;}
+ try{await bounded(browser?.close(),30000,'Browser close');}catch{receipt.status='FAIL';receipt.teardownFailure='Browser cleanup failed; private details withheld';process.exitCode=1;}
  receipt.finishedAt=new Date().toISOString();await mkdir('artifacts/public-launch',{recursive:true});
  await writeFile('artifacts/public-launch/hosted-public-browser-acceptance.json',JSON.stringify(receipt,null,2));
   await writeFile(`artifacts/public-launch/hosted-public-${runId}.json`,JSON.stringify(receipt,null,2));

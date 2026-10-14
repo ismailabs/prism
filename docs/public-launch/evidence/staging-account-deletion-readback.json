@@ -1,0 +1,37 @@
+{
+  "checkedAtUTC": "2026-10-14T18:45:23.415Z",
+  "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+  "environment": "STAGING-HOSTED",
+  "syntheticLabel": "D",
+  "status": "PASS",
+  "ordinaryUserAction": {
+    "productSignupHTTP": 200,
+    "realInboxReceived": true,
+    "confirmedNormalUIAndSDKSignin": true,
+    "ownExactFinancialBalanceBeforeDeletion": "10.01",
+    "typedDeletionConfirmation": true,
+    "ordinaryDeletionRPC_HTTP": 204,
+    "serviceRoleUsed": false
+  },
+  "readback": {
+    "transport": "Supabase MCP BEGIN READ ONLY, exact generated synthetic UUID only; aggregate counts, no financial rows or values",
+    "enforcedReadOnly": "on",
+    "authIdentityCount": 0,
+    "profileCount": 0,
+    "accountCount": 0,
+    "transactionCount": 0
+  },
+  "formerCredentials": {
+    "errorCode": "invalid_credentials",
+    "sessionIssued": false
+  },
+  "productionContacted": false,
+  "credentialsOrAddressesPublished": false,
+  "limits": [
+    "Original browser lifecycle run remains FAIL: post-deletion page.evaluate raced with successful navigation.",
+    "This separate observed erasure/identity-readback PASS does not fabricate the missing browser storage observation or timely D PKCE result.",
+    "Ordinary RPC establishes user authorization; privileged read-only aggregate verifies physical erasure only.",
+    "Owner/operator retention acceptance and historical backups remain separate; no customer backup decrypted or erased."
+  ],
+  "readbackRecordedAtUTC": "2026-10-14T18:56:36.6369242Z"
+}

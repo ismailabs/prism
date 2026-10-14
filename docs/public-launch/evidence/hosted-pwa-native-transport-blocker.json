@@ -1,0 +1,27 @@
+{
+  "checkedAtUTC": "2026-10-14T20:03:44.222Z",
+  "environment": "STAGING-HOSTED",
+  "productionContacted": false,
+  "credentialsPublished": false,
+  "nativeRequestSemantics": true,
+  "assetPath": "/assets/index-CAiUZyj8.js",
+  "workerCredentialPolicy": "omit",
+  "anonymousAssetHTTP": 302,
+  "anonymousRedirectHostname": "vercel.com",
+  "apiCookieJarDefaultHTTP": 200,
+  "apiExplicitEmptyCookieHTTP": 302,
+  "nativeBrowser": {
+    "omit": {
+      "status": 0,
+      "type": "opaqueredirect",
+      "mime": null
+    },
+    "same-origin": {
+      "status": 200,
+      "type": "basic",
+      "mime": "application/javascript; charset=utf-8"
+    }
+  },
+  "status": "OBSERVED",
+  "finishedAtUTC": "2026-10-14T20:04:35.431Z"
+}

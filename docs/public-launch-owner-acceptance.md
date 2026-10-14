@@ -6,11 +6,19 @@ missing. The owner has retained the breach-password protection requirement;
 G04/G12 remain **BLOCKED**. This form cannot waive that requirement or authorize release.
 
 **Protected staging:** [Open PRISM staging](https://prism-staging-acceptance-ismailstudio.vercel.app/).
-Its database must be **zwqcdfzfsudqccclficx**. The last supplied preview receipt is
-**5e9d034cdd6bf516fc7bf335cf4fcbca7efae784** ([PR #6](https://github.com/ismailabs/prism/pull/6));
-the deletion-copy clarification still needs the new final-head CI/deployment receipt.
-Before testing, record the refreshed preview SHA supplied by the mission.
+Its database must be **zwqcdfzfsudqccclficx**. The preview includes the repaired
+mobile sign-out, accurate deletion wording and readable entrance motion.
+The current exact candidate/preview SHA and final CI receipt are supplied in
+[PR #6](https://github.com/ismailabs/prism/pull/6) and the mission's final gate ledger.
+Record that refreshed full SHA before testing; old baseline receipts are historical.
 Production stays unchanged; this form authorizes no production access, data export or restore.
+
+**Known staging PWA limit:** native credentialless asset requests are redirected
+by preview protection. Earlier relayed PWA observations are superseded; G08 stays
+BLOCKED until a supported protected staging setup serves the reviewed public asset
+manifest without credentials. Do not disable protection or alter the worker's
+private-cache contract. Record affected installation/offline checks as BLOCKED,
+with the actual observation; continue the other checks.
 
 Create your **own separate synthetic test identity**, using a mailbox you control
 and a password entered privately. Do not use the automated A/B accounts or

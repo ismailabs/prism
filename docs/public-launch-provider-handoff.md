@@ -111,3 +111,14 @@ Use the [single acceptance form](public-launch-owner-acceptance.md) for devices,
 Malay, privacy/contact/operations and recovery. The owner has explicitly retained
 the breached-password requirement; see [decision record](public-launch-owner-decisions.md)
 and [security disposition](public-launch-password-security-disposition.md).
+
+## Native hosted PWA dependency
+
+See [PWA disposition](public-launch-hosted-pwa-disposition.md). Preview protection
+redirects credentialless public-cache GETs, so G08 remains BLOCKED. The existing
+worker/security contract and preview protection are preserved. An alternate free
+protected host was investigated: Cloudflare Access is not enabled and subscription
+billing is not readable through this connection. Official Free enrollment requires
+private owner plan/payment steps. No new host or paid resource was provisioned.
+The disposition gives the minimum optional account action and subsequent verification;
+no private payment details, secrets or account codes belong in replies.

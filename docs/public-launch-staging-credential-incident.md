@@ -45,14 +45,31 @@ data was used. Receipt: `artifacts/public-launch/staging-ui-interrupted-cleanup.
 ## Engineering repair and remaining acceptance
 
 The browser harness now catches transport/teardown errors without printing
-header-bearing diagnostics, drains route handlers before closing contexts,
+header-bearing diagnostics, cancels remaining background handlers at intentional
+teardown after response assertions, then closes contexts,
 permits exact origins only, refuses unapproved redirects, and redacts every
 known private input before writing failures. A separate local output containment
 wrapper also redacts unexpected native errors. Tests use a permitted temporary
 Vercel share-link session; development trust stays withdrawn and protected
 previews remain protected. No protection exception or public preview was added.
 
-Syntax and explicit JavaScript lint passed. A fresh complete hosted run and final
-candidate CI/artifact verification are still required; repairs alone cannot
-claim a PASS. The mandatory leaked-password protection requirement and missing
+Syntax and explicit JavaScript lint passed. The complete functional workspace run
+passed all 76 checks/69 zero-violation scans, then failed in teardown. That failure
+is retained. A focused four-check oracle/privacy/PWA/sign-out run verified the
+repaired teardown and ordinary fixture cleanup as PASS. Final exact-head and
+complete-run receipts are recorded separately; repairs alone cannot claim a PASS.
+The mandatory leaked-password protection requirement and missing
 provider/human/operator/recovery evidence continue to block public release.
+
+Updated context-lifecycle repair: closing/offline state is now owned permanently
+by each browser context. Opening a new context cannot reset the old context's
+closing flag or misclassify its cancelled background callbacks as active errors.
+Unexpected active transport failures remain fatal and have sanitized category
+receipts. Financial response assertions and owner-only cleanup remain mandatory.
+
+Later evidence supersedes the PWA interpretation: native credentialless public
+assets are redirected by deployment protection. The earlier relay-cookie PWA
+observations remain historical and do not satisfy native hosted acceptance.
+The relay now explicitly preserves absent Cookie headers. G08 remains BLOCKED;
+see public-launch-hosted-pwa-disposition.md. No worker contract or provider
+protection was weakened to manufacture a pass.

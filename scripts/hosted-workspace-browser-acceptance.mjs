@@ -23,8 +23,10 @@ assert.equal(manifest.stagingRef,config.projectRef);assert.match(manifest.candid
 assert.ok(config.anonKey.startsWith('sb_publishable_'));
 const runId=randomUUID().slice(0,8), tag=`PRISM UI ${runId}`, temporary={accounts:[],transactions:[],transfers:[]};
 const finishOnly=process.argv.includes('--finish');
+const withoutPwa=process.argv.includes('--without-pwa');
 const receipt={startedAt:new Date().toISOString(),environment:'STAGING-HOSTED',...manifest,
-  checkoutSHA:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),partialRun:finishOnly,
+  checkoutSHA:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),partialRun:finishOnly||withoutPwa,
+  omittedChecks:withoutPwa?['Native hosted PWA: protected preview rejects credentialless public-cache assets; G08 remains BLOCKED']:[],
   harnessSHA256:createHash('sha256').update(await readFile(new URL(import.meta.url))).digest('hex'),
   syntheticOnly:true,fixtureEndpoints:false,serviceRoleUsed:false,productionContacted:false,
   credentialsOrStoragePublished:false,checks:[],axe:[],runtimeErrors:0,foreignBackendRequests:0,
@@ -43,27 +45,34 @@ const originalProfile=ok(await db.from('profiles').select('language,theme,financ
 const privateValues=[];const collect=v=>{if(typeof v==='string'&&v.length>=8)privateValues.push(v);else if(v&&typeof v==='object')Object.values(v).forEach(collect);};
 collect(config);collect(access);collect(actorA);collect(actorB);
 const redact=message=>{let text=String(message);for(const value of privateValues.sort((a,b)=>b.length-a.length))text=text.split(value).join('[private value]');return text.replace(/\u001b\[[0-9;]*m/g,'').replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g,'[private address]').replace(/https?:\/\/\S+/g,'[url]').replace(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g,'[token]');};
-let browser, context, page, active='ordinary hosted UI signin',closing=false,offline=false;
+let browser, context, page, active='ordinary hosted UI signin';
+const contextStates=new WeakMap();
 receipt.transportErrors=0;receipt.providerAccess='Permitted temporary Vercel share-link session; development OIDC trust remains withdrawn';
+receipt.transportFailures=[];
 const allowedOrigins=new Set([ORIGIN,API,'https://challenges.cloudflare.com']);
-const guardedRoute=async route=>{
+const guardedRoute=state=>async route=>{
   let response;
   try{
     const u=new URL(route.request().url());
     if(!allowedOrigins.has(u.origin)||u.username||u.password){receipt.foreignBackendRequests++;await route.abort();return;}
-    if(offline){await route.abort('internetdisconnected');return;}
-    const headers={...route.request().headers()};for(const name of Object.keys(headers))if(/^x-vercel-(?:trusted-oidc-idp-token|protection-bypass)$/i.test(name))delete headers[name];
+    if(state.offline){await route.abort('internetdisconnected');return;}
+    const headers={...await route.request().allHeaders()};headers.cookie=headers.cookie??'';
+    for(const name of Object.keys(headers))if(/^x-vercel-(?:trusted-oidc-idp-token|protection-bypass)$/i.test(name))delete headers[name];
     response=await route.fetch({headers,maxRedirects:0,timeout:20000});
     const location=response.headers().location;
     if(location){const next=new URL(location,u);if(!allowedOrigins.has(next.origin)||next.username||next.password){receipt.foreignBackendRequests++;await route.abort('blockedbyclient');return;}}
     await route.fulfill({response}); // Unchanged, real authorized provider response.
   }catch{
-    if(!closing&&!offline)receipt.transportErrors++;
+    if(!state.closing&&!state.offline){receipt.transportErrors++;receipt.transportFailures.push({step:active,kind:'active-route-operation'});}
     try{await route.abort();}catch{} // Closing contexts must never throw header-bearing transport diagnostics.
   }
-  finally{if(response)try{await response.dispose();}catch{if(!closing)receipt.transportErrors++;}}
+  finally{if(response)try{await response.dispose();}catch{if(!state.closing&&!state.offline){receipt.transportErrors++;receipt.transportFailures.push({step:active,kind:'active-response-dispose'});}}}
 };
-const closeContext=async()=>{if(!context)return;closing=true;let failed=false;try{await bounded(context.unrouteAll({behavior:'wait'}),30000,'Guarded route drain');}catch{failed=true;}try{await bounded(context.close(),30000,'Browser context close');}catch{failed=true;}context=undefined;closing=false;if(failed)throw new Error('Guarded browser cleanup failed; private details withheld');};
+const bindRoutes=async nextContext=>{const state={closing:false,offline:false};contextStates.set(nextContext,state);await nextContext.route('**/*',guardedRoute(state));};
+// Assertions await their actual responses first. At intentional teardown,
+// cancel leftover background asset handlers instead of waiting on them forever.
+// Guarded handlers contain diagnostics; ordinary fixture cleanup remains mandatory.
+const closeContext=async()=>{if(!context)return;contextStates.get(context).closing=true;let failed=false;try{await bounded(context.unrouteAll({behavior:'ignoreErrors'}),30000,'Intentional background route cancellation');}catch{failed=true;}try{await bounded(context.close(),30000,'Browser context close');}catch{failed=true;}context=undefined;if(failed)throw new Error('Guarded browser cleanup failed; private details withheld');};
 const visit=url=>page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
 const enterProtectedPreview=async()=>{await visit(access.url);await expect(page).toHaveURL(u=>u.origin===ORIGIN&&!u.searchParams.has('_vercel_share'),{timeout:30000});};
 const pass=(label,details={})=>{receipt.checks.push({label,status:'PASS',...details});console.log('PASS hosted workspace:',label);};
@@ -78,8 +87,8 @@ try{
   step('prepare synthetic B preferences and browser');
   ok(await db.from('profiles').update({language:'en',theme:'light'}).eq('id',actorB.userId),'set synthetic B test preferences');
   browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{})});
-  context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light'});
-  await context.route('**/*',guardedRoute);
+  context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',...(withoutPwa?{serviceWorkers:'block'}:{})});
+  await bindRoutes(context);
   page=await context.newPage();page.on('pageerror',()=>receipt.runtimeErrors++);
   page.on('requestfinished',r=>{if(r.url().startsWith(API+'/rest/v1/')){const t=r.timing();if(t.responseEnd>0)receipt.latency.push(t.responseEnd);}});
   await enterProtectedPreview();
@@ -144,14 +153,16 @@ try{
   for(const [locale,theme] of [['en','light'],['ms','dark'],['en','dark'],['ms','light']]){
     active=`saved preferences ${locale}/${theme}`;await visit(ORIGIN+'/settings');const profileForm=page.locator('form.settings-form');
     await profileForm.getByRole('combobox',{name:/^(Language|Bahasa)$/,exact:true}).selectOption(locale);await profileForm.getByRole('button',{name:theme==='dark'?/^(Dark|Gelap)$/:/^(Light|Cerah)$/,exact:true}).click();
+    const savedResponse=page.waitForResponse(response=>{const url=new URL(response.url());return url.origin===API&&url.pathname==='/rest/v1/profiles'&&url.searchParams.get('id')===`eq.${actorB.userId}`&&response.request().method()==='PATCH';},{timeout:30000});
     await profileForm.getByRole('button',{name:/^(Changes saved|Save changes|Save|Simpan perubahan|Simpan)$/,exact:true}).click();
+    assert.ok([200,204].includes((await savedResponse).status()),'Real own profile save must be acknowledged by staging');
     await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect.poll(()=>page.locator('html').evaluate(e=>e.classList.contains('dark'))).toBe(theme==='dark');
     const stored=ok(await db.from('profiles').select('language,theme').eq('id',actorB.userId).single(),'saved hosted preferences');assert.equal(stored.language,locale);assert.equal(stored.theme,theme);
     // Release each theme's renderer/cache before the next 16-route group.
     // Real signin and saved provider preferences are rechecked; no assertion,
     // route, locale/theme combination or per-assertion deadline is removed.
-    await closeContext();context=await browser.newContext({viewport:{width:390,height:844},colorScheme:theme});
-    await context.route('**/*',guardedRoute);page=await context.newPage();page.on('pageerror',()=>receipt.runtimeErrors++);
+    await closeContext();context=await browser.newContext({viewport:{width:390,height:844},colorScheme:theme,...(withoutPwa?{serviceWorkers:'block'}:{})});
+    await bindRoutes(context);page=await context.newPage();page.on('pageerror',()=>receipt.runtimeErrors++);
     page.on('requestfinished',r=>{if(r.url().startsWith(API+'/rest/v1/')){const t=r.timing();if(t.responseEnd>0)receipt.latency.push(t.responseEnd);}});
     await enterProtectedPreview();await signin(actorB);
     await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect.poll(()=>page.locator('html').evaluate(e=>e.classList.contains('dark'))).toBe(theme==='dark');
@@ -164,8 +175,8 @@ try{
   // Restore the actor's original preferences before independent oracle UI checks.
   ok(await db.from('profiles').update(originalProfile).eq('id',actorB.userId),'restore synthetic B profile');
   step('close B context and prepare ordinary A oracle');
-  await closeContext();context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light'});
-  await context.route('**/*',guardedRoute);
+  await closeContext();context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',...(withoutPwa?{serviceWorkers:'block'}:{})});
+  await bindRoutes(context);
   page=await context.newPage();page.on('pageerror',()=>receipt.runtimeErrors++);await enterProtectedPreview();step('ordinary A signin');await signin(actorA);active='A independent cash-flow, goal and principal oracle';
   await expect(page.locator('.snapshot-value')).toContainText('2,140.00');await expect(page.locator('.snapshot-metric.income')).toContainText('5,200.00');await expect(page.locator('.snapshot-metric.expense')).toContainText('3,060.00');
   await expect(page.locator('.position-section').filter({hasText:'Your accounts'})).toContainText('2,840.00');await expect(page.locator('.position-section').filter({hasText:'Your accounts'})).toContainText('2,200.00');await expect(page.locator('.position-section').filter({hasText:'Your commitments'})).toContainText('900.00');pass(active);
@@ -173,13 +184,15 @@ try{
   await bottom.getByRole('button',{name:'Quick Add',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();await page.keyboard.press('Escape');await expect(bottom.getByRole('button',{name:'Quick Add',exact:true})).toBeFocused();
   await visit(ORIGIN+'/goals');await expect(page.locator('main [role="status"]').filter({hasText:/Loading|Memuatkan/})).toHaveCount(0,{timeout:30000});const goal=page.locator('button.selection-card').filter({hasText:'PRISM hosted 20261014 Emergency fund'});await expect(goal).toHaveCount(1,{timeout:30000});await expect(goal).toContainText('60%');await page.getByRole('button',{name:'Privacy Mode',exact:true}).click();await expect(goal).not.toContainText('60%');
   for(const bar of await page.getByRole('progressbar').all())await expect(bar).not.toHaveAttribute('aria-valuenow');await audit(active);await page.getByRole('button',{name:'Privacy Mode',exact:true}).click();await expect(goal).toContainText('60%');pass(active);
+  if(!withoutPwa){
   active='hosted PWA public cache and network-only private screen';await page.evaluate(()=>Promise.race([navigator.serviceWorker.ready,new Promise((_,reject)=>setTimeout(()=>reject(new Error('Real hosted worker installation timed out')),30000))]));await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller)),{timeout:30000}).toBe(true);
   const inventory=await page.evaluate(async()=>{const all=[];for(const name of await caches.keys()){const cache=await caches.open(name);all.push({name,paths:(await cache.keys()).map(r=>new URL(r.url).pathname)});}return all;});
   assert.equal(inventory.length,1);assert.ok(inventory[0].paths.every(p=>p.startsWith('/assets/')||p.startsWith('/offline-')));assert.deepEqual(await page.evaluate(()=>indexedDB.databases()),[]);
-  offline=true;await context.setOffline(true);await expect(page.getByRole('heading',{name:'You are offline',exact:true})).toBeVisible();await expect(page.getByText('PRISM hosted 20261014 Emergency fund',{exact:true})).toHaveCount(0);
+  contextStates.get(context).offline=true;await context.setOffline(true);await expect(page.getByRole('heading',{name:'You are offline',exact:true})).toBeVisible();await expect(page.getByText('PRISM hosted 20261014 Emergency fund',{exact:true})).toHaveCount(0);
   await visit(ORIGIN+'/accounts');await expect(page.getByRole('heading',{name:'You are offline',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Anda di luar talian',exact:true})).toBeVisible();
   const restarted=await context.newPage();await restarted.goto(ORIGIN+'/transactions');await expect(restarted.getByRole('heading',{name:'You are offline',exact:true})).toBeVisible();await restarted.close();
-  offline=false;await context.setOffline(false);await page.getByRole('link',{name:'Try again / Cuba lagi',exact:true}).click();await visit(ORIGIN+'/accounts');await expect(page.locator('main [role="status"]').filter({hasText:/Loading|Memuatkan/})).toHaveCount(0,{timeout:30000});await expect(page.getByRole('heading',{name:'PRISM hosted 20261014 Everyday account',exact:true})).toBeVisible({timeout:30000});pass(active,{cache:inventory,restart:true,privateDataCached:false});
+  contextStates.get(context).offline=false;await context.setOffline(false);await page.getByRole('link',{name:'Try again / Cuba lagi',exact:true}).click();await visit(ORIGIN+'/accounts');await expect(page.locator('main [role="status"]').filter({hasText:/Loading|Memuatkan/})).toHaveCount(0,{timeout:30000});await expect(page.getByRole('heading',{name:'PRISM hosted 20261014 Everyday account',exact:true})).toBeVisible({timeout:30000});pass(active,{cache:inventory,restart:true,privateDataCached:false});
+  }else{await visit(ORIGIN+'/accounts');await expect(page.locator('main [role="status"]').filter({hasText:/Loading|Memuatkan/})).toHaveCount(0,{timeout:30000});}
   active='real mobile signout, back and private deep-link denial';await page.getByRole('button',{name:'Open navigation',exact:true}).click();await page.getByRole('dialog',{name:'WORKSPACE',exact:true}).getByRole('button',{name:'Sign out',exact:true}).click();await expect(page).toHaveURL(/\/login/);await page.goBack();await expect(page.getByText('PRISM hosted 20261014 Everyday account',{exact:true})).toHaveCount(0);
   await visit(ORIGIN+'/accounts');await expect(page).toHaveURL(/\/login\?next=%2Faccounts/);assert.equal(await page.evaluate(()=>localStorage.getItem('sb-zwqcdfzfsudqccclficx-auth-token')),null);pass(active);
   assert.equal(receipt.runtimeErrors,0);assert.equal(receipt.foreignBackendRequests,0);assert.equal(receipt.transportErrors,0);receipt.status='PASS';
