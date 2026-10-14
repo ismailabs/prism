@@ -3,6 +3,58 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  local-supabase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PRISM_LOCAL_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, Node 24
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0, Node 24
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Install pinned official Supabase CLI with digest verification
+        run: |
+          curl -fsSL https://github.com/supabase/cli/releases/download/v2.117.0/supabase_2.117.0_linux_amd64.tar.gz -o /tmp/prism-supabase-cli.tar.gz
+          echo '69c05f85b9e47ee706d30f1a6ca8a526b4e337bfd12c7ef1ef522d24e7280d24  /tmp/prism-supabase-cli.tar.gz' | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/prism-supabase-bin"
+          tar -xzf /tmp/prism-supabase-cli.tar.gz -C "$RUNNER_TEMP/prism-supabase-bin" supabase
+          echo "$RUNNER_TEMP/prism-supabase-bin" >> "$GITHUB_PATH"
+      - name: Prepare synthetic local Supabase schema and stronger local Auth policy
+        run: node scripts/local-supabase-ci.mjs prepare
+      - name: Start and verify actual loopback-only local Supabase containers
+        run: node scripts/local-supabase-ci.mjs start
+      - name: Accept real local Auth, SMTP capture, MFA, recovery and A/B RLS
+        run: node scripts/local-supabase-acceptance.mjs
+      - name: Stop only the isolated synthetic stack
+        if: always()
+        run: node scripts/local-supabase-ci.mjs stop
+      - name: Preserve redacted local-stack receipts in required logs
+        if: always()
+        run: |
+          for receipt in artifacts/public-launch/local-supabase-{chain,runtime,acceptance}.json; do
+            if [ -f "$receipt" ]; then cat "$receipt"; fi
+          done
+      - name: Preserve optional redacted local-stack receipt archive
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2, Node 24
+        with:
+          name: prism-local-supabase-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 1
+          if-no-files-found: warn
+          include-hidden-files: false
+          path: |
+            artifacts/public-launch/local-supabase-chain.json
+            artifacts/public-launch/local-supabase-runtime.json
+            artifacts/public-launch/local-supabase-acceptance.json
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 45
