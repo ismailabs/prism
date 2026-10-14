@@ -147,6 +147,14 @@ try{
     await profileForm.getByRole('button',{name:/^(Changes saved|Save changes|Save|Simpan perubahan|Simpan)$/,exact:true}).click();
     await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect.poll(()=>page.locator('html').evaluate(e=>e.classList.contains('dark'))).toBe(theme==='dark');
     const stored=ok(await db.from('profiles').select('language,theme').eq('id',actorB.userId).single(),'saved hosted preferences');assert.equal(stored.language,locale);assert.equal(stored.theme,theme);
+    // Release each theme's renderer/cache before the next 16-route group.
+    // Real signin and saved provider preferences are rechecked; no assertion,
+    // route, locale/theme combination or per-assertion deadline is removed.
+    await closeContext();context=await browser.newContext({viewport:{width:390,height:844},colorScheme:theme});
+    await context.route('**/*',guardedRoute);page=await context.newPage();page.on('pageerror',()=>receipt.runtimeErrors++);
+    page.on('requestfinished',r=>{if(r.url().startsWith(API+'/rest/v1/')){const t=r.timing();if(t.responseEnd>0)receipt.latency.push(t.responseEnd);}});
+    await enterProtectedPreview();await signin(actorB);
+    await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect.poll(()=>page.locator('html').evaluate(e=>e.classList.contains('dark'))).toBe(theme==='dark');
     for(const tab of destinations){active=`${locale}/${theme} /${tab}`;await visit(ORIGIN+'/'+tab);await expect(page.locator('main h1')).toHaveCount(1);await expect(page.locator('main h1')).toBeVisible();assert.equal(new URL(page.url()).pathname,'/'+tab);
       await expect(page.locator('main [role="status"]').filter({hasText:/Loading|Memuatkan/})).toHaveCount(0,{timeout:30000});
       for(const width of [390,1440]){await page.setViewportSize({width,height:900});await checkReflow();}await audit(active);pass(active,{widths:[390,1440]});
