@@ -16,6 +16,7 @@ const files = [
   'artifacts/responsive-checks.json',
   'artifacts/phase7/pwa-cache-inventory.json',
   'artifacts/phase7/restore-rehearsal.json',
+  'artifacts/public-launch/large-report.json',
 ];
 const logs = (await readdir('artifacts/ci')).filter(name => /^[a-z0-9-]+\.log$/.test(name));
 assert.ok(logs.includes('commit.log') && logs.includes('local-only.log'), 'Fixture-only evidence identity is required');

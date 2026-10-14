@@ -369,7 +369,7 @@ for (const locale of ['en','ms'] as const) test(`setup retry reports only steps 
   const accountDenied=page.waitForResponse(response=>response.url().startsWith(supabaseUrl+'/rest/v1/accounts')&&response.request().method()==='POST'&&response.status()===403);
   await save.click();await accountDenied;await expect(save).toBeEnabled();
   await expect(setup.getByRole('listitem').filter({hasText:locale==='en'?/^Preferences:/:/^Pilihan:/})).toHaveText(locale==='en'?'Preferences: Saved':'Pilihan: Disimpan');
-  await expect(setup.getByRole('listitem').filter({hasText:locale==='en'?'Optional categories:':'Kategori pilihan:'})).toHaveText(locale==='en'?'Optional categories: Complete':'Kategori pilihan: Selesai');
+  await expect(setup.getByRole('listitem').filter({hasText:locale==='en'?'Optional categories:':'Kategori pilihan:'})).toHaveText(locale==='en'?'Optional categories: Skipped':'Kategori pilihan: Dilangkau');
   await page.route(supabaseUrl+'/rest/v1/profiles*',async route=>route.request().method()==='PATCH'?route.fulfill({status:403,json:{code:'42501',message:'Synthetic preferences denial'}}):route.fallback());
   await setup.getByRole('combobox',{name:locale==='en'?'Primary currency':'Mata wang utama',exact:true}).selectOption('USD');
   const preferencesDenied=page.waitForResponse(response=>response.url().startsWith(supabaseUrl+'/rest/v1/profiles')&&response.request().method()==='PATCH'&&response.status()===403);

@@ -103,5 +103,6 @@ jobs:
             artifacts/qa-failure.png
             artifacts/calm-precision/screens/*.png
             artifacts/calm-precision/screens/a11y-*.json
+            artifacts/public-launch/large-report.json
             test-results/
             playwright-report/

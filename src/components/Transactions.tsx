@@ -12,12 +12,12 @@ import { Failure } from './financial/shared';
 import { TransactionTable } from './TransactionTable';
 import { Button } from './ui/button';
 
-export interface TransactionsProps { transactions: Transaction[]; categories: Category[]; payments: PaymentMethod[]; search: string; setSearch: (value: string) => void; onEdit: (tx: Transaction) => void; onDelete: (tx: Transaction) => void }
-export function Transactions({ categories, payments, search: rememberedSearch, setSearch: rememberSearch, onEdit, onDelete }: TransactionsProps) {
+export interface TransactionsProps { transactions: Transaction[]; categories: Category[]; payments: PaymentMethod[]; onEdit: (tx: Transaction) => void; onDelete: (tx: Transaction) => void }
+export function Transactions({ categories, payments, onEdit, onDelete }: TransactionsProps) {
   const { t } = useTranslation();
   const [initial] = useState(() => new URLSearchParams(typeof window === 'undefined' ? '' : window.location.search));
-  const [search, setLocalSearch] = useState(initial.get('search') ?? rememberedSearch);
-  const setSearch = (value: string) => { setLocalSearch(value); rememberSearch(value); };
+  // The current URL owns each visit, including Back/Forward and cleared drilldowns.
+  const [search, setSearch] = useState(initial.get('search') ?? '');
   const drill = initial.get('activity') === 'ordinary';
   const [filtersOpen, setFiltersOpen] = useState(initial.size > 0);
   const [type, setType] = useState(initial.get('type') ?? '');
@@ -42,7 +42,7 @@ export function Transactions({ categories, payments, search: rememberedSearch, s
     for (const [key, value] of Object.entries({ search, type, category, payment, from, to, account, currency, min, max, activity: drill ? 'ordinary' : '' })) {
       query.delete(key); if (value) query.set(key, value);
     }
-    window.history.replaceState(null, '', `/transactions${query.size ? `?${query}` : ''}`);
+    window.history.replaceState(window.history.state, '', `/transactions${query.size ? `?${query}` : ''}`);
   }, [initial, search, type, category, payment, from, to, account, currency, min, max, drill]);
   const chips = [
     { label: t('type'), value: type ? t(type) : '', clear: () => setType('') },

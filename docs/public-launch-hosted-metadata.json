@@ -1,0 +1,45 @@
+{
+  "checkedAtUTC": "2026-10-14T04:27:49.825Z",
+  "project": "hyhsppiitijkuvpyswce",
+  "evidenceClass": "PROD-METADATA-READ-ONLY",
+  "transactionReadOnly": "on",
+  "serverVersion": "17.6",
+  "customerRowsAccessed": false,
+  "applicationFunctionInvocations": false,
+  "publicTableCount": 25,
+  "allPublicTablesHaveRLS": true,
+  "publicViewCount": 19,
+  "allPublicViewsUseInvokerSecurity": true,
+  "policyCount": 108,
+  "privateReservations": {
+    "schema": "prism_private",
+    "name": "report_reservations",
+    "rls": true,
+    "force_rls": false,
+    "policy_count": 0,
+    "anon_schema_usage": false,
+    "authenticated_schema_usage": true,
+    "anon_select": false,
+    "authenticated_select": false,
+    "authenticated_insert": false,
+    "authenticated_update": false,
+    "authenticated_delete": false
+  },
+  "anonymousAndAuthenticatedHavePrivilegedMemberships": false,
+  "clientRoles": [
+    {
+      "name": "authenticated",
+      "superuser": false,
+      "bypassRLS": false
+    },
+    {
+      "name": "anon",
+      "superuser": false,
+      "bypassRLS": false
+    }
+  ],
+  "privateZeroArgumentDeletionExecutableByClient": false,
+  "allInspectedDefinersHaveFixedSearchPath": true,
+  "migrationReceiptCount": 19,
+  "limitation": "Safe metadata plus synthetic local-native checks do not replace hosted staging A/B or full Auth acceptance. Raw provider catalog remains local and ignored."
+}

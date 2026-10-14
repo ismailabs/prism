@@ -81,7 +81,6 @@ export default function Workspace() {
   const { selection, period, setSelection } = useFinancialPeriod();
   const label = periodLabel(selection, store.locale, t);
   const report = useFinancialReport(period, store.personalization.analyticsBar || ['dashboard', 'analytics'].includes(store.activeTab));
-  const [search, setSearch] = useState(() => new URLSearchParams(typeof window === 'undefined' ? '' : window.location.search).get('search') ?? '');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
@@ -424,8 +423,6 @@ export default function Workspace() {
               <div className="space-y-7">
                 <Transactions key={routeRevision}
                   {...data}
-                  search={search}
-                  setSearch={setSearch}
                   onEdit={edit}
                   onDelete={setDeleting}
                 />

@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "mission": "PRISM Autonomous Public Launch",
+  "checkedAtUTC": "2026-10-14T04:38:20.370Z",
+  "decision": "NO-GO",
+  "sourceArchive": "PRISM-Public-Launch-Codex-Package.zip",
+  "sourceAuthority": "prompt.md; specs/00-13; checklists; current user permission. Historical files are evidence only.",
+  "repository": "https://github.com/ismailabs/prism",
+  "originalPR": "https://github.com/ismailabs/prism/pull/5",
+  "baselineCandidateSHA": "345d26caa904c088c76f5c40c4435f6509260ffc",
+  "mainSHA": "d1438197a33d179cedd6c54bad3bfcf9a06db31f",
+  "branch": "codex/public-launch-20261014",
+  "worktree": "C:/Users/moham/.codex/worktrees/5e1d/prism-finance-baseline",
+  "production": {
+    "url": "https://prism.ismailstudio.my/",
+    "supabaseProject": "hyhsppiitijkuvpyswce",
+    "vercelProject": "prj_cxW7kDXZK6AxnJ954ZvB54eRZ8kr",
+    "vercelTeam": "team_y1FMLs1LWgVb2dOvegEGYVkf",
+    "observedDeployment": "dpl_7ybY6ao53z2BG6yhhyrDpKX7CGNk",
+    "deployedSHA": "d1438197a33d179cedd6c54bad3bfcf9a06db31f",
+    "signupMetadata": "Enabled before this mission; disable_signup=false; flows unverified",
+    "autoAssignCustomDomains": false,
+    "changedSettings": [
+      {
+        "setting": "autoAssignCustomDomains",
+        "before": true,
+        "after": false,
+        "verifiedAtUTC": "2026-10-14T04:03:51Z",
+        "liveDeploymentUnchanged": true
+      }
+    ]
+  },
+  "capabilities": {
+    "goalMode": "available; active",
+    "isolatedWorktree": "available; reused",
+    "terminal": "available",
+    "githubRead": "available",
+    "githubWrite": "metadata reports push; publication in progress",
+    "githubAdministration": "blocked by integration for branch protection",
+    "vercelInspection": "available",
+    "vercelRelease": "not checked; conditional only",
+    "supabaseMetadata": "available",
+    "supabaseProductionSQL": "not authorized",
+    "browser": "in-app browser available; no authenticated external browser in inventory",
+    "modelPreference": "selection control not available through current tools",
+    "supabaseProductionMetadataSQL": "available; BEGIN READ ONLY; transaction_read_only=on observed; catalog only"
+  },
+  "observations": [
+    "PR #5 open and unmerged; current head independently matches API, fetched ref and advertised ref.",
+    "Current main branch d1438197a33d179cedd6c54bad3bfcf9a06db31f is ancestor of PR #5.",
+    "Two final-head verify checks succeeded: runs 38480290231 and 38480284977; detailed logs pending independent inspection.",
+    "Supabase lists production PRISM and unrelated Hearthline only; production PRISM has no development branch.",
+    "Security advisor reports leaked-password protection disabled; private report_reservations has RLS and no policies.",
+    "Existing human acceptance file expressly records missing device/AT and operations/legal attestation; old candidate facts do not certify this head.",
+    "Fresh public routes all return HTTPS 200 and security headers; public Auth settings report signup enabled, email confirmation required and Google/email enabled; this mission made no Supabase Auth change.",
+    "Transaction-enforced read-only production catalog: 25 RLS tables, 19 invoker views, 25 restrictive session/MFA policies, safe private reservation client denial, nineteen migration receipts; no application/Auth rows accessed.",
+    "Current full audit has five inherited high build-chain findings; runtime audit zero. No dependency or migration change.",
+    "Actual local acceptance: 5 core checks with 166 units; 16 database/review; 3 native PostgreSQL/PostgREST; 3 safety/recovery/package; 7 launch regressions and all 19 phase3 browser cases; 261 main cases collected, not yet claimed fully run."
+  ],
+  "gates": [
+    {
+      "id": "G01",
+      "status": "NOT CHECKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Current development candidate must be committed, independently matched and reviewed; main is unprotected and rulesets empty; no required reviewers found.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G02",
+      "status": "PASS",
+      "evidence": [
+        "docs/public-launch-security-decisions.md",
+        "artifacts/public-launch/release-freeze.json"
+      ],
+      "blocker": null,
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G03",
+      "status": "NOT CHECKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Complete fresh exact-head CI required; local core/database/native/recovery and 26 browser cases PASS.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G04",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Required hosted password-control disposition and current Auth acceptance unavailable; runtime audit zero; inherited build-only advisory reviewed.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G05",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "No isolated hosted staging among connected resources; Free organization already has two active production projects and no PRISM branch.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G06",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Actual isolated signup/recipient confirmation/recovery/MFA/OAuth/CAPTCHA success and denial acceptance missing.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G07",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-hosted-metadata.json",
+        "artifacts/calm-precision/native/receipts.json"
+      ],
+      "blocker": "Local native ownership/session/MFA and production read-only catalog PASS; hosted isolated A/B denial acceptance missing.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G08",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Local product/EN-MS/reflow checks PASS; exact-candidate full CI and hosted critical workflows required.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G09",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Actual physical Windows/Android/iOS, human screen-reader and Malay comprehension sign-offs absent.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G10",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Existing public copy and conditional engineering authority do not supply named dated operator/privacy/contact/operations acceptance.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G11",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Served SHA and schema-preserving deploy rollback identified; current independent recovery/RPO-RTO/operator and provider automation acceptance missing.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G12",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Existing signup metadata is enabled; safe acceptance and required hosted password control on current Free plan unresolved; no upgrade or SQL writes authorized.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "G13",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "All mandatory pre-release gates must PASS; current decision NO-GO.",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "L01",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Candidate not released; pre-release GO required",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "L02",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Candidate not released; pre-release GO required",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "L03",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Candidate not released; pre-release GO required",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    },
+    {
+      "id": "L04",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/public-launch-audit.md",
+        "docs/public-launch-staging-and-human-acceptance.md"
+      ],
+      "blocker": "Candidate not released; pre-release GO required",
+      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+    }
+  ],
+  "prohibitedUntilGO": [
+    "merge to main",
+    "production deployment or promotion",
+    "public signup enablement",
+    "production synthetic financial writes"
+  ],
+  "authorizedProductionSQL": false,
+  "milestones": {
+    "M0": "PASS",
+    "M1": "BLOCKED",
+    "M2": "PASS",
+    "M3": "IN PROGRESS",
+    "M4": "BLOCKED",
+    "M5": "BLOCKED",
+    "M6": "BLOCKED",
+    "M7": "BLOCKED"
+  },
+  "releaseCandidateSHA": "PENDING FIRST REVIEWED COMMIT"
+}

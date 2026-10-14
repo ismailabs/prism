@@ -4,9 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "git": {
-    "deploymentEnabled": {
-      "codex/calm-precision-20261013": false
-    }
+    "deploymentEnabled": false
   },
   "functions": {
     "api/**/*.ts": {
