@@ -275,6 +275,10 @@
   ],
   "publishedReceiptIntegrity": [
     {
+      "path": "docs/public-launch/evidence/ci-contrast-first-failure.json",
+      "sha256": "a19e94b52fc75ceb11e977700c1b595b413b48018c622772227f1c7de349f729"
+    },
+    {
       "path": "docs/public-launch/evidence/continuation-full-audit.json",
       "sha256": "46ee59abad96c0ccef0e0838064a177f780588dfb52bd7d2b567f96ae4626230"
     },
@@ -293,6 +297,10 @@
     {
       "path": "docs/public-launch/evidence/continuation-unit-first-failure.json",
       "sha256": "9dd390b9fe0ba32896fe6c5163794718fa863e71cd523c94e392664528b0385a"
+    },
+    {
+      "path": "docs/public-launch/evidence/contrast-repair-local-regression.json",
+      "sha256": "27acfc6652ddf801957872d366e4e480d7035d24ab5219021a7a1af015ffe639"
     },
     {
       "path": "docs/public-launch/evidence/hosted-backend-finance-oracle.json",
@@ -327,6 +335,10 @@
       "sha256": "2a7eaaa858ef2f7d60edd7f17d9e14207df8b1159ed19bcdd5e872b5bb035a8e"
     },
     {
+      "path": "docs/public-launch/evidence/staging-expired-confirmation-acceptance.json",
+      "sha256": "793def3d0f8438fd14f6cb760a7e274d1f4cd671e52b777aa0accda3f325a9aa"
+    },
+    {
       "path": "docs/public-launch/evidence/staging-expiry-preflight.json",
       "sha256": "f4164c665c3118f6253246aac6e7ad39c3e40209d69c4817ed8c98d1b8203910"
     },
@@ -349,6 +361,14 @@
     {
       "path": "docs/public-launch/evidence/staging-project-final-controls.json",
       "sha256": "7cc1a4d65515b3c8bd5b18c1f135c61e82a06782e16778c5d4867e54b7e09621"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-public-form-signup-first-run.json",
+      "sha256": "443330048da6cf64d44bdabc99418bf40874701df70c6e50b5e4c3db5df03d71"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-public-lifecycle-normal-signin.json",
+      "sha256": "aacd4b6ef366157604864573fdd84f98af29b068a40f42b6d3ce420f401bab9b"
     },
     {
       "path": "docs/public-launch/evidence/staging-recovery-acceptance.json",

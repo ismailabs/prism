@@ -52,3 +52,19 @@ The October 13 encrypted bundle has **40 matching hashes** and a valid detached 
 Use the [single 14-check acceptance form](public-launch-owner-acceptance.md) and [exact private provider guide](public-launch-provider-handoff.md). Return actual dated observations and non-secret responsibility/custody records. Send no keys, passwords, email links, MFA secrets, customer rows or private storage URLs. No human PASS has been inferred. [Owner decisions](public-launch-owner-decisions.md) retain the breach blocker; integrations or this form cannot waive it.
 
 Engineering continues through publication, CI and affected isolated hosted tests. After those tasks, a supported breach control within authorized cost, genuine provider acceptance and actual owner/device/recovery records are the resume triggers. A future severe released-app failure permits only an approved compatible deployment rollback; database/Auth restoration needs separate authority. No indefinite/background continuation is promised.
+
+## Follow-up after the first publication
+
+Commit7364ada was independently published, built only in staging and passed its
+complete push CI. Its PR CI retained one real WCAG failure: page-label contrast
+4.46:1 during the parent's entrance fade. This revision preserves the180ms movement
+with full-opacity content. The original eight-scan case and a new four-frame EN/MS
+regression passed locally without weakening assertions or deadlines. Final-head
+CI and protected hosted checks remain required for this follow-up.
+
+At17:28:46 UTC the first-use real confirmation link for C was rejected after3662
+seconds; unconfirmed signin remained denied and an unsupported redirect had been
+confined to staging. All four expiry/redirect/inbox checks passed. D registered
+through the actual public product form, received real INBOX confirmation and later
+signed in normally. Its browser callback/cleanup failures are retained, not
+described as a timely PKCE success; B's timely PKCE receipt remains separate.

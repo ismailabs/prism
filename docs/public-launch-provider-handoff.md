@@ -94,6 +94,10 @@ before the remaining expired-link test; never disable confirmation to make it pa
 Update at 16:27 UTC: C's ordinary signup and actual Gmail INBOX receipt succeeded
 after quota recovery, without changing the normal 3600-second policy. No session
 was issued. The first-use expired-link check is pending until after 17:28:44 UTC.
+Subsequent actual check at17:28:46 UTC: first use after3662seconds returned303 with
+`otp_expired`; unconfirmed signin was still denied. All four checks passed; the
+normal3600-second lifetime remains unchanged. Google/CAPTCHA and transport parity
+are still outstanding, so this does not pass G06.
 If later email parity needs
 a staging SMTP credential, enter it privately in [staging Emails](https://supabase.com/dashboard/project/zwqcdfzfsudqccclficx/auth/templates)
 with an existing free provider. No SMTP secret needs to be sent to Codex.

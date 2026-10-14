@@ -337,13 +337,11 @@
 @media(max-width:1100px) { .analytics-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:900px) { .dashboard-modules,.analytics-breakdowns { grid-template-columns:minmax(0,1fr); } }
 @media(max-width:639px) { .analytics-bar button { min-height:44px; } .analytics-metric { padding:16px; } .analytics-metric strong { font-size:20px; } .donut-layout { padding-left:16px; padding-right:16px; } .donut-legend { flex-basis:100%; } .donut-center strong { font-size:17px; } .app-main { padding-bottom:calc(24px + env(safe-area-inset-bottom)); } .header-brand { font-size:15px; gap:6px; } .header-brand img { width:27px; height:27px; } .app-header { gap:4px; padding-left:10px; padding-right:10px; } .app-header>div { gap:2px; } .chart-data summary { min-height:44px; } }
-@keyframes prism-reveal { from { opacity:0; transform:translateY(5px); clip-path:polygon(0 0,100% 0,100% 96%,0 100%); } to { opacity:1; transform:translateY(0); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); } }
+/* Content stays fully readable while moving: fading parents blends their text
+   into the background and can violate contrast during intermediate frames. */
+@keyframes prism-reveal { from { transform:translateY(5px); } to { transform:translateY(0); } }
 @keyframes drawer-reveal { from { transform:translateX(-100%); } to { transform:translateX(0); } }
 .page-heading,.dashboard-module,.analytics-metrics { animation:prism-reveal 180ms ease-out both; }
-/* Keep financial labels readable throughout the entrance, including the moment
-   an accessibility scan samples the animation. Motion must not fade contrast. */
-@keyframes prism-metrics-reveal { from { transform:translateY(5px); } to { transform:translateY(0); } }
-.analytics-metrics { animation-name:prism-metrics-reveal; }
 .mobile-nav-panel { animation:drawer-reveal 190ms ease-out; }
 button,a { transition:background-color 120ms ease,color 120ms ease,border-color 120ms ease; }
 [data-motion=reduced] *,[data-motion=reduced] *::before,[data-motion=reduced] *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
