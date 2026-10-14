@@ -40,6 +40,8 @@
   ],
   "privateZeroArgumentDeletionExecutableByClient": false,
   "allInspectedDefinersHaveFixedSearchPath": true,
+  "restrictiveSessionMFAPolicyCount": 25,
+  "clientRolesHaveLoginOrCreateRole": false,
   "migrationReceiptCount": 19,
   "limitation": "Safe metadata plus synthetic local-native checks do not replace hosted staging A/B or full Auth acceptance. Raw provider catalog remains local and ignored."
 }

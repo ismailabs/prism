@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "mission": "PRISM Autonomous Public Launch",
-  "checkedAtUTC": "2026-10-14T04:38:20.370Z",
-  "decision": "NO-GO",
+  "checkedAtUTC": "2026-10-14T05:52:04.307Z",
+  "decision": "LAUNCH BLOCKED",
   "sourceArchive": "PRISM-Public-Launch-Codex-Package.zip",
   "sourceAuthority": "prompt.md; specs/00-13; checklists; current user permission. Historical files are evidence only.",
   "repository": "https://github.com/ismailabs/prism",
@@ -28,14 +28,15 @@
         "verifiedAtUTC": "2026-10-14T04:03:51Z",
         "liveDeploymentUnchanged": true
       }
-    ]
+    ],
+    "vercelPlan": "hobby"
   },
   "capabilities": {
     "goalMode": "available; active",
     "isolatedWorktree": "available; reused",
     "terminal": "available",
     "githubRead": "available",
-    "githubWrite": "metadata reports push; publication in progress",
+    "githubWrite": "available; non-force branch publication and PR #6 created",
     "githubAdministration": "blocked by integration for branch protection",
     "vercelInspection": "available",
     "vercelRelease": "not checked; conditional only",
@@ -55,18 +56,21 @@
     "Fresh public routes all return HTTPS 200 and security headers; public Auth settings report signup enabled, email confirmation required and Google/email enabled; this mission made no Supabase Auth change.",
     "Transaction-enforced read-only production catalog: 25 RLS tables, 19 invoker views, 25 restrictive session/MFA policies, safe private reservation client denial, nineteen migration receipts; no application/Auth rows accessed.",
     "Current full audit has five inherited high build-chain findings; runtime audit zero. No dependency or migration change.",
-    "Actual local acceptance: 5 core checks with 166 units; 16 database/review; 3 native PostgreSQL/PostgREST; 3 safety/recovery/package; 7 launch regressions and all 19 phase3 browser cases; 261 main cases collected, not yet claimed fully run."
+    "Actual local acceptance: 5 core checks with 166 units; 16 database/review; 3 native PostgreSQL/PostgREST; 3 safety/recovery/package; 7 launch regressions and all 19 phase3 browser cases; 261 main cases collected, not yet claimed fully run.",
+    "Both candidate CI jobs completed with 45/45 successful steps. Downloaded artifact SHA256 matches provider digest; 224 members, 37 logs, 64 zero-violation route axe reports and fixture receipt reviewed. PR test-merge tree exactly matches candidate tree."
   ],
   "gates": [
     {
       "id": "G01",
-      "status": "NOT CHECKED",
+      "status": "PASS",
       "evidence": [
-        "docs/public-launch-audit.md",
-        "docs/public-launch-staging-and-human-acceptance.md"
+        "https://github.com/ismailabs/prism/pull/6",
+        "https://github.com/ismailabs/prism/actions/runs/38512935091",
+        "https://github.com/ismailabs/prism/actions/runs/38513067418",
+        "artifacts/public-launch/artifact-review.json"
       ],
-      "blocker": "Current development candidate must be committed, independently matched and reviewed; main is unprotected and rulesets empty; no required reviewers found.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "blocker": null,
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G02",
@@ -76,17 +80,19 @@
         "artifacts/public-launch/release-freeze.json"
       ],
       "blocker": null,
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G03",
-      "status": "NOT CHECKED",
+      "status": "PASS",
       "evidence": [
-        "docs/public-launch-audit.md",
-        "docs/public-launch-staging-and-human-acceptance.md"
+        "https://github.com/ismailabs/prism/pull/6",
+        "https://github.com/ismailabs/prism/actions/runs/38512935091",
+        "https://github.com/ismailabs/prism/actions/runs/38513067418",
+        "artifacts/public-launch/artifact-review.json"
       ],
-      "blocker": "Complete fresh exact-head CI required; local core/database/native/recovery and 26 browser cases PASS.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "blocker": null,
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G04",
@@ -96,7 +102,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Required hosted password-control disposition and current Auth acceptance unavailable; runtime audit zero; inherited build-only advisory reviewed.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G05",
@@ -106,7 +112,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "No isolated hosted staging among connected resources; Free organization already has two active production projects and no PRISM branch.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G06",
@@ -116,7 +122,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Actual isolated signup/recipient confirmation/recovery/MFA/OAuth/CAPTCHA success and denial acceptance missing.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G07",
@@ -126,7 +132,7 @@
         "artifacts/calm-precision/native/receipts.json"
       ],
       "blocker": "Local native ownership/session/MFA and production read-only catalog PASS; hosted isolated A/B denial acceptance missing.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G08",
@@ -136,7 +142,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Local product/EN-MS/reflow checks PASS; exact-candidate full CI and hosted critical workflows required.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G09",
@@ -146,7 +152,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Actual physical Windows/Android/iOS, human screen-reader and Malay comprehension sign-offs absent.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G10",
@@ -156,7 +162,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Existing public copy and conditional engineering authority do not supply named dated operator/privacy/contact/operations acceptance.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G11",
@@ -166,7 +172,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Served SHA and schema-preserving deploy rollback identified; current independent recovery/RPO-RTO/operator and provider automation acceptance missing.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G12",
@@ -176,7 +182,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Existing signup metadata is enabled; safe acceptance and required hosted password control on current Free plan unresolved; no upgrade or SQL writes authorized.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "G13",
@@ -186,7 +192,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "All mandatory pre-release gates must PASS; current decision NO-GO.",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "L01",
@@ -196,7 +202,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Candidate not released; pre-release GO required",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "L02",
@@ -206,7 +212,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Candidate not released; pre-release GO required",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "L03",
@@ -216,7 +222,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Candidate not released; pre-release GO required",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     },
     {
       "id": "L04",
@@ -226,7 +232,7 @@
         "docs/public-launch-staging-and-human-acceptance.md"
       ],
       "blocker": "Candidate not released; pre-release GO required",
-      "verifiedAtUTC": "2026-10-14T04:38:20.370Z"
+      "verifiedAtUTC": "2026-10-14T05:52:04.307Z"
     }
   ],
   "prohibitedUntilGO": [
@@ -240,11 +246,48 @@
     "M0": "PASS",
     "M1": "BLOCKED",
     "M2": "PASS",
-    "M3": "IN PROGRESS",
+    "M3": "PASS",
     "M4": "BLOCKED",
     "M5": "BLOCKED",
     "M6": "BLOCKED",
     "M7": "BLOCKED"
   },
-  "releaseCandidateSHA": "PENDING FIRST REVIEWED COMMIT"
+  "releaseCandidateSHA": "db5a208571c4aa10bb082cfdde79bc14231ee9bb",
+  "engineeringCandidateSHA": "db5a208571c4aa10bb082cfdde79bc14231ee9bb",
+  "candidatePR": "https://github.com/ismailabs/prism/pull/6",
+  "ciRuns": [
+    {
+      "id": 38512935091,
+      "event": "push",
+      "headSHA": "db5a208571c4aa10bb082cfdde79bc14231ee9bb",
+      "conclusion": "success",
+      "url": "https://github.com/ismailabs/prism/actions/runs/38512935091"
+    },
+    {
+      "id": 38513067418,
+      "event": "pull_request",
+      "headSHA": "db5a208571c4aa10bb082cfdde79bc14231ee9bb",
+      "conclusion": "success",
+      "url": "https://github.com/ismailabs/prism/actions/runs/38513067418"
+    }
+  ],
+  "ciEvidence": {
+    "stepsPerJob": 45,
+    "allStepsSuccessful": true,
+    "browserTests": 261,
+    "unitTests": 166,
+    "authTests": 14,
+    "pwaTests": 5,
+    "responsiveChecks": 481,
+    "axeReports": 64,
+    "axeViolations": 0,
+    "artifactId": 11870209466,
+    "artifactDigest": "1af961709cfe690e8eebc53bf885127f1a26581185019c45670cd4c8d8c7fbf0",
+    "artifactMembers": 224,
+    "namedLogs": 37,
+    "prCheckoutSHA": "4aaff1180ef58c3d89923381f930b9ba0133ba30",
+    "treeSHA": "067321e168592a85f5fcf250e5c769535cd6f9a2",
+    "matchesCandidateTree": true
+  },
+  "checkpointScope": "Engineering commit db5a208 is verified. Reverify the latest PR #6 documentation head and CI before any release; final current-head receipt is in artifacts/public-launch/final-ledger.json and the live PR description."
 }
