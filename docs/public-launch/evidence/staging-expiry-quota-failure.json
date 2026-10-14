@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-14T14:16:15.722Z",
+  "issuedAt": "2026-10-14T14:16:14.284Z",
+  "environment": "STAGING-HOSTED",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "syntheticLabel": "C",
+  "configuredOTPSeconds": 60,
+  "originalOTPSeconds": 3600,
+  "publicSignupStatus": 429,
+  "errorCode": "over_email_send_rate_limit",
+  "userCreated": false,
+  "sessionIssued": false,
+  "requestedUnsupportedRedirect": true,
+  "credentialsOrAddressPublished": false
+}

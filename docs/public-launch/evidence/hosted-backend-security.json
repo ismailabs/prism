@@ -1,0 +1,160 @@
+{
+  "startedAtUTC": "2026-10-14T13:44:21.251Z",
+  "environment": "STAGING-HOSTED",
+  "projectRef": "zwqcdfzfsudqccclficx",
+  "apiOrigin": "https://zwqcdfzfsudqccclficx.supabase.co",
+  "phase": "security",
+  "selectedGroup": null,
+  "partialRun": false,
+  "sourceBaselineSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "harnessSHA256": "287a12e25dc935b73d7fd7f8769578d65252a110beb72c8edf574a5539c3ae54",
+  "productionContacted": false,
+  "privilegedKeyUsed": false,
+  "syntheticOnly": true,
+  "credentialsPublished": false,
+  "checks": [
+    {
+      "label": "exact staging target, source chain and genuine A/B sessions",
+      "status": "PASS",
+      "seconds": 0,
+      "reviewedMigrationCount": 18,
+      "ordinaryActors": 2
+    },
+    {
+      "label": "actual hosted TOTP, wrong/foreign denial, AAL1 restrictions and AAL2 access",
+      "status": "PASS",
+      "seconds": 2.439,
+      "genuineTOTP": true,
+      "foreignAndWrongCodeDenied": true,
+      "insufficientAssuranceReadWriteDenied": true,
+      "AAL2OwnRead": true,
+      "unenrolled": true,
+      "realRefresh": true
+    },
+    {
+      "label": "actual global sign-out denies unexpired-session reads, writes and refresh",
+      "status": "PASS",
+      "seconds": 1.231,
+      "actualRevocation": true,
+      "unexpiredJWTReadWriteDenied": true,
+      "refreshDenied": true
+    },
+    {
+      "label": "restore A ordinary genuine session and preserved financial oracle",
+      "status": "PASS",
+      "seconds": 1.742,
+      "expected": {
+        "mainCash": "2840.00",
+        "reserveCash": "2200.00",
+        "ordinaryNetFlow": "2140.00",
+        "goalProgressPercent": "60",
+        "debtRemaining": "900.00"
+      }
+    }
+  ],
+  "migrations": [
+    {
+      "file": "20260928000200_initial_finance_tracker.sql",
+      "sourceSHA256": "8b6edbafe0d0c8abf40f790c2bbbcf9e8333dcd05c1e600152fa8e04ca5d2dcf"
+    },
+    {
+      "file": "20260928031516_personal_finance_platform.sql",
+      "sourceSHA256": "694fe175c0d84ad19d843ef307dd7f383ddaf3ac21c66d810f814793aa9e215b"
+    },
+    {
+      "file": "20260928032448_exact_money_validation.sql",
+      "sourceSHA256": "a1ae2e71a99e01c66bba5f5173ab2d028d4143b3bcc2d730dea1f6555b6ff520"
+    },
+    {
+      "file": "20260928043611_focused_crud_integrity.sql",
+      "sourceSHA256": "09d6ff559ec89ab610ac9afa8e9e53db6aa27ff42f8f6d4940ede4b11ba544e5"
+    },
+    {
+      "file": "20260928082016_harden_self_delete_rpc.sql",
+      "sourceSHA256": "a15abe93ca22d798ee36a21fce9b16e3b64cafce0c5135f94fee9914f4c00255"
+    },
+    {
+      "file": "20260930135217_financial_foundations.sql",
+      "sourceSHA256": "a17de5726e92918f98ee31e931003b56da367b59dc31e01a6b6100f6ff328a36"
+    },
+    {
+      "file": "20260930135222_reporting_and_planning.sql",
+      "sourceSHA256": "2bc5c6bcad616b2947cd0af82b50b9f53d13618077e6490e0406283f1ee5db64"
+    },
+    {
+      "file": "20260930135716_financial_relationship_indexes.sql",
+      "sourceSHA256": "2c6d7dafb39982e0f79308b7edfb007989b016068dfdb08e54c2ec51c8db7319"
+    },
+    {
+      "file": "20260930141104_canonical_financial_transport.sql",
+      "sourceSHA256": "12a7de302d5d2a790419d091a00aa9df8f526b5ce0cb70d31331cd49d65039e0"
+    },
+    {
+      "file": "20261001033902_analytics_drilldown_filters.sql",
+      "sourceSHA256": "7358956bf1c261e2b7035ad39848767611c98f184c5f0af2736f2bca64bdea4d"
+    },
+    {
+      "file": "20261001083346_period_analytics_preferences.sql",
+      "sourceSHA256": "93738e0efbdf892c60b1f1e59db237a16c0ff15142cdf0902248a9981ad28854"
+    },
+    {
+      "file": "20261001083350_present_financial_progress.sql",
+      "sourceSHA256": "2f96377f695550c63e1010df4a5e17b734cd463cf7648b1b7328f4fdab8c3d6a"
+    },
+    {
+      "file": "20261009162324_protect_debt_repayment_history.sql",
+      "sourceSHA256": "1876fd422284c7c69d60e41ca622d0a8b342ab7510c2d9bf4b888d607bb23513"
+    },
+    {
+      "file": "20261009220402_shadow_double_entry_ledger.sql",
+      "sourceSHA256": "0c89ad1de837cb7ed79f9a0c0042939e1faa05b7593a96b02a049720cab840fe"
+    },
+    {
+      "file": "20261010021500_malaysia_profile_defaults.sql",
+      "sourceSHA256": "dea70b1077b4a50f704359a0ea30781a9b869ac453f2844369b504eeae8a7839"
+    },
+    {
+      "file": "20261010024257_phase4_planning.sql",
+      "sourceSHA256": "93719388a1eaa50caf0c6a221dfbbfced093e7993073290d99abec637fe92f0d"
+    },
+    {
+      "file": "20261010062259_phase5_connected_actions.sql",
+      "sourceSHA256": "d09b8e535d491d0d9da6d699cf3c0d578cf6e49c16a82ed4945727f10e8214ee"
+    },
+    {
+      "file": "20261013031257_enforce_hosted_transaction_currency_precision.sql",
+      "sourceSHA256": "539b86be8e6e1912cfe9251b290e3df32847254ed2bc312ff281ab4602d3fcb9"
+    }
+  ],
+  "provenance": "Root supplied genuine public-signup/Gmail-confirmed actors; this harness validates their ordinary hosted sessions independently.",
+  "limits": [
+    "No production operations or provider configuration writes.",
+    "Browser/OAuth/CAPTCHA/recovery/inbox and human acceptance are separate root workstreams.",
+    "Backend acceptance does not pass every release gate."
+  ],
+  "sourceGuardScope": [
+    "supabase/migrations",
+    "src/domain",
+    "src/lib/finance.ts",
+    "src/lib/supabase.ts",
+    "src/hooks",
+    "src/components/financial",
+    ":(exclude)src/components/financial/Settings.tsx"
+  ],
+  "finishedAtUTC": "2026-10-14T13:44:29.752Z",
+  "status": "PASS",
+  "transport": {
+    "stagingRequests": 28,
+    "statusCounts": {
+      "200": 22,
+      "204": 1,
+      "400": 1,
+      "403": 2,
+      "404": 1,
+      "422": 1
+    },
+    "medianMilliseconds": 214,
+    "p95Milliseconds": 455
+  }
+}

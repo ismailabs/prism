@@ -345,6 +345,19 @@ export default function Workspace() {
             <nav className="mobile-nav-links" aria-label={t("workspace")}>
               {groupedNavigation()}
             </nav>
+            <div className="shrink-0 border-t border-border p-4">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                disabled={signingOut}
+                onClick={() => {
+                  setNavigationOpen(false);
+                  void logout();
+                }}
+              >
+                <LogOut size={16} />{t("signOut")}
+              </Button>
+            </div>
           </aside>
         </>
       )}

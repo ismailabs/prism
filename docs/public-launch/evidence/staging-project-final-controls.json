@@ -1,0 +1,73 @@
+{
+  "id": "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe",
+  "name": "prism-staging",
+  "autoAssignCustomDomains": false,
+  "previewDeploymentsDisabled": false,
+  "ssoProtection": {
+    "deploymentType": "prod_deployment_urls_and_all_previews"
+  },
+  "linkPresent": false,
+  "trustedSources": {
+    "projects": {
+      "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe": {
+        "label": "Development identities blocked after staging test logging incident",
+        "customAllow": [
+          {
+            "from": {
+              "slugs": [
+                "production"
+              ]
+            },
+            "to": {
+              "slugs": [
+                "production"
+              ]
+            }
+          },
+          {
+            "from": {
+              "slugs": [
+                "preview"
+              ]
+            },
+            "to": {
+              "slugs": [
+                "preview"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "envMetadata": [
+    {
+      "key": "VITE_SUPABASE_URL",
+      "target": [
+        "preview",
+        "development"
+      ],
+      "type": "plain",
+      "branch": null
+    },
+    {
+      "key": "VITE_SUPABASE_ANON_KEY",
+      "target": [
+        "preview",
+        "development"
+      ],
+      "type": "plain",
+      "branch": null
+    },
+    {
+      "key": "EXCHANGE_RATE_PROVIDER",
+      "target": [
+        "preview",
+        "development"
+      ],
+      "type": "plain",
+      "branch": null
+    }
+  ],
+  "checkedAtUTC": "2026-10-14T16:48:25.8471395Z"
+}

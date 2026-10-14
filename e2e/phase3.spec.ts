@@ -284,6 +284,26 @@ test('mobile workspace groups have working routes and restore drawer focus', asy
   await expect(trigger).toBeFocused();
 });
 
+for (const locale of ['en', 'ms'] as const) {
+  test(`mobile ${locale} sign-out clears the session and guards history and private links`, async ({ page }) => {
+    await mockSignedInApp(page, true);
+    (rows.profiles[0] as Record<string, unknown>).language = locale;
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/accounts');
+    await expect(page.locator('.app-shell')).toBeVisible();
+    await page.getByRole('button', { name: locale === 'en' ? 'Open navigation' : 'Buka navigasi', exact: true }).click();
+    const drawer = page.getByRole('dialog', { name: locale === 'en' ? 'WORKSPACE' : 'RUANG KERJA', exact: true });
+    await drawer.getByRole('button', { name: locale === 'en' ? 'Sign out' : 'Log keluar', exact: true }).click();
+    await expect(page).toHaveURL(/\/login/);
+    expect(await page.evaluate(key => localStorage.getItem(key), authStorageKey)).toBeNull();
+    await page.goBack();
+    await expect(page.locator('.app-shell')).toHaveCount(0);
+    await page.goto('/accounts');
+    await expect(page).toHaveURL(/\/login\?next=%2Faccounts/);
+    await expect(page.locator('.app-shell')).toHaveCount(0);
+  });
+}
+
 test('setup waits for server confirmation and keeps its controls locked while an account save is pending', async ({ page }) => {
   await mockSignedInApp(page); rows.accounts = [];
   let release!: () => void;

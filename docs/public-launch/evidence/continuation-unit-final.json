@@ -1,0 +1,1 @@
+{"environment":"LOCAL-WINDOWS","candidateBaseSHA":"5e9d034cdd6bf516fc7bf335cf4fcbca7efae784","command":"npx vitest run --maxWorkers=2","startedAtLocal":"2026-10-14 23:27:10 Asia/Kuala_Lumpur","durationSeconds":34.79,"status":"PASS","testFiles":21,"passed":166,"failed":0,"deadlinesOrAssertionsChanged":false,"originalFailureRetained":"continuation-unit-first-failure.json"}
