@@ -45,6 +45,7 @@ export function Failure({
 }
 export function ProgressBar({ value, tone = "savings" }: { value: number; tone?: "savings" | "debt" }) {
   const c = useFinancialCopy();
+  const privateMode = useAppStore(s => s.personalization.privacyMode);
   const { t }=useTranslation();
   const percent = Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0));
   const milestone=[100,75,50,25].find(m=>percent>=m);
@@ -53,17 +54,17 @@ export function ProgressBar({ value, tone = "savings" }: { value: number; tone?:
     <div
       className="progress-track"
       role="progressbar"
-      aria-label={c("Progress", "Kemajuan")}
-      aria-valuenow={percent}
+      aria-label={privateMode ? c('Progress hidden', 'Kemajuan disembunyikan') : c("Progress", "Kemajuan")}
+      aria-valuenow={privateMode ? undefined : percent}
       aria-valuemin={0}
       aria-valuemax={100}
     >
       <div
         className={`h-full rounded-full progress-fill progress-${tone}`}
-        style={{ width: `${percent}%` }}
+        style={{ width: `${privateMode ? 0 : percent}%` }}
       />
     </div>
-    {milestone && <small className="milestone-note">{t(milestone===100?'milestoneComplete':'milestone',{percent:milestone})}</small>}
+    {!privateMode && milestone && <small className="milestone-note">{t(milestone===100?'milestoneComplete':'milestone',{percent:milestone})}</small>}
     </div>
   );
 }

@@ -1,0 +1,38 @@
+{
+  "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+  "environment": "GITHUB-CI-LOCAL-FIXTURES",
+  "productionOrHostedCredentialsIncluded": false,
+  "verification": {
+    "sha256": "b1322fca25f09e867c791e9f42d0ee586df20555ebcab4d7e887acdc82566f9f",
+    "members": 224,
+    "logs": 37,
+    "axeReports": 64,
+    "axeViolations": 0
+  },
+  "local": {
+    "sha256": "942d39391c9877e9918cf26e22d2e83c4804345fdfdabcc4e79089e65c2bb945",
+    "members": 3,
+    "logs": 0,
+    "axeReports": 0,
+    "receipts": [
+      {
+        "name": "local-supabase-chain.json",
+        "status": null,
+        "candidateSHA": null,
+        "checks": 0
+      },
+      {
+        "name": "local-supabase-runtime.json",
+        "status": null,
+        "candidateSHA": null,
+        "checks": 0
+      },
+      {
+        "name": "local-supabase-acceptance.json",
+        "status": "PASS",
+        "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+        "checks": 10
+      }
+    ]
+  }
+}

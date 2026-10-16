@@ -1,0 +1,13 @@
+{
+  "checkedAtUTC": "2026-10-14T17:43:04.055Z",
+  "environment": "STAGING-HOSTED",
+  "syntheticLabel": "D",
+  "productionContacted": false,
+  "serviceRoleUsed": false,
+  "credentialsPublished": false,
+  "errorCode": null,
+  "actualEmailConfirmed": true,
+  "actualOrdinarySignin": true,
+  "earlierBrowserCallbackRun": "FAIL; original exact transport error unavailable, not relabeled as timely PKCE success",
+  "status": "PASS"
+}

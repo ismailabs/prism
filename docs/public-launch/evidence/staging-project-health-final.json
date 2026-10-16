@@ -1,0 +1,11 @@
+{
+  "checkedAtUTC": "2026-10-14T21:35:46.605Z",
+  "environment": "STAGING-HOSTED",
+  "projectId": "zwqcdfzfsudqccclficx",
+  "name": "prism-staging",
+  "organization": "zwgtqvqlmcwbjssyoysv",
+  "region": "ap-northeast-2",
+  "status": "ACTIVE_HEALTHY",
+  "postgres": "17.11.0.003",
+  "productionContacted": false
+}

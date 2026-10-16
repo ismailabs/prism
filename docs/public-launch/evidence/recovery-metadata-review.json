@@ -1,0 +1,18 @@
+{
+  "observedAtUTC": "2026-10-14T06:49:38.9463689Z",
+  "encryptedPayloadsDecrypted": false,
+  "plaintextCustomerRowsUsed": false,
+  "manifestHashMatchCount": 40,
+  "mismatches": [],
+  "detachedSignature": "PASS: valid signature by the declared bundled public key",
+  "declaredSnapshotAtUTC": "2026-10-13T02:11:48.7375538Z",
+  "declaredAuthConfigAtUTC": "2026-10-13T06:41:50Z",
+  "backupSignupDisabled": true,
+  "observedLiveSignupDisabled": false,
+  "restorePerformed": false,
+  "acceptedRPO_RTO": "UNPROVIDED",
+  "verificationExitCode": 0,
+  "publicKeyFingerprint": "5A7EEBBABE21D136F99F852B4FDA63B1033E8DCC",
+  "independentPrivateKeyCustody": "UNVERIFIED; no private key or provider custody accessed",
+  "gateG11": "BLOCKED: snapshot/config drift and actual current recovery acceptance remain unresolved"
+}

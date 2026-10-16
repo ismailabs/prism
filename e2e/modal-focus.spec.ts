@@ -93,6 +93,7 @@ for (const locale of ['en', 'ms']) {
     const original = JSON.stringify(rows.transactions);
     await page.goto('/transactions');
     const opener = page.getByRole('button', { name: locale === 'ms' ? 'Tambah transaksi' : 'Add transaction', exact: true });
+    await expect(opener).toBeEnabled();
     await opener.focus();
     for (const dismissal of ['escape', 'cancel', 'close']) {
       await page.keyboard.press('Enter');

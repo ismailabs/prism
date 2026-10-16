@@ -15,7 +15,7 @@
     "test": "vitest run",
     "test:db": "node scripts/finance-db-test.mjs",
     "test:platform-db": "node scripts/platform-db-test.mjs",
-    "test:e2e": "playwright test",
+    "test:e2e": "node scripts/browser-test.mjs",
     "test:auth-security": "playwright test --config auth-security.playwright.config.ts",
     "test:pwa": "playwright test --config pwa.playwright.config.ts",
     "test:pwa-review": "node scripts/pwa-review-probes.mjs",

@@ -1,0 +1,36 @@
+{
+  "startedAt": "2026-10-14T14:09:12.898Z",
+  "environment": "STAGING-HOSTED",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "syntheticLabel": "B",
+  "actualInboxRead": true,
+  "receivedAtMillis": "1791986813000",
+  "serviceRoleUsed": false,
+  "credentialsOrLinksPublished": false,
+  "checks": [
+    {
+      "label": "actual inbox recovery, allowed callback and PKCE session",
+      "status": "PASS"
+    },
+    {
+      "label": "server rejects weak recovery password",
+      "status": "PASS",
+      "errorCode": "weak_password"
+    },
+    {
+      "label": "recovery global sign-out denies prior JWT reads/writes and refresh",
+      "status": "PASS"
+    },
+    {
+      "label": "old password and consumed recovery action denied",
+      "status": "PASS"
+    },
+    {
+      "label": "new password ordinary sign-in and own profile retained",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "finishedAt": "2026-10-14T14:09:17.373Z"
+}

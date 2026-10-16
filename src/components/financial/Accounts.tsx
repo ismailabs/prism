@@ -4,14 +4,16 @@ import { useTransactions } from "@/hooks/useFinanceData";
 import { usePlatformMutation, usePlatformTable } from "@/hooks/usePlatformData";
 import { errorMessage } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
+import { drillTransactions } from '@/lib/navigation';
 import type { Account, Currency, Transaction } from "@/types";
+import { MoneyText } from '../MoneyText';
 import { Plus, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
 import { usePlatformText } from "./copy";
-import { Failure, currencies, money } from "./shared";
+import { Failure, currencies, money, useFinancialCopy } from "./shared";
 import { Transfers } from "./Transfers";
 function hasLinks(account: Account, transactions: Transaction[]) {
   return (
@@ -21,6 +23,7 @@ function hasLinks(account: Account, transactions: Transaction[]) {
 }
 export function AccountsPage() {
   const L = usePlatformText();
+  const c = useFinancialCopy();
   const accounts = usePlatformTable("accounts");
   const transactions = useTransactions();
   const mutations = usePlatformMutation("accounts");
@@ -124,15 +127,15 @@ export function AccountsPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {accounts.data.map((a) => (
             <article key={a.id} className="card account-card p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0 flex-1 basis-40 break-words">
                   <h2 className="font-semibold">{a.name}</h2>
                   <p className="text-xs text-subtle">
                     {a.currency} · {a.archived ? L("Archived") : L("Active")}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => begin(a)}>
+                <div className="flex shrink-0 gap-2">
+                  <Button className="whitespace-nowrap" size="sm" variant="outline" onClick={() => begin(a)}>
                     {L("Edit")}
                   </Button>
                   <Button
@@ -146,7 +149,7 @@ export function AccountsPage() {
                 </div>
               </div>
               <p className="mt-6 text-2xl font-semibold">
-                {money(accountBalance(a, transactions.data ?? []), a.currency)}
+                <MoneyText fit text={money(accountBalance(a, transactions.data ?? []), a.currency)} />
               </p>
               <p className="mt-2 text-xs text-subtle">
                 {L("Opening")} {money(a.opening_balance, a.currency)} ·{" "}
@@ -155,6 +158,7 @@ export function AccountsPage() {
                     .length}{" "}
                 {L("linked transactions")}
               </p>
+              <button className="text-link mt-3 mr-4" onClick={() => drillTransactions({ account: a.id, currency: a.currency })}>{c('View transactions', 'Lihat transaksi')}</button>
               <button
                 className="mt-4 text-link"
                 onClick={() =>

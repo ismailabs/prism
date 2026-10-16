@@ -15,7 +15,8 @@ export function AnalyticsBar({
 }) {
   const { t } = useTranslation();
   const s = useAppStore();
-  if (!s.personalization.analyticsBar) return null;
+  // Overview already presents this period and every figure in its main card.
+  if (!s.personalization.analyticsBar || s.activeTab === 'dashboard') return null;
   const data = report
     ? dashboardFinancials(
         [],

@@ -1,4 +1,6 @@
 import { SettingsView } from "@/components/financial/Settings";
+import { BottomNavigation, navigationGroups, WorkspaceLinks } from './app-shell/Navigation';
+import { pageDescriptions } from './app-shell/pageCopy';
 import { Onboarding } from "@/components/financial/Onboarding";
 import { PlanningHighlights } from '@/components/financial/PlanningHighlights';
 import { Plans } from "@/components/financial/Planning";
@@ -35,22 +37,12 @@ import { useAppStore } from "@/store/useAppStore";
 import type { Tab, Transaction } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {
-  HandCoins,
-  FileText,
-  Bell,
-  CalendarDays,
-  ChartNoAxesCombined,
   Search,
   Eye,
   EyeOff,
-  Landmark,
-  LayoutDashboard,
   LogOut,
   Menu,
   Plus,
-  Settings,
-  Target,
-  Wallet,
   X,
 } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
@@ -72,24 +64,6 @@ const Reminders = lazy(() => import('@/components/financial/Reminders'));
 const Notifications = lazy(() => import('@/components/financial/Notifications'));
 const Calendar = lazy(() => import('@/components/financial/Calendar'));
 const ActionSourceContext = lazy(() => import('@/components/financial/ActionSourceContext'));
-const tabs = [
-  { id: "dashboard", icon: LayoutDashboard },
-  { id: "transactions", icon: Wallet },
-  { id: "analytics", icon: ChartNoAxesCombined },
-  { id: "accounting", icon: Landmark },
-  { id: "accounts", icon: Landmark },
-  { id: "plans", icon: Target },
-  { id: "goals", icon: Target },
-  { id: "savings", icon: Target },
-  { id: "debts", icon: HandCoins },
-  { id: "notes", icon: FileText },
-  { id: "reminders", icon: Bell },
-  { id: "notifications", icon: Bell },
-  { id: "calendar", icon: CalendarDays },
-  { id: "categories", icon: Wallet },
-  { id: "payments", icon: Wallet },
-  { id: "settings", icon: Settings },
-] as const;
 
 export default function Workspace() {
   const { user, signOut } = useAuth();
@@ -107,7 +81,6 @@ export default function Workspace() {
   const { selection, period, setSelection } = useFinancialPeriod();
   const label = periodLabel(selection, store.locale, t);
   const report = useFinancialReport(period, store.personalization.analyticsBar || ['dashboard', 'analytics'].includes(store.activeTab));
-  const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
@@ -117,7 +90,7 @@ export default function Workspace() {
   const [routeRevision,setRouteRevision]=useState(0);
   useNavigationGestures(navigationOpen,setNavigationOpen);
   useEffect(()=>{
-    const media=window.matchMedia('(min-width: 640px)');
+    const media=window.matchMedia('(min-width: 768px)');
     const close=()=>{if(media.matches)setNavigationOpen(false);};
     media.addEventListener('change',close);
     return ()=>media.removeEventListener('change',close);
@@ -134,6 +107,7 @@ export default function Workspace() {
     document.addEventListener('keydown',keyboard);return ()=>document.removeEventListener('keydown',keyboard);
   },[]);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const navigationOpener = useRef<HTMLButtonElement | null>(null);
   const navigationPanel = useRef<HTMLElement>(null);
   const [online, setOnline] = useState(navigator.onLine);
   const rates = useQuery({
@@ -174,7 +148,7 @@ export default function Workspace() {
   useEffect(() => {
     if (!navigationOpen) return;
     const previousOverflow = document.body.style.overflow;
-    const returnFocus = menuButton.current;
+    const returnFocus = navigationOpener.current ?? menuButton.current;
     document.body.style.overflow = "hidden";
     const panel = navigationPanel.current;
     const focusable = panel?.querySelectorAll<HTMLElement>(
@@ -185,7 +159,6 @@ export default function Workspace() {
       if (event.key === "Escape") {
         event.preventDefault();
         setNavigationOpen(false);
-        menuButton.current?.focus();
         return;
       }
       if (event.key !== "Tab" || !focusable?.length) return;
@@ -268,36 +241,8 @@ export default function Workspace() {
     store.setActiveTab(tab);
     setNavigationOpen(false);
   };
-  const navigationLinks = (closeLabel = false, selectedTabs: readonly string[] = tabs.map(tab => tab.id)) =>
-    tabs.filter(tab => selectedTabs.includes(tab.id)).map(({ id, icon: Icon }) => (
-      <a
-        href={`/${id}`}
-        key={id}
-        title={t(id)}
-        aria-label={t(id)}
-        aria-current={store.activeTab === id ? "page" : undefined}
-        onClick={(event) => {
-          if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
-            return;
-          event.preventDefault();
-          navigate(id);
-        }}
-      >
-        <Icon size={17} />
-        <span>{t(id)}</span>
-        {closeLabel && store.activeTab === id && (
-          <span className="sr-only">{store.locale === 'ms' ? ', halaman semasa' : ', current page'}</span>
-        )}
-      </a>
-    ));
-  const groupedNavigation = (mobile = false) => [
-    { en: 'Overview', ms: 'Gambaran', items: ['dashboard'] },
-    { en: 'Money', ms: 'Wang', items: ['transactions', 'accounts'] },
-    { en: 'Planning', ms: 'Perancangan', items: ['plans', 'goals', 'savings', 'debts'] },
-    { en: 'Insights', ms: 'Wawasan', items: ['analytics', 'accounting'] },
-    { en: 'Action', ms: 'Tindakan', items: ['notes','reminders','notifications','calendar'] },
-    { en: 'Personal', ms: 'Peribadi', items: ['settings', 'categories', 'payments'] },
-  ].map(group => <div className="workspace-nav-group" key={group.en}><p className="eyebrow">{store.locale === 'ms' ? group.ms : group.en}</p>{navigationLinks(mobile, group.items)}</div>);
+  const groupedNavigation = () => navigationGroups.map(group => <div className="workspace-nav-group" key={group.en}><p className="eyebrow">{store.locale === 'ms' ? group.ms : group.en}</p><WorkspaceLinks items={group.items} active={store.activeTab} navigate={navigate}/></div>);
+  const openNavigation = (opener: HTMLButtonElement) => { navigationOpener.current = opener; setNavigationOpen(true); };
   return (
     <div className={`app-shell ${store.personalization.sidebarCompact?'sidebar-compact':''}`}>
       <a
@@ -308,7 +253,6 @@ export default function Workspace() {
       </a>
       <aside className="desktop-sidebar">
         <a className="brand sidebar-brand" href="/dashboard" onClick={event => { event.preventDefault(); navigate('dashboard'); }}><img src="/prism.svg" width="35" height="35" alt="" /><span>PRISM<span className="brand-caption">{store.locale === 'ms' ? 'Kewangan peribadi' : 'Personal finance'}</span></span></a>
-        <p className="eyebrow sidebar-label">{store.locale === 'ms' ? 'WANG ANDA' : 'YOUR MONEY'}</p>
         <nav className="sidebar-links" aria-label={t('workspace')}>{groupedNavigation()}</nav>
         <div className="sidebar-footer"><p>{store.locale === 'ms' ? 'Sedikit kejelasan, setiap hari.' : 'A little clarity, every day.'}</p><Button variant="ghost" disabled={signingOut} onClick={() => void logout()}><LogOut size={16} />{t('signOut')}</Button></div>
       </aside>
@@ -316,13 +260,13 @@ export default function Workspace() {
         <div className="flex min-w-0 items-center gap-2">
           <Button
             ref={menuButton}
-            className="sm:hidden"
+            className="md:hidden"
             variant="ghost"
             size="icon"
             aria-label={t("openNavigation")}
             aria-expanded={navigationOpen}
             aria-controls="mobile-navigation"
-            onClick={() => setNavigationOpen(true)}
+            onClick={event => openNavigation(event.currentTarget)}
           >
             <Menu size={20} />
           </Button>
@@ -362,8 +306,8 @@ export default function Workspace() {
           </Button>
         </div>
       </header>
-      <nav className="app-nav hidden sm:flex" aria-label={t("workspace")}>
-        {navigationLinks(false, ['dashboard', 'transactions', 'accounts', 'plans', 'debts', 'analytics', 'accounting', 'settings'])}
+      <nav className="app-nav hidden md:flex" aria-label={t("workspace")}>
+        <WorkspaceLinks items={navigationGroups.flatMap(group => group.items)} active={store.activeTab} navigate={navigate}/>
       </nav>
       {navigationOpen && (
         <>
@@ -372,7 +316,6 @@ export default function Workspace() {
             aria-label={t("closeNavigation")}
             onClick={() => {
               setNavigationOpen(false);
-              menuButton.current?.focus();
             }}
           />
           <aside
@@ -394,15 +337,27 @@ export default function Workspace() {
                 aria-label={t('closeNavigation')}
                 onClick={() => {
                   setNavigationOpen(false);
-                  menuButton.current?.focus();
                 }}
               >
                 <X size={20} />
               </Button>
             </div>
             <nav className="mobile-nav-links" aria-label={t("workspace")}>
-              {groupedNavigation(true)}
+              {groupedNavigation()}
             </nav>
+            <div className="shrink-0 border-t border-border p-4">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                disabled={signingOut}
+                onClick={() => {
+                  setNavigationOpen(false);
+                  void logout();
+                }}
+              >
+                <LogOut size={16} />{t("signOut")}
+              </Button>
+            </div>
           </aside>
         </>
       )}
@@ -414,7 +369,7 @@ export default function Workspace() {
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               {t(title)}
             </h1>
-            <p className="page-description">{store.activeTab === 'dashboard' ? (store.locale === 'ms' ? 'Kedudukan anda hari ini. Ruang untuk hari esok.' : 'Where you stand today. Room for tomorrow.') : store.activeTab === 'transactions' ? (store.locale === 'ms' ? 'Semak, cari dan rekod wang yang masuk dan keluar.' : 'Review, find, and record the money coming in and going out.') : null}</p>
+            <p className="page-description">{pageDescriptions[store.activeTab][store.locale === 'ms' ? 1 : 0]}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {profile.data && (store.activeTab === "dashboard" || store.activeTab === "analytics") && (
@@ -481,8 +436,6 @@ export default function Workspace() {
               <div className="space-y-7">
                 <Transactions key={routeRevision}
                   {...data}
-                  search={search}
-                  setSearch={setSearch}
                   onEdit={edit}
                   onDelete={setDeleting}
                 />
@@ -522,7 +475,7 @@ export default function Workspace() {
           </p>
         )}
       </main>
-      <Button className="quick-add-mobile" size="icon" aria-label={t('quickAdd')} onClick={add} disabled={pending||!!dataError}><Plus size={22}/></Button>
+      <BottomNavigation active={store.activeTab} navigate={navigate} add={add} canAdd={!pending&&!dataError&&online} more={openNavigation} expanded={navigationOpen} inert={navigationOpen||dialogOpen||!!deleting||paletteOpen}/>
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} onAdd={add} canAdd={!pending&&!dataError&&online}/>
       <TransactionDialog
         open={dialogOpen}
