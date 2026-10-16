@@ -46,6 +46,17 @@ the bounded requests; tokens remain private and in memory. This is distinct from
 the completed positive signup/sign-in; do not repeat those journeys. Do not type
 keys/tokens into chat or disable CAPTCHA. Provider-denial and email transport
 checks remain engineering/provider work, not an invented owner attestation.
+This challenge step is deferred until Codex prepares the bounded test after
+the provider prerequisites; no repeat positive Google sign-in is required.
+
+Existing staging inbox success does not establish production SMTP parity.
+Codex can compare non-secret transport settings after the provider resume trigger.
+Only if private staging credentials are actually needed, open
+[staging Emails](https://supabase.com/dashboard/project/zwqcdfzfsudqccclficx/auth/templates)
+→ SMTP Settings → enter an **existing free, test-safe provider** credential
+privately → Save (2–4 minutes). Keep its approved real sender; do not invent one,
+copy production secrets, modify production or buy services. Report only configured
+or the exact restriction. Actual delivery/recovery acceptance remains required.
 
 ## Session 2 — one grouped device/Malay review (25–40 minutes active)
 
@@ -89,22 +100,13 @@ not requested again. Do not create the valid transaction three times.
 Mandatory G10/G11 evidence. This is a decision/metadata review, not permission to
 read, export, decrypt or restore production customer data.
 
-0. **Private GitHub reauthentication, 2–5 min (G01/G02).** The connected account
-   allowed the main-only freeze form, but GitHub stopped its save at **Confirm
-   access**. In the preserved tab or [branch-rule page](https://github.com/ismailabs/prism/settings/branch_protection_rules),
-   choose **Use GitHub Mobile** or **Send a code via email** yourself and complete
-   GitHub's private instructions. Never send a code here. After returning, check
-   [Branches](https://github.com/ismailabs/prism/settings/branches). If the form is
-   shown again: pattern **main**; enable **Require a pull request before merging**,
-   **Require status checks** (select **verify** and **local-supabase**, source
-   **GitHub Actions**), **Require branches to be up to date**, **Require conversation
-   resolution**, **Lock branch**, and **Do not allow bypassing the above settings**.
-   Leave force pushes/deletion off. The prepared initial rule does not add a new
-   human-reviewer requirement; no human approval is fabricated. Save and report
-   only whether the rule exists. Do not unlock main, merge, or deploy. Codex will
-   read back the actual rule after your consolidated response. Review the final
-   [PR #6](https://github.com/ismailabs/prism/pull/6) changes as part of that response;
-   the release decision remains separate from this protective freeze.
+The [saved main-branch freeze](https://github.com/ismailabs/prism/settings/branch_protection_rules/84904418)
+was independently verified on 16 October: read-only branch lock, administrator
+enforcement, PR-only, strict `verify`/`local-supabase` checks and conversation
+resolution; force pushes/deletion off. **No GitHub action or repeated private
+confirmation is required.** No approval count is configured and no human review
+approval is fabricated. Review the final [PR #6](https://github.com/ismailabs/prism/pull/6)
+as part of the consolidated operator record; production authorization stays separate.
 
 1. **Public identity/contact/policies, 5 min (O1/O3).** Read staging
    [Privacy](https://prism-staging-acceptance-ismailstudio.vercel.app/privacy) and
@@ -157,7 +159,7 @@ Malay reviewer/voice; M1 actual outcomes/confusing wording:
 O1–O3: contact receipt, operator responsibilities, retention and provider-use decisions:
 R1–R3: actual schedule/latest point/integrity/custodian/access/coverage evidence;
 feasible recovery targets or exact missing evidence:
-GitHub private reauthentication/main freeze outcome; final candidate review:
+Final candidate review (GitHub freeze already verified; no repeated action):
 Unavailable items (leave BLOCKED):
 ```
 

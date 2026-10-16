@@ -235,7 +235,6 @@
   .app-header { min-height:66px; }
   .page-heading h1 { font-size:26px; }
   .page-heading > div:last-child { width:100%; justify-content:space-between; align-items:end; gap:8px; }
-  .page-heading input[type=month] { max-width:150px; }
   .page-description { font-size:12px; }
   .snapshot-main { padding:24px; }
   .snapshot-metrics { grid-template-columns:minmax(0,1fr); padding:10px 22px; }

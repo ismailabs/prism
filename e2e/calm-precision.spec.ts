@@ -26,6 +26,27 @@ async function seed(page: Page, locale = 'en', theme = 'light') {
 }
 
 for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) {
+  for (const route of ['dashboard', 'analytics']) test(`native month picker retains full year ${locale} ${route}`, async ({ page }, testInfo) => {
+    await seed(page, locale, theme);
+    for (const width of [320, 390, 640, 768]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/${route}`);
+      const month = page.getByLabel(locale === 'en' ? 'Month' : 'Bulan', { exact: true });
+      await expect(month).toBeVisible();
+      // A long native month and four-digit year must share room with the picker.
+      await month.fill('2026-09');
+      await expect(month).toHaveValue('2026-09');
+      const geometry = await month.evaluate(input => {
+        const box = input.getBoundingClientRect(), label = input.parentElement!.getBoundingClientRect();
+        return { width: box.width, labelWidth: label.width, right: box.right };
+      });
+      expect(geometry.width).toBeGreaterThanOrEqual(210);
+      expect(geometry.width).toBeGreaterThanOrEqual(geometry.labelWidth - 1);
+      expect(geometry.right).toBeLessThanOrEqual(width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.screenshot({ path: testInfo.outputPath(`month-${width}.png`), fullPage: true });
+    }
+  });
   // Supplied image is 1365x720 including browser chrome. Also exercise the
   // approximately 1360x636 content viewport, then every narrower breakpoint.
   for (const [width, height] of [[320,740],[390,844],[640,800],[768,900],[1024,800],[1360,636],[1365,720],[1440,1000]]) {
