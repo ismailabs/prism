@@ -370,7 +370,6 @@ button,a { transition:background-color 120ms ease,color 120ms ease,border-color 
   .snapshot-metric strong { margin:8px 0 4px; text-align:left; font-size:19px; }
   .snapshot-metric:last-child { grid-column:1/-1; border-top:1px solid var(--border); padding-top:12px; }
   .snapshot-metric small { font-size:11px; }
-  .module-position { order:-1; }
   .pwa-notice { bottom:calc(90px + env(safe-area-inset-bottom)); }
 }
 @media(min-width:1024px) { .sidebar-compact .sidebar-footer { display:block; padding:14px 0 0; } .sidebar-compact .sidebar-footer p { display:none; } .sidebar-compact .sidebar-footer button { font-size:0; gap:0; justify-content:center; width:44px; } }

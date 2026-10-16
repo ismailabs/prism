@@ -47,10 +47,6 @@ for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) {
       }));
       await expect.poll(geometry).toEqual(Array.from({ length: 4 }, () => ({ lines: 1, fits: true, readable: true })));
       await expect(page.getByRole('complementary', { name: locale === 'en' ? 'Analytics summary bar' : 'Bar ringkasan analitik' })).toHaveCount(0);
-      if (width < 768) {
-        const position = await page.locator('.module-position').boundingBox(), chart = await page.locator('.module-cashFlow').boundingBox();
-        expect(position!.y).toBeLessThan(chart!.y);
-      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       await page.screenshot({ path: testInfo.outputPath('dashboard-amounts.png'), fullPage: true });
       await page.getByRole('button', { name: locale === 'en' ? 'Privacy Mode' : 'Mod Privasi', exact: true }).click();
@@ -120,6 +116,25 @@ for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) for (c
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   });
 }
+
+for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) test(`phone honors a saved dashboard section order ${locale}`, async ({ page }) => {
+  await seed(page, locale, theme); await page.setViewportSize({ width: 320, height: 900 });
+  const section = locale === 'en' ? 'Accounts, goals & debts' : 'Akaun, matlamat dan hutang';
+  const down = locale === 'en' ? `Move ${section} down` : `Alih ${section} ke bawah`;
+  const up = locale === 'en' ? `Move ${section} up` : `Alih ${section} ke atas`;
+  await page.goto('/settings'); await page.getByRole('button', { name: down, exact: true }).click();
+  await page.goto('/dashboard'); await page.locator('.module-position .position-grid').waitFor();
+  const belowRecent = async () => (await page.locator('.module-position').boundingBox())!.y > (await page.locator('.module-recent').boundingBox())!.y;
+  await expect.poll(belowRecent).toBe(true);
+  await page.reload(); await page.locator('.module-position .position-grid').waitFor(); await expect.poll(belowRecent).toBe(true);
+  await page.goto('/settings');
+  for (let step = 0; step < 3; step++) await page.getByRole('button', { name: up, exact: true }).click();
+  await page.goto('/dashboard'); await page.locator('.module-position .position-grid').waitFor();
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect.poll(async () => (await page.locator('.module-position').boundingBox())!.y < (await page.locator('.module-cashFlow').boundingBox())!.y).toBe(true);
+  }
+});
 
 for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) for (const width of [320, 390, 768, 1365]) {
   test(`long names preserve account actions and financial card values ${locale} ${width}`, async ({ page }, testInfo) => {
