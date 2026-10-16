@@ -25,6 +25,63 @@ async function seed(page: Page, locale = 'en', theme = 'light') {
   await page.route('**/api/rates?*', route => route.fulfill({ json: { base: 'MYR', rates: { MYR: 1, USD: .23, EUR: .21, JPY: 34 }, updatedAt: Date.parse('2026-10-13T04:00:00Z'), source: 'Synthetic QA reference' } }));
 }
 
+for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) {
+  // Supplied image is 1365x720 including browser chrome. Also exercise the
+  // approximately 1360x636 content viewport, then every narrower breakpoint.
+  for (const [width, height] of [[320,740],[390,844],[640,800],[768,900],[1024,800],[1360,636],[1365,720],[1440,1000]]) {
+    test(`whole dashboard amounts and hierarchy ${locale} ${width}x${height}`, async ({ page }, testInfo) => {
+      await seed(page, locale, theme);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.setViewportSize({ width, height });
+      await page.goto('/dashboard');
+      await expect(page.locator('.snapshot-metric.income strong')).toContainText('5,200.00');
+      await expect(page.locator('.snapshot-metric.expense strong')).toContainText('3,060.00');
+      await expect(page.locator('.snapshot-value')).toContainText('2,140.00');
+      await page.evaluate(() => document.fonts.ready);
+      const geometry = () => page.locator('.snapshot .money-token').evaluateAll(tokens => tokens.map(token => {
+        const range = document.createRange(); range.selectNodeContents(token);
+        const text = range.getBoundingClientRect(), box = token.parentElement!.getBoundingClientRect();
+        return { lines: new Set([...range.getClientRects()].map(rect => Math.round(rect.top))).size,
+          fits: text.left >= box.left - 1 && text.right <= box.right + 1,
+          readable: parseFloat(getComputedStyle(token).fontSize) >= 14 };
+      }));
+      await expect.poll(geometry).toEqual(Array.from({ length: 4 }, () => ({ lines: 1, fits: true, readable: true })));
+      await expect(page.getByRole('complementary', { name: locale === 'en' ? 'Analytics summary bar' : 'Bar ringkasan analitik' })).toHaveCount(0);
+      if (width < 768) {
+        const position = await page.locator('.module-position').boundingBox(), chart = await page.locator('.module-cashFlow').boundingBox();
+        expect(position!.y).toBeLessThan(chart!.y);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.screenshot({ path: testInfo.outputPath('dashboard-amounts.png'), fullPage: true });
+      await page.getByRole('button', { name: locale === 'en' ? 'Privacy Mode' : 'Mod Privasi', exact: true }).click();
+      await expect(page.locator('.snapshot')).not.toContainText('5,200.00');
+      await expect(page.locator('.snapshot')).not.toContainText('3,060.00');
+      await expect.poll(geometry).toEqual(Array.from({ length: 4 }, () => ({ lines: 1, fits: true, readable: true })));
+      await page.goto('/transactions');
+      await expect(page.locator('.analytics-bar')).toBeVisible();
+      expect(await page.locator('.analytics-bar').evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+    });
+  }
+  for (const width of [320, 768, 1365]) test(`maximum exact money stays legible ${locale} ${width}`, async ({ page }) => {
+    await seed(page, locale, theme); await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width, height: 900 });
+    for (const currency of ['MYR', 'USD', 'EUR', 'JPY']) {
+      const amount = currency === 'JPY' ? '9999999999999999' : '9999999999999999.99';
+      rows.profiles[0] = { ...rows.profiles[0] as object, currency };
+      rows.transactions = [{ id: 'huge', user_id: userId, account_id: 'main', category_id: null, payment_method_id: null, description: 'Maximum exact synthetic amount', currency, amount, type: 'income', transaction_date: '2026-10-10T04:00:00Z', created_at: '' }];
+      await page.goto('/dashboard');
+      await expect(page.locator('.snapshot-value')).toContainText(currency === 'JPY' ? '9,999,999,999,999,999' : '9,999,999,999,999,999.99');
+      await expect.poll(() => page.locator('.snapshot .fit-money').evaluateAll(boxes => boxes.every(box => {
+        const token = box.querySelector('.money-token')!;
+        const range = document.createRange(); range.selectNodeContents(token);
+        return new Set([...range.getClientRects()].map(rect => Math.round(rect.top))).size === 1 &&
+          box.scrollWidth <= box.clientWidth + 1 && parseFloat(getComputedStyle(token).fontSize) >= 14;
+      }))).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    }
+  });
+}
+
 for (const [locale,theme] of [['en','light'],['ms','dark'],['en','dark'],['ms','light']] as const) test(`chart marks retain graphical contrast ${locale}/${theme}`, async({page})=>{
   await seed(page,locale,theme);await page.emulateMedia({reducedMotion:'reduce'});
   await page.setViewportSize({width:390,height:844});await page.goto('/dashboard');

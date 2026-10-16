@@ -14,6 +14,7 @@ import { resolveFinancialPeriod, type Period } from '@/domain/periods';
 import { financialDate } from '@/domain/dates';
 import { useFinancialCopy } from './financial/shared';
 import { TransactionTable } from './TransactionTable';
+import { MoneyText } from './MoneyText';
 
 export interface DashboardProps { transactions: Transaction[]; categories: Category[]; payments: PaymentMethod[]; month?: string; period?: Period; periodLabel?: string; onEdit: (tx: Transaction) => void; onDelete: (tx: Transaction) => void; accountSummary?: ReactNode; report?: FinancialReport; onAdd?: () => void }
 export function Dashboard({ transactions, categories, payments, month, period: selectedPeriod, periodLabel, onEdit, onDelete, accountSummary, report, onAdd }: DashboardProps) {
@@ -42,10 +43,10 @@ export function Dashboard({ transactions, categories, payments, month, period: s
       <section className="snapshot" aria-label={t('periodSnapshot')}>
         <div className="snapshot-main">
           <h2 className="snapshot-label"><ChartNoAxesCombined size={17} />{t('periodCashFlow')}</h2>
-          <p className={`snapshot-value ${data.positiveFlow ? '' : 'negative-flow'}`}>{data.unavailable ? '—' : `${data.positiveFlow ? '' : '−'}${money(data.netMagnitude)}`}</p>
+          <p className={`snapshot-value ${data.positiveFlow ? '' : 'negative-flow'}`}><MoneyText fit text={data.unavailable ? '—' : `${data.positiveFlow ? '' : '−'}${money(data.netMagnitude)}`} /></p>
           <p className="snapshot-note">{data.unavailable ? t('ratesUnavailable') : data.income || data.expense ? t(data.positiveFlow ? 'positivePeriodFlow' : 'negativePeriodFlow') : t('emptyPeriodFlow')}</p>
         </div>
-        <div className="snapshot-metrics">{metrics.map(({ label, value, detail, icon: Icon }) => <div className={`snapshot-metric ${label===t('analyticsPeriodIncome')?'income':label===t('analyticsPeriodExpenses')?'expense':''}`} key={label}><span><Icon size={15} />{label}</span><strong>{value}</strong><small>{detail}</small></div>)}</div>
+        <div className="snapshot-metrics">{metrics.map(({ label, value, detail, icon: Icon }) => <div className={`snapshot-metric ${label===t('analyticsPeriodIncome')?'income':label===t('analyticsPeriodExpenses')?'expense':''}`} key={label}><span><Icon size={15} />{label}</span><strong><MoneyText fit text={value} /></strong><small>{detail}</small></div>)}</div>
       </section>
       <div className="flow-note"><span>{c('Recorded income less recorded spending. Transfers, principal and earmarks are excluded.', 'Pendapatan direkodkan tolak perbelanjaan direkodkan. Pindahan, prinsipal dan peruntukan dikecualikan.')}</span><span>{c('Account balances shown separately below.', 'Baki akaun dipaparkan berasingan di bawah.')}</span><details><summary>{t('totalBalance')}</summary><p>{money(data.balanceExact)} · {t('allTime')} · {t('balanceNote')}</p></details></div>
       {data.mixed && !data.unavailable && <p className="mt-2 text-xs text-subtle">≈ {c('Converted totals are estimates in', 'Jumlah ditukar ialah anggaran dalam')} {currency}. {c('Rate date:', 'Tarikh kadar:')} {exchangeRates ? new Date(exchangeRates.updatedAt).toISOString() : c('unavailable', 'tidak tersedia')} · {c('Source:', 'Sumber:')} {exchangeRates?.source ?? '—'}.</p>}

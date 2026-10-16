@@ -6,6 +6,7 @@ import { errorMessage } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { drillTransactions } from '@/lib/navigation';
 import type { Account, Currency, Transaction } from "@/types";
+import { MoneyText } from '../MoneyText';
 import { Plus, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -148,7 +149,7 @@ export function AccountsPage() {
                 </div>
               </div>
               <p className="mt-6 text-2xl font-semibold">
-                {money(accountBalance(a, transactions.data ?? []), a.currency)}
+                <MoneyText fit text={money(accountBalance(a, transactions.data ?? []), a.currency)} />
               </p>
               <p className="mt-2 text-xs text-subtle">
                 {L("Opening")} {money(a.opening_balance, a.currency)} ·{" "}

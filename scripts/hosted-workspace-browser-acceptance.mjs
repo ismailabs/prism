@@ -24,9 +24,11 @@ assert.ok(config.anonKey.startsWith('sb_publishable_'));
 const runId=randomUUID().slice(0,8), tag=`PRISM UI ${runId}`, temporary={accounts:[],transactions:[],transfers:[]};
 const finishOnly=process.argv.includes('--finish');
 const withoutPwa=process.argv.includes('--without-pwa');
+const workspaceOnly=process.argv.includes('--workspace-only');
+const sessionEntry=process.argv.includes('--session-entry');
 const receipt={startedAt:new Date().toISOString(),environment:'STAGING-HOSTED',...manifest,
-  checkoutSHA:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),partialRun:finishOnly||withoutPwa,
-  omittedChecks:withoutPwa?['Native hosted PWA: protected preview rejects credentialless public-cache assets; G08 remains BLOCKED']:[],
+  checkoutSHA:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),partialRun:finishOnly||withoutPwa||workspaceOnly||sessionEntry,
+  omittedChecks:[...(withoutPwa?['Native hosted PWA: protected preview rejects credentialless public-cache assets; G08 remains BLOCKED']:[]),...(workspaceOnly?['A oracle and final A privacy/logout segment not executed; existing A session revoked']:[]),...(sessionEntry?['Public password/CAPTCHA sign-in not executed: real ordinary synthetic session restored; owner/provider Auth acceptance remains separate']:[])],
   harnessSHA256:createHash('sha256').update(await readFile(new URL(import.meta.url))).digest('hex'),
   syntheticOnly:true,fixtureEndpoints:false,serviceRoleUsed:false,productionContacted:false,
   credentialsOrStoragePublished:false,checks:[],axe:[],runtimeErrors:0,foreignBackendRequests:0,
@@ -76,7 +78,18 @@ const closeContext=async()=>{if(!context)return;contextStates.get(context).closi
 const visit=url=>page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
 const enterProtectedPreview=async()=>{await visit(access.url);await expect(page).toHaveURL(u=>u.origin===ORIGIN&&!u.searchParams.has('_vercel_share'),{timeout:30000});};
 const pass=(label,details={})=>{receipt.checks.push({label,status:'PASS',...details});console.log('PASS hosted workspace:',label);};
-const signin=async (actor)=>{await visit(ORIGIN+'/login');await page.getByLabel(/^(Email address|Alamat e-mel)$/).fill(actor.email);
+const signin=async (actor)=>{await visit(ORIGIN+'/login');
+  if(sessionEntry){
+    const client=createClient(API,config.anonKey,{global:{fetch:guardFetch},auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+    const current=ok(await client.auth.setSession({access_token:actor.session.access_token,refresh_token:actor.session.refresh_token}),'ordinary synthetic browser session restoration');
+    assert.equal(current.user.id,actor.userId);assert.equal(current.user.role,'authenticated');
+    actor.session=current.session;
+    const inputName=actor.userId===actorB.userId?'b':'a';
+    await writeFile(`.cache/prism-staging-actor-${inputName}.json`,JSON.stringify(actor));
+    await page.evaluate(session=>localStorage.setItem('sb-zwqcdfzfsudqccclficx-auth-token',JSON.stringify(session)),current.session);
+    await visit(ORIGIN+'/dashboard');await expect(page).toHaveURL(/\/dashboard$/,{timeout:30000});return;
+  }
+  await page.getByLabel(/^(Email address|Alamat e-mel)$/).fill(actor.email);
   await page.locator('#auth-password').fill(actor.password);await page.locator('form').getByRole('button',{name:/^(Sign in|Log masuk)$/,exact:true}).click();
   await expect(page).toHaveURL(/\/dashboard$/,{timeout:30000});};
 const audit=async label=>{const result=await bounded(new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze(),60000,'Accessibility scan '+label);
@@ -94,7 +107,7 @@ try{
   await enterProtectedPreview();
   step('protected staging entry accepted');
   if(!finishOnly){
-  await signin(actorB);pass('ordinary B UI signin without fixture responses');
+  await signin(actorB);pass(sessionEntry?'ordinary B hosted session restoration without fixture responses; public CAPTCHA flow not claimed':'ordinary B UI signin without fixture responses');
   for(const [currency,amount,invalid,balance] of [['MYR','0.01','0.001','10.01'],['USD','0.01','0.001','10.01'],['EUR','0.01','0.001','10.01'],['JPY','1','0.1','11']]){
     active=`${currency} exact account and transaction`;await visit(ORIGIN+'/accounts');
     await page.getByRole('button',{name:'Add account',exact:true}).click();let dialog=page.getByRole('dialog');
@@ -174,6 +187,7 @@ try{
   }
   // Restore the actor's original preferences before independent oracle UI checks.
   ok(await db.from('profiles').update(originalProfile).eq('id',actorB.userId),'restore synthetic B profile');
+  if(!workspaceOnly){
   step('close B context and prepare ordinary A oracle');
   await closeContext();context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',...(withoutPwa?{serviceWorkers:'block'}:{})});
   await bindRoutes(context);
@@ -195,6 +209,7 @@ try{
   }else{await visit(ORIGIN+'/accounts');await expect(page.locator('main [role="status"]').filter({hasText:/Loading|Memuatkan/})).toHaveCount(0,{timeout:30000});}
   active='real mobile signout, back and private deep-link denial';await page.getByRole('button',{name:'Open navigation',exact:true}).click();await page.getByRole('dialog',{name:'WORKSPACE',exact:true}).getByRole('button',{name:'Sign out',exact:true}).click();await expect(page).toHaveURL(/\/login/);await page.goBack();await expect(page.getByText('PRISM hosted 20261014 Everyday account',{exact:true})).toHaveCount(0);
   await visit(ORIGIN+'/accounts');await expect(page).toHaveURL(/\/login\?next=%2Faccounts/);assert.equal(await page.evaluate(()=>localStorage.getItem('sb-zwqcdfzfsudqccclficx-auth-token')),null);pass(active);
+  }
   assert.equal(receipt.runtimeErrors,0);assert.equal(receipt.foreignBackendRequests,0);assert.equal(receipt.transportErrors,0);receipt.status='PASS';
 }catch(error){const alerts=await page?.getByRole('alert').allTextContents().catch(()=>[]);const surface=await page?.locator('main').innerText().catch(()=>'(surface unavailable)');receipt.status='FAIL';receipt.failure={step:active,message:redact(String(error.message)+'\nVisible alerts: '+(alerts??[]).join(' | ')).slice(0,1000),syntheticSurface:redact(surface??'').slice(0,1200)};console.error('FAIL hosted workspace:',active);process.exitCode=1;}
 finally{
