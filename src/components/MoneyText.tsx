@@ -15,8 +15,20 @@ function FittedMoneyText({ text }: { text: string }) {
       if (disposed || !box.clientWidth) return;
       value.style.fontSize = '';
       const base = parseFloat(getComputedStyle(box).fontSize);
-      const natural = value.getBoundingClientRect().width;
-      if (natural > box.clientWidth) value.style.fontSize = `${Math.max(14, Math.floor(base * box.clientWidth / natural * 100) / 100)}px`;
+      const available = box.clientWidth - 1;
+      if (value.getBoundingClientRect().width > available) {
+        // Inherited letter spacing and font hinting do not scale linearly with
+        // font size. Measure the rendered token at each step, including on
+        // systems where Inter is unavailable, rather than estimating its width.
+        let low = Math.min(14, base), high = base;
+        for (let step = 0; step < 10; step++) {
+          const size = (low + high) / 2;
+          value.style.fontSize = `${size}px`;
+          if (value.getBoundingClientRect().width <= available) low = size;
+          else high = size;
+        }
+        value.style.fontSize = `${Math.floor(low * 100) / 100}px`;
+      }
       setOverflow(value.getBoundingClientRect().width > box.clientWidth + 1);
     };
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };

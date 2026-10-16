@@ -62,9 +62,13 @@ for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) {
       expect(await page.locator('.analytics-bar').evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
     });
   }
-  for (const width of [320, 768, 1365]) test(`maximum exact money stays legible ${locale} ${width}`, async ({ page }) => {
+  for (const font of ['system', 'Arial']) for (const width of [320, 768, 1365]) test(`maximum exact money stays legible ${locale} ${width} ${font}`, async ({ page }) => {
     await seed(page, locale, theme); await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 900 });
+    if (font === 'Arial') await page.route('**/*.css', async route => {
+      const response = await route.fetch();
+      await route.fulfill({ response, body: `${await response.text()}\n.snapshot { font-family: Arial, sans-serif; }` });
+    });
     for (const currency of ['MYR', 'USD', 'EUR', 'JPY']) {
       const amount = currency === 'JPY' ? '9999999999999999' : '9999999999999999.99';
       rows.profiles[0] = { ...rows.profiles[0] as object, currency };

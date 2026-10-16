@@ -213,15 +213,14 @@ test("analytics calculates comparison and supports income and uncategorized dril
   );
   await expect(page.locator(".analytics-metric").nth(1)).toContainText("-MYR");
   await expect(
-    page.locator(".analytics-metric.expense .money-group").first(),
+    page.locator(".analytics-metric.expense .money-token"),
   ).toHaveCSS("color", "rgb(180, 66, 66)");
   await expect(
-    page.locator(".analytics-metric.income .money-group").first(),
+    page.locator(".analytics-metric.income .money-token"),
   ).toHaveCSS("color", "rgb(8, 119, 95)");
   expect(
     await page
-      .locator(".analytics-metric.expense .money-group")
-      .first()
+      .locator(".analytics-metric.expense .money-token")
       .evaluate((element) => parseFloat(getComputedStyle(element).fontSize)),
   ).toBeGreaterThanOrEqual(16);
   await expect(page.locator(".analytics-metric").nth(1)).toContainText("40.00");

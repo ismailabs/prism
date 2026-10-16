@@ -26,12 +26,15 @@ const finishOnly=process.argv.includes('--finish');
 const withoutPwa=process.argv.includes('--without-pwa');
 const workspaceOnly=process.argv.includes('--workspace-only');
 const sessionEntry=process.argv.includes('--session-entry');
+const captureScreens=process.argv.includes('--screenshots');
+const screenRoot=`artifacts/public-launch/staging-polish-20261016/hosted-screens-${runId}`;
+if(captureScreens)await mkdir(screenRoot,{recursive:true});
 const receipt={startedAt:new Date().toISOString(),environment:'STAGING-HOSTED',...manifest,
   checkoutSHA:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),partialRun:finishOnly||withoutPwa||workspaceOnly||sessionEntry,
   omittedChecks:[...(withoutPwa?['Native hosted PWA: protected preview rejects credentialless public-cache assets; G08 remains BLOCKED']:[]),...(workspaceOnly?['A oracle and final A privacy/logout segment not executed; existing A session revoked']:[]),...(sessionEntry?['Public password/CAPTCHA sign-in not executed: real ordinary synthetic session restored; owner/provider Auth acceptance remains separate']:[])],
   harnessSHA256:createHash('sha256').update(await readFile(new URL(import.meta.url))).digest('hex'),
   syntheticOnly:true,fixtureEndpoints:false,serviceRoleUsed:false,productionContacted:false,
-  credentialsOrStoragePublished:false,checks:[],axe:[],runtimeErrors:0,foreignBackendRequests:0,
+  credentialsOrStoragePublished:false,checks:[],axe:[],screenshots:[],runtimeErrors:0,foreignBackendRequests:0,
   limits:['Viewport and network interruption are browser emulation, not physical-device or assistive-technology acceptance.',
     'Auth inbox/OAuth/CAPTCHA acceptance and production release are separate gates.'],latency:[]};
 const guardFetch=async (input,init={})=>{const u=new URL(typeof input==='string'?input:input.url??input);
@@ -181,7 +184,15 @@ try{
     await expect(page.locator('html')).toHaveAttribute('lang',locale);await expect.poll(()=>page.locator('html').evaluate(e=>e.classList.contains('dark'))).toBe(theme==='dark');
     for(const tab of destinations){active=`${locale}/${theme} /${tab}`;await visit(ORIGIN+'/'+tab);await expect(page.locator('main h1')).toHaveCount(1);await expect(page.locator('main h1')).toBeVisible();assert.equal(new URL(page.url()).pathname,'/'+tab);
       await expect(page.locator('main [role="status"]').filter({hasText:/Loading|Memuatkan/})).toHaveCount(0,{timeout:30000});
-      for(const width of [390,1440]){await page.setViewportSize({width,height:900});await checkReflow();}await audit(active);pass(active,{widths:[390,1440]});
+      for(const width of [390,1440]){await page.setViewportSize({width,height:900});await checkReflow();
+        if(captureScreens&&(locale==='en'&&theme==='light'||locale==='ms'&&theme==='dark')){
+          const path=`${screenRoot}/${tab}-${width}-${locale}-${theme}.png`;
+          // Only the synthetic owning user's records are captured. Account
+          // addresses/profile labels are masked; session storage is never saved.
+          await page.screenshot({path,fullPage:true,animations:'disabled',mask:[page.locator('input[type="email"],.profile-name'),page.getByText(actorB.email,{exact:true})]});
+          receipt.screenshots.push({route:tab,width,locale,theme,path,sha256:createHash('sha256').update(await readFile(path)).digest('hex'),recordedAt:new Date().toISOString()});
+        }
+      }await audit(active);pass(active,{widths:[390,1440]});
     }
   }
   }
