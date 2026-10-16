@@ -36,8 +36,9 @@ function FittedMoneyText({ text }: { text: string }) {
     observer.observe(box);
     measure();
     void document.fonts.ready.then(schedule);
+    document.fonts.addEventListener('loadingdone', schedule);
     window.addEventListener('resize', schedule);
-    return () => { disposed = true; observer.disconnect(); cancelAnimationFrame(frame); window.removeEventListener('resize', schedule); };
+    return () => { disposed = true; observer.disconnect(); cancelAnimationFrame(frame); window.removeEventListener('resize', schedule); document.fonts.removeEventListener('loadingdone', schedule); };
   }, [text]);
   return <span ref={container} className="fit-money" tabIndex={overflow ? 0 : undefined}><span ref={token} className="money-token">{text}</span></span>;
 }

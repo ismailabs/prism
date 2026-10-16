@@ -82,7 +82,42 @@ for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) {
           box.scrollWidth <= box.clientWidth + 1 && parseFloat(getComputedStyle(token).fontSize) >= 14;
       }))).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.goto('/analytics');
+      // Analytics resolves its separate comparison queries; use the existing
+      // analytics readiness budget before measuring the rendered amount.
+      await expect(page.locator('.analytics-metric.income .money-token')).toContainText(currency === 'JPY' ? '9,999,999,999,999,999' : '9,999,999,999,999,999.99', { timeout: 20_000 });
+      await expect.poll(() => page.locator('.analytics-metrics .fit-money').evaluateAll(boxes => boxes.every(box => {
+        const token = box.querySelector('.money-token')!;
+        const range = document.createRange(); range.selectNodeContents(token);
+        return new Set([...range.getClientRects()].map(rect => Math.round(rect.top))).size === 1 &&
+          box.scrollWidth <= box.clientWidth + 1 && parseFloat(getComputedStyle(token).fontSize) >= 14;
+      }))).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     }
+  });
+}
+
+for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) for (const width of [320, 390, 768]) {
+  test(`transfer action remains a whole readable label ${locale} ${width}`, async ({ page }) => {
+    await seed(page, locale, theme); await page.setViewportSize({ width, height: 900 });
+    await page.goto('/accounts');
+    if (width < 768) for (const label of await page.locator('.mobile-bottom-nav > a > span,.mobile-bottom-nav > button > span').all()) {
+      expect(await label.evaluate(span => {
+        const range = document.createRange(); range.selectNodeContents(span);
+        const text = range.getBoundingClientRect(), button = span.parentElement!.getBoundingClientRect();
+        return new Set([...range.getClientRects()].map(rect => Math.round(rect.top))).size === 1 &&
+          text.left >= button.left && text.right <= button.right && button.width >= 44;
+      })).toBe(true);
+    }
+    const action = page.getByRole('button', { name: locale === 'en' ? 'New transfer' : 'Pindahan baharu', exact: true });
+    await expect(action).toBeEnabled();
+    expect(await action.evaluate(button => {
+      const range = document.createRange(); range.selectNodeContents(button);
+      return new Set([...range.getClientRects()].filter(rect => rect.width > 0).map(rect => Math.round(rect.top))).size;
+    })).toBe(1);
+    await action.click(); await expect(page.getByRole('dialog')).toBeVisible();
+    await page.keyboard.press('Escape'); await expect(action).toBeFocused();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   });
 }
 
