@@ -127,15 +127,15 @@ export function AccountsPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {accounts.data.map((a) => (
             <article key={a.id} className="card account-card p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0 flex-1 basis-40 break-words">
                   <h2 className="font-semibold">{a.name}</h2>
                   <p className="text-xs text-subtle">
                     {a.currency} · {a.archived ? L("Archived") : L("Active")}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => begin(a)}>
+                <div className="flex shrink-0 gap-2">
+                  <Button className="whitespace-nowrap" size="sm" variant="outline" onClick={() => begin(a)}>
                     {L("Edit")}
                   </Button>
                   <Button

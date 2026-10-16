@@ -13,6 +13,7 @@ import { Modal } from "../ui/dialog";
 import { usePlatformText } from "./copy";
 import { Failure, ProgressBar, currencies, money, positive } from "./shared";
 import { DebtPlanner } from './DebtPlanner';
+import { MoneyText } from '../MoneyText';
 export function DebtsPage() {
   const privateMode = useAppStore(s => s.personalization.privacyMode);
   const L = usePlatformText();
@@ -170,7 +171,7 @@ export function DebtsPage() {
                   className={`card selection-card block w-full p-5 text-left hover:border-primary ${selected === d.id ? "border-primary" : ""}`}
                   onClick={() => setSelected(d.id)}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="selection-summary">
                     <div className="flex items-center gap-2">
                       {d.direction === "i_owe" ? (
                         <ArrowUpRight size={17} className="text-orange-600" />
@@ -192,7 +193,7 @@ export function DebtsPage() {
                         </p>
                       </div>
                     </div>
-                    <strong>{money(p.remaining, d.currency)}</strong>
+                    <strong className="selection-amount"><MoneyText fit text={money(p.remaining, d.currency)} /></strong>
                   </div>
                   <div className="mt-4">
                     <ProgressBar value={p.percent} tone="debt" />

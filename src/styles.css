@@ -376,7 +376,7 @@ button,a { transition:background-color 120ms ease,color 120ms ease,border-color 
 @media(min-width:1024px) { .sidebar-compact .sidebar-footer { display:block; padding:14px 0 0; } .sidebar-compact .sidebar-footer p { display:none; } .sidebar-compact .sidebar-footer button { font-size:0; gap:0; justify-content:center; width:44px; } }
 /* Shared financial period controls retain room for native date inputs. */
 .period-selector, .period-custom { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; min-width: 0; }
-.period-selector .form-field { min-width: 0; flex: 1 1 150px; }
+.period-selector .form-field { min-width: 0; flex: 1 1 210px; }
 .period-selector .input { width: 100%; min-width: 0; }
 .period-custom { flex: 1 1 100%; }
 .period-custom .error-message { flex-basis: 100%; }
@@ -430,6 +430,12 @@ button,a { transition:background-color 120ms ease,color 120ms ease,border-color 
 .feature-intro > p { font-size:14px; }
 .account-card h2,.selection-card h2 { font-size:16px; }
 .selection-card strong { font-variant-numeric:tabular-nums; }
+.selection-summary { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:8px; }
+.selection-summary > div { flex:1 1 10rem; min-width:0; overflow-wrap:anywhere; }
+.selection-summary > div > div { min-width:0; }
+.selection-summary svg { flex-shrink:0; }
+.selection-summary > strong { flex:0 0 auto; white-space:nowrap; }
+.selection-summary > .selection-amount { flex:0 1 auto; min-width:0; max-width:100%; }
 @media(max-width:767px) {
   .pwa-notice { bottom:calc(90px + env(safe-area-inset-bottom)); }
   .transaction-search .search-field { flex-basis:100%; }

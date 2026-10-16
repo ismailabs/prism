@@ -121,6 +121,41 @@ for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) for (c
   });
 }
 
+for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) for (const width of [320, 390, 768, 1365]) {
+  test(`long names preserve account actions and financial card values ${locale} ${width}`, async ({ page }, testInfo) => {
+    await seed(page, locale, theme); await page.setViewportSize({ width, height: 900 });
+    const name = (locale === 'en' ? 'UnbrokenSyntheticFinancialName' : 'NamaKewanganSintetikTanpaRuang').repeat(4).slice(0, 80);
+    Object.assign(rows.accounts[0] as object, { name });
+    Object.assign(rows.objectives[0] as object, { name }); rows.objective_contributions = [];
+    Object.assign(rows.person_debts[0] as object, { counterparty: name, original_amount: '9999999999999999.99' }); rows.debt_repayments = [];
+    const whole = async (locator: ReturnType<Page['locator']>) => {
+      await expect(locator).toBeVisible();
+      await expect.poll(() => locator.evaluate(el => {
+        const range = document.createRange(); range.selectNodeContents(el);
+        const text = range.getBoundingClientRect(), box = (el.closest('.fit-money') ?? el).getBoundingClientRect();
+        return new Set([...range.getClientRects()].filter(r => r.width > 0).map(r => Math.round(r.top))).size === 1 &&
+          text.left >= box.left - 1 && text.right <= box.right + 1;
+      })).toBe(true);
+    };
+    await page.goto('/accounts');
+    const card = page.locator('article.account-card').filter({ has: page.getByRole('heading', { name, exact: true }) });
+    const edit = card.getByRole('button', { name: locale === 'en' ? 'Edit' : 'Sunting', exact: true });
+    await whole(edit); await edit.click(); await expect(page.getByRole('dialog')).toBeVisible();
+    await page.keyboard.press('Escape'); await expect(edit).toBeFocused();
+    await page.screenshot({ path: testInfo.outputPath('accounts-long-name.png'), fullPage: true });
+    await page.goto('/goals');
+    const goal = page.locator('.selection-card').filter({ has: page.getByRole('heading', { name, exact: true }) });
+    await expect(goal.locator('.selection-summary > strong')).toHaveText('0%'); await whole(goal.locator('.selection-summary > strong'));
+    await page.screenshot({ path: testInfo.outputPath('goals-long-name.png'), fullPage: true });
+    await page.goto('/debts');
+    const debt = page.locator('.selection-card').filter({ has: page.getByRole('heading', { name, exact: true }) });
+    await expect(debt.locator('.money-token')).toContainText('9,999,999,999,999,999.99'); await whole(debt.locator('.money-token'));
+    expect(await debt.locator('.money-token').evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14);
+    await page.screenshot({ path: testInfo.outputPath('debt-long-name.png'), fullPage: true });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  });
+}
+
 for (const [locale,theme] of [['en','light'],['ms','dark'],['en','dark'],['ms','light']] as const) test(`chart marks retain graphical contrast ${locale}/${theme}`, async({page})=>{
   await seed(page,locale,theme);await page.emulateMedia({reducedMotion:'reduce'});
   await page.setViewportSize({width:390,height:844});await page.goto('/dashboard');

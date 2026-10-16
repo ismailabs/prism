@@ -35,6 +35,9 @@ this is not an account invoice quote. Existing password rules, verified email,
 rate limits, CAPTCHA and optional MFA are useful, but not equivalent. No waiver,
 client-only replacement or purchase is proposed. **There is currently no verified
 zero-additional-cost path through this mandatory gate.**
+Your existing decision to keep release blocked is retained; do not repeat it.
+If no separately authorized eligible plan is feasible, defer the remaining owner
+sessions instead of spending more review time on a launch that cannot yet pass.
 
 One short future supervised CAPTCHA step may still need you to complete the real
 challenge personally for the expired/reused-token tests (about 1–2 minutes active
@@ -81,10 +84,27 @@ claim success or replay after reconnecting. Check sign-out/private-link/Back on
 the phones; the already reported desktop sign-out/Back observation is retained,
 not requested again. Do not create the valid transaction three times.
 
-## Session 3 — operator and recovery custody (15–25 minutes active)
+## Session 3 — repository freeze, operator and recovery custody (18–30 minutes active)
 
 Mandatory G10/G11 evidence. This is a decision/metadata review, not permission to
 read, export, decrypt or restore production customer data.
+
+0. **Private GitHub reauthentication, 2–5 min (G01/G02).** The connected account
+   allowed the main-only freeze form, but GitHub stopped its save at **Confirm
+   access**. In the preserved tab or [branch-rule page](https://github.com/ismailabs/prism/settings/branch_protection_rules),
+   choose **Use GitHub Mobile** or **Send a code via email** yourself and complete
+   GitHub's private instructions. Never send a code here. After returning, check
+   [Branches](https://github.com/ismailabs/prism/settings/branches). If the form is
+   shown again: pattern **main**; enable **Require a pull request before merging**,
+   **Require status checks** (select **verify** and **local-supabase**, source
+   **GitHub Actions**), **Require branches to be up to date**, **Require conversation
+   resolution**, **Lock branch**, and **Do not allow bypassing the above settings**.
+   Leave force pushes/deletion off. The prepared initial rule does not add a new
+   human-reviewer requirement; no human approval is fabricated. Save and report
+   only whether the rule exists. Do not unlock main, merge, or deploy. Codex will
+   read back the actual rule after your consolidated response. Review the final
+   [PR #6](https://github.com/ismailabs/prism/pull/6) changes as part of that response;
+   the release decision remains separate from this protective freeze.
 
 1. **Public identity/contact/policies, 5 min (O1/O3).** Read staging
    [Privacy](https://prism-staging-acceptance-ismailstudio.vercel.app/privacy) and
@@ -120,6 +140,9 @@ Approve targets only after the actual schedule, integrity, access and an authori
 isolated rehearsal support them; otherwise record feasible targets and the gap.
 An application rollback neither restores a database/Auth state nor reverses writes.
 No production restore is authorized by an owner checkbox on this form.
+An eligible paid plan may also offer provider database backups, but the first
+actual recovery point, coverage, permissions and separate Auth/configuration
+custody must still be verified. A plan change alone cannot pass recovery.
 
 ## Return one result record, once
 
@@ -134,6 +157,7 @@ Malay reviewer/voice; M1 actual outcomes/confusing wording:
 O1–O3: contact receipt, operator responsibilities, retention and provider-use decisions:
 R1–R3: actual schedule/latest point/integrity/custodian/access/coverage evidence;
 feasible recovery targets or exact missing evidence:
+GitHub private reauthentication/main freeze outcome; final candidate review:
 Unavailable items (leave BLOCKED):
 ```
 
@@ -148,7 +172,7 @@ authorized cost → provider/transport/PWA acceptance → grouped device/Malay a
 operator/current-recovery evidence → affected fixes and final-source CI/hosted
 rechecks → fresh G01–G13 GO/NO-GO → separate production authorization. Only then
 could an authorized production release and L01–L04 smoke/monitoring occur.
-Owner active review is roughly **50–80 minutes across three sessions**, with
+Owner active review is roughly **55–85 minutes across three sessions**, with
 provider setup/expiry/recovery rehearsal waits separate. There is no truthful
 launch date while the security-plan decision or mandatory evidence is unresolved.
 

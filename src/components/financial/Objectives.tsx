@@ -239,7 +239,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                   className={`card selection-card block w-full p-5 text-left hover:border-primary ${selected === o.id ? "border-primary" : ""}`}
                   onClick={() => setSelected(o.id)}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="selection-summary">
                     <div>
                       <h2 className="font-semibold">{o.name}</h2>
                       <p className="mt-1 text-xs text-subtle">
