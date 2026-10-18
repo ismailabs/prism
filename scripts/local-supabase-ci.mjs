@@ -53,6 +53,7 @@ if (mode === 'prepare') {
   set('auth.rate_limit', 'email_sent', '100');
   set('auth.email', 'enable_confirmations', 'true');
   set('auth.email', 'secure_password_change', 'true');
+  set('auth.email', 'max_frequency', '"1s"');
   set('auth.email', 'otp_expiry', '60');
   set('auth.mfa.totp', 'enroll_enabled', 'true');
   set('auth.mfa.totp', 'verify_enabled', 'true');

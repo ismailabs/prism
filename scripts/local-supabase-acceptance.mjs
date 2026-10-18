@@ -89,7 +89,15 @@ async function verifyFactor(auth,factor) {
 }
 async function mailboxSession(identity) {
   const next=client(undefined,true);
-  requireOk(await next.auth.signInWithOtp({email:identity.email,options:{shouldCreateUser:false,emailRedirectTo:'http://127.0.0.1:5173'}}),'independent native mailbox proof request');
+  let sent;
+  for(let attempt=0;attempt<3;attempt++){
+    sent=await next.auth.signInWithOtp({email:identity.email,options:{shouldCreateUser:false,emailRedirectTo:'http://127.0.0.1:5173'}});
+    if(sent.error?.code!=='over_email_send_rate_limit'||attempt===2)break;
+    // Actual provider throttle, not a guessed UI wait: the isolated CLI config
+    // explicitly retains a one-second per-user mail interval. Never disable it.
+    await delay(1_000);
+  }
+  requireOk(sent,'independent native mailbox proof request');
   const action=await emailAction(identity,'magiclink');
   const link=new URL(`${api}/auth/v1/verify`);
   link.searchParams.set('token',action.token_hash);link.searchParams.set('type',action.type);link.searchParams.set('redirect_to',action.redirect);
