@@ -1,5 +1,6 @@
 # Audit material and local QA must never be uploaded with the application.
 docs/
+PRISM-ZERO-COST-SECURITY-DECISION.md
 artifacts/
 scripts/
 e2e/

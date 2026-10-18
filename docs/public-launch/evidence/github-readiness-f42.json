@@ -1,0 +1,21 @@
+{
+  "checkedAtUTC": "2026-10-14T19:47:24.349Z",
+  "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+  "environment": "GITHUB-PUBLIC-READONLY",
+  "originalPRSHA": "345d26caa904c088c76f5c40c4435f6509260ffc",
+  "originalPRURL": "https://github.com/ismailabs/prism/pull/5",
+  "originalAncestryVerified": true,
+  "prURL": "https://github.com/ismailabs/prism/pull/6",
+  "head": "f42a359cffcef91b688568dc936c11c367c2e3db",
+  "base": "d1438197a33d179cedd6c54bad3bfcf9a06db31f",
+  "state": "open",
+  "merged": false,
+  "draft": false,
+  "mergeable": true,
+  "mergeableState": "clean",
+  "main": "d1438197a33d179cedd6c54bad3bfcf9a06db31f",
+  "branchProtected": false,
+  "effectiveRules": [],
+  "reviews": [],
+  "productionProvidersContacted": false
+}

@@ -2,6 +2,10 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mockSignedInApp, rows, userId, authStorageKey, supabaseUrl } from './fixtures';
 
+function ownedResponse(page: Parameters<typeof mockSignedInApp>[0], resource: string) {
+  return page.waitForResponse(response=>{const url=new URL(response.url());return url.origin===supabaseUrl&&url.pathname===`/rest/v1/${resource}`&&url.searchParams.get('user_id')===`eq.${userId}`&&response.status()===200;});
+}
+
 for (const scenario of [
   { name:'positive', september:'700.00',october:'850.00',available:'900.00',remaining:'50.00',notices:0 },
   { name:'negative', september:'900.00',october:'750.00',available:'700.00',remaining:'-50.00',notices:1 },
@@ -18,7 +22,8 @@ for (const scenario of [
   for (const tx of rows.transactions as Record<string,unknown>[]) tx.payment_method_id = null;
   const original = structuredClone({transactions:rows.transactions,accounts:rows.accounts,transfers:rows.transfers,debt_repayments:rows.debt_repayments});
   const persistedAccounts = () => rows.accounts.map(account => { const copy = {...account as Record<string,unknown>}; delete copy.balance; return copy; });
-  await page.goto('/dashboard');
+  await Promise.all([ownedResponse(page,'finance_daily_totals'),ownedResponse(page,'exact_monthly_budgets'),page.goto('/dashboard')]);
+  await page.locator('.loading-state').waitFor({state:'hidden'});
   await expect(page.getByRole('region', {name:'Budget health',exact:true})).toContainText(`${scenario.notices} threshold notices`);
   const highlights = page.getByRole('region',{name:'Planning highlights'});
   if (scenario.notices) {
@@ -35,7 +40,8 @@ for (const scenario of [
   await expect(budget.getByText('Remaining', {exact:true}).locator('..').getByRole('definition')).toHaveText(scenario.remaining.startsWith('-')?`-MYR ${scenario.remaining.slice(1)}`:`MYR ${scenario.remaining}`);
   if (scenario.notices) await expect(budget.getByText(/Over budget/)).toBeVisible();
   await page.screenshot({path:`artifacts/integration/budget-${scenario.name}.png`,fullPage:true});
-  await page.goto('/dashboard');
+  await Promise.all([ownedResponse(page,'finance_daily_totals'),ownedResponse(page,'exact_monthly_budgets'),page.goto('/dashboard')]);
+  await page.locator('.loading-state').waitFor({state:'hidden'});
   await expect(page.getByRole('region', {name:'Budget health',exact:true})).toContainText(`${scenario.notices} threshold notices`);
   await expect(page.locator('.snapshot')).toContainText(scenario.october);
   expect({transactions:rows.transactions,accounts:persistedAccounts(),transfers:rows.transfers,debt_repayments:rows.debt_repayments}).toEqual(original);
@@ -54,7 +60,8 @@ test('MFA protects the accounting destination before querying private data',asyn
   await mockSignedInApp(page);
   await page.addInitScript(key=>{const value=JSON.parse(localStorage.getItem(key)!);value.user.factors=[{id:'factor-1',factor_type:'totp',status:'verified',friendly_name:'Fixture authenticator'}];localStorage.setItem(key,JSON.stringify(value));},authStorageKey);
   await page.route(supabaseUrl+'/auth/v1/user',route=>route.fulfill({json:{id:userId,factors:[{id:'factor-1',factor_type:'totp',status:'verified'}]}}));
-  const requests:string[]=[];page.on('request',request=>{if(request.url().includes('/rest/v1/'))requests.push(request.url());});
+  await page.route(supabaseUrl+'/rest/v1/rpc/financial_access_status',route=>route.fulfill({json:{allowed:false,reason:'needs_mfa',approvedFactorIds:['factor-1','factor-2'],mailboxVerified:false,activated:true}}));
+  const requests:string[]=[];page.on('request',request=>{if((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status'))&&!request.url().endsWith('/rpc/financial_access_status'))requests.push(request.url());});
   await page.goto('/login?next=%2Faccounting');
   await expect(page.getByRole('heading',{name:'One more layer of security'})).toBeVisible();
   expect(requests).toEqual([]);
@@ -65,8 +72,8 @@ for(const locale of ['en','ms'] as const) test(`integrated synthetic accounting 
   await mockSignedInApp(page);Object.assign(rows.profiles[0] as object,{language:locale});
   await page.setViewportSize({width:375,height:812});
   const before=structuredClone(rows);const writes:string[]=[];
-  page.on('request',request=>{if(request.url().includes('/rest/v1/')&&request.method()!=='GET')writes.push(request.url());});
-  await page.goto('/accounting');
+  page.on('request',request=>{if((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status'))&&request.method()!=='GET')writes.push(request.url());});
+  await Promise.all([ownedResponse(page,'finance_daily_totals'),page.goto('/accounting')]);
   await expect(page.getByRole('heading',{name:locale==='en'?'Accounting laboratory':'Makmal perakaunan',exact:true})).toBeVisible();
   await page.getByRole('button',{name:locale==='en'?'Synthetic example':'Contoh rekaan',exact:true}).click();
   await expect(page.getByRole('region',{name:locale==='en'?'Balance sheet':'Kunci kira-kira'})).toContainText('15,280.00');

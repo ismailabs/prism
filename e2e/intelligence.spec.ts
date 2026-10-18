@@ -30,7 +30,7 @@ async function seed(page: Parameters<typeof mockSignedInApp>[0], language = 'en'
 }
 test('review reconciles ordinary flows, debt and native balance while future rent remains a scenario', async ({ page }) => {
   await seed(page); const writes: string[] = [];
-  page.on('request', request => { if (request.url().includes('/rest/v1/') && request.method() !== 'GET') writes.push(request.url()); });
+  page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) && request.method() !== 'GET') writes.push(request.url()); });
   await openAnalytics(page);
   const center = page.getByRole('region', { name: 'Financial intelligence', exact: true });
   await expect(center.getByRole('table', { name: 'Recorded native balances', exact: true })).toContainText('MYR 3,500.00');
@@ -93,7 +93,7 @@ test('new intelligence supports Malay, privacy, keyboard, mobile and WCAG scans'
 test('numeric transport and server denial remain visible failures, never fabricated zero', async ({ page }) => {
   await seed(page);
   await page.route(supabaseUrl + '/rest/v1/finance_daily_totals*', route => route.fulfill({ json: [{ user_id: userId, currency: 'MYR', type: 'income', month: '2026-10', financial_date: '2026-10-01', category_id: null, amount: Number('90071992547409.93'), transaction_count: 1 }] }));
-  await page.goto('/analytics'); await expect(page.getByRole('alert').filter({ hasText: 'Invalid exact financial report.' })).toBeVisible();
+  await openAnalytics(page); await expect(page.getByRole('alert').filter({ hasText: 'Invalid exact financial report.' })).toBeVisible();
   await page.route(supabaseUrl + '/rest/v1/finance_daily_totals*', route => route.fulfill({ status: 403, json: { message: 'Synthetic authorization denied PRIVATE_ACCOUNT_SENTINEL', code: '42501' } }));
   const denied = page.waitForResponse(response => response.url().startsWith(supabaseUrl + '/rest/v1/finance_daily_totals') && response.status() === 403);
   await page.reload(); await denied;
@@ -101,7 +101,7 @@ test('numeric transport and server denial remain visible failures, never fabrica
   await expect(page.getByText(/PRIVATE_ACCOUNT_SENTINEL|Synthetic authorization denied/)).toHaveCount(0);
 });
 test('a plan mutation refreshes the forecast and logout hides private sources', async ({ page }) => {
-  await seed(page); await page.goto('/analytics');
+  await seed(page); await openAnalytics(page);
   const scenarios = page.getByRole('region', { name: 'Cash scenarios', exact: true });
   await expect(scenarios).toContainText('MYR 2,800.00');
   await scenarios.getByRole('link', { name: 'Planned rent', exact: true }).click();
@@ -115,7 +115,7 @@ test('a plan mutation refreshes the forecast and logout hides private sources', 
 });
 test('unmapped rules remain separate and all-time review has no invented comparison', async ({ page }) => {
   await seed(page); rows.recurring_rules[0] = { ...(rows.recurring_rules[0] as object), account_id: null };
-  await page.goto('/analytics');
+  await openAnalytics(page);
   const scenarios = page.getByRole('region', { name: 'Cash scenarios', exact: true });
   await expect(scenarios).toContainText('MYR 3,500.00');
   await expect(scenarios).toContainText('excluded from this closing scenario');

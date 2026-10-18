@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-14T13:12:30.894Z",
+  "environment": "STAGING-HOSTED",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "syntheticLabel": "B",
+  "realInboxRead": true,
+  "serviceRoleUsed": false,
+  "credentialsOrLinksPublished": false,
+  "checks": [
+    {
+      "label": "actual received confirmation, allowed staging PKCE callback and code exchange",
+      "status": "PASS",
+      "httpStatus": 303
+    },
+    {
+      "label": "consumed confirmation link rejected",
+      "status": "PASS",
+      "errorCode": "otp_expired"
+    },
+    {
+      "label": "normal confirmed password sign-in",
+      "status": "PASS"
+    },
+    {
+      "label": "ordinary hosted session sees only owned Malaysia-first profile",
+      "status": "PASS"
+    }
+  ]
+}

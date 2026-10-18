@@ -1,4 +1,5 @@
 import { MfaSetup } from "../auth/MfaSetup";
+import { MfaChallenge } from '../auth/MfaChallenge';
 import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
 import { browserTimezone, validTimezone } from "@/domain/dates";
@@ -20,7 +21,7 @@ export function SettingsView({ profile }: { profile: Profile }) {
   const c = useFinancialCopy();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, securityStatus } = useAuth();
   const update = useUpdateProfile();
   const [username, setUsername] = useState(profile.username);
   const [currency, setCurrency] = useState<Currency>(profile.currency);
@@ -30,6 +31,8 @@ export function SettingsView({ profile }: { profile: Profile }) {
   );
   const [theme, setTheme] = useState<Theme>(profile.theme);
   const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [verifyOpen, setVerifyOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -59,9 +62,10 @@ export function SettingsView({ profile }: { profile: Profile }) {
     setBusy(true);
     setError("");
     try {
-      const result = await supabase.auth.updateUser({ password });
+      const result = await supabase.auth.updateUser({ password, current_password: currentPassword || undefined });
       if (result.error) throw result.error;
       setPassword("");
+      setCurrentPassword("");
       toast.success(t("passwordUpdated"));
     } catch (cause) {
       setError(errorMessage(cause));
@@ -81,6 +85,7 @@ export function SettingsView({ profile }: { profile: Profile }) {
       );
       return;
     }
+    if (!securityStatus?.recentVerification) { setVerifyOpen(true); return; }
     setDeletingAccount(true);
     try {
       const { error: rpcError } = await supabase.rpc("delete_own_account", {
@@ -221,18 +226,23 @@ export function SettingsView({ profile }: { profile: Profile }) {
           <h2 className="text-lg font-semibold">{t("security")}</h2>
           <p className="text-sm text-subtle">{t("securityDescription")}</p>
           <MfaSetup />
+          <Button variant="outline" onClick={() => setVerifyOpen(true)}>{c('Verify authenticator again', 'Sahkan pengesah semula')}</Button>
           <p className="text-sm text-subtle">{t("mfaRecoveryHint")}</p>
           <form
             className="space-y-4 border-t border-border pt-6"
             onSubmit={(event) => void changePassword(event)}
           >
             <label className="form-field">
+              {c('Current password (if you have set one)', 'Kata laluan semasa (jika pernah ditetapkan)')}
+              <input className="input" type="password" autoComplete="current-password" value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} />
+            </label>
+            <label className="form-field">
               {t("newPassword")}
               <input
                 className="input"
                 type="password"
                 autoComplete="new-password"
-                minLength={8}
+                minLength={16}
                 required
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -255,8 +265,8 @@ export function SettingsView({ profile }: { profile: Profile }) {
           </h2>
           <p className="mt-3 text-sm text-subtle">
             {c(
-              "Permanently delete your Prism account, authentication identity, and all owned financial data. This cannot be undone.",
-              "Padam akaun Prism, identiti log masuk dan semua data kewangan anda secara kekal. Tindakan ini tidak boleh dibatalkan.",
+              "Delete your Prism sign-in and owned financial records from the active database. This cannot be undone in the app. Earlier copies may remain in encrypted recovery backups and provider records.",
+              "Padam identiti log masuk Prism dan rekod kewangan milik anda daripada pangkalan data aktif. Tindakan ini tidak boleh dibatalkan dalam aplikasi. Salinan terdahulu mungkin kekal dalam sandaran pemulihan yang disulitkan dan rekod penyedia.",
             )}
           </p>
           <Button
@@ -280,6 +290,9 @@ export function SettingsView({ profile }: { profile: Profile }) {
           />
         </section>
       </div>
+      <Modal open={verifyOpen} onOpenChange={setVerifyOpen} title={c('Verify authenticator again', 'Sahkan pengesah semula')}>
+        <MfaChallenge onVerified={() => setVerifyOpen(false)} />
+      </Modal>
       <Modal
         open={deleteOpen}
         onOpenChange={(value) => {
@@ -290,8 +303,8 @@ export function SettingsView({ profile }: { profile: Profile }) {
           "Padam akaun Prism secara kekal",
         )}
         description={c(
-          "This deletes your sign-in and every financial record owned by your account.",
-          "Identiti log masuk dan setiap rekod kewangan anda akan dipadam.",
+          "Confirmed deletion removes your sign-in and owned financial records from the active database. Earlier copies may remain in encrypted recovery backups and provider records.",
+          "Pemadaman yang disahkan menghapuskan identiti log masuk dan rekod kewangan milik anda daripada pangkalan data aktif. Salinan terdahulu mungkin kekal dalam sandaran pemulihan yang disulitkan dan rekod penyedia.",
         )}
       >
         <form
@@ -300,12 +313,15 @@ export function SettingsView({ profile }: { profile: Profile }) {
         >
           <div className="error-message">
             <strong>
-              {c("This action is permanent.", "Tindakan ini kekal.")}
+              {c(
+                "Deletion from the active database cannot be undone in the app.",
+                "Pemadaman daripada pangkalan data aktif tidak boleh dibatalkan dalam aplikasi.",
+              )}
             </strong>
             <p className="mt-1">
               {c(
-                "Accounts, transactions, goals, savings targets, debts, categories, payment methods, transfers, budgets, recurring rules, and progress history will be deleted.",
-                "Akaun, transaksi, matlamat, sasaran simpanan, hutang, kategori, kaedah pembayaran, pindahan, bajet, peraturan berulang dan sejarah kemajuan akan dipadam.",
+                "Accounts, transactions, goals, savings targets, debts, categories, payment methods, transfers, budgets, recurring rules, and progress history will be removed from the active database.",
+                "Akaun, transaksi, matlamat, sasaran simpanan, hutang, kategori, kaedah pembayaran, pindahan, bajet, peraturan berulang dan sejarah kemajuan akan dipadam daripada pangkalan data aktif.",
               )}
             </p>
           </div>

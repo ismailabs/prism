@@ -33,6 +33,7 @@ export function Onboarding({ profile }: { profile: Profile }) {
   const [defaults, setDefaults] = useState(false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [savedSteps, setSavedSteps] = useState({ preferences: false, categories: 'pending' as 'pending' | 'skipped' | 'complete' });
   const savingLock = useRef(false);
   const createdCategories = useRef(new Set<string>());
   function finish() {
@@ -43,6 +44,7 @@ export function Onboarding({ profile }: { profile: Profile }) {
     e.preventDefault();
     if (savingLock.current) return;
     setError('');
+    setSavedSteps({ preferences: false, categories: 'pending' });
     savingLock.current = true;
     setSaving(true);
     try {
@@ -52,6 +54,7 @@ export function Onboarding({ profile }: { profile: Profile }) {
       const openingBalance = decimalMoney(parseMoney(opening, currency), currency);
       // These existing mutations are separate operations; partial saves are disclosed on failure.
       await update.mutateAsync({ currency, financial_timezone: timezone, language });
+      setSavedSteps(previous => ({ ...previous, preferences: true }));
       if (defaults) {
         const ms = language === 'ms';
         for (const category of [
@@ -66,6 +69,7 @@ export function Onboarding({ profile }: { profile: Profile }) {
           }
         }
       }
+      setSavedSteps(previous => ({ ...previous, categories: defaults ? 'complete' : 'skipped' }));
       await mutations.create.mutateAsync({ name: name.trim(), currency, opening_balance: openingBalance, archived: false });
       finish();
     } catch (cause) {
@@ -78,6 +82,7 @@ export function Onboarding({ profile }: { profile: Profile }) {
   return <section className="card onboarding p-5 space-y-4 mb-5" aria-label={c('Quick setup', 'Persediaan ringkas')}>
     <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="eyebrow">{c('YOUR FIRST STEP', 'LANGKAH PERTAMA ANDA')}</p><h2 className="font-semibold">{c('Start with your financial foundations', 'Mulakan asas kewangan anda')}</h2></div><Button variant="ghost" type="button" disabled={saving} onClick={finish}>{c('Skip setup', 'Langkau persediaan')}</Button></div>
     <p className="onboarding-note">{c('Start with one real account. Setup is optional, and you can change these choices in Settings. No sample transactions will be added.', 'Mulakan dengan satu akaun sebenar. Persediaan adalah pilihan, dan anda boleh mengubah pilihan ini dalam Tetapan. Tiada transaksi contoh akan ditambah.')}</p>
+    {(saving || !!error || savedSteps.preferences || savedSteps.categories !== 'pending') && <div aria-live="polite"><p className="onboarding-note">{c('Confirmed during the last save attempt:', 'Disahkan semasa percubaan simpan terakhir:')}</p><ol className="setup-progress"><li>{c('Preferences', 'Pilihan')}: {savedSteps.preferences ? c('Saved', 'Disimpan') : c('Not yet confirmed', 'Belum disahkan')}</li><li>{c('Optional categories', 'Kategori pilihan')}: {savedSteps.categories === 'complete' ? c('Complete', 'Selesai') : savedSteps.categories === 'skipped' ? c('Skipped', 'Dilangkau') : c('Not yet complete', 'Belum selesai')}</li><li>{c('Account', 'Akaun')}: {saving ? c('Not yet confirmed', 'Belum disahkan') : c('Review before retrying', 'Semak sebelum mencuba semula')}</li></ol></div>}
     {accounts.error || existingCategories.error ? <><p role="alert" className="error-message">{errorMessage(accounts.error ?? existingCategories.error)}</p><Button onClick={() => void Promise.all([accounts.refetch(), existingCategories.refetch()])}>{c('Retry', 'Cuba lagi')}</Button></> : <form onSubmit={e => void save(e)}>
       <fieldset disabled={saving || existingCategories.isPending} className="grid sm:grid-cols-2 gap-3">
         <legend>{c('1. Your preferences', '1. Pilihan anda')}</legend>

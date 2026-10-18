@@ -1,6 +1,14 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { authStorageKey, mockSignedInApp, rows, supabaseUrl } from './fixtures';
+import { authStorageKey, mockSignedInApp, rows, supabaseUrl, userId } from './fixtures';
+
+function ownedResponse(page: Parameters<typeof mockSignedInApp>[0], resource: string) {
+  return page.waitForResponse(response => {
+    const url = new URL(response.url());
+    return url.origin === supabaseUrl && url.pathname === `/rest/v1/${resource}` &&
+      url.searchParams.get('user_id') === `eq.${userId}` && response.status() === 200;
+  });
+}
 
 test('public homepage and demo make no financial requests, including before Auth settles', async ({ page }) => {
   const privateRequests: string[] = [];
@@ -25,7 +33,7 @@ test('public homepage and demo make no financial requests, including before Auth
 test('standalone synthetic demo stays isolated even with a signed-in session', async ({ page }) => {
   await mockSignedInApp(page);
   const requests: string[] = [];
-  page.on('request', request => { if (request.url().includes('/rest/v1/')) requests.push(request.url()); });
+  page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) && !request.url().endsWith('/rpc/financial_access_status')) requests.push(request.url()); });
   await page.goto('/demo');
   await expect(page.getByRole('region', { name: 'Synthetic product preview' })).toBeVisible();
   await expect(page.locator('body')).not.toContainText('Test member');
@@ -40,13 +48,13 @@ test('protected filtered link returns to its exact destination after fixture sig
   await mockSignedInApp(page);
   await page.addInitScript(key => localStorage.removeItem(key), authStorageKey);
   const requests: string[] = [];
-  page.on('request', request => { if (request.url().includes('/rest/v1/')) requests.push(request.url()); });
+  page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status'))) requests.push(request.url()); });
   await page.goto('/transactions?type=expense&category=uncategorized');
   await expect(page).toHaveURL(/\/login\?next=/);
   expect(new URL(page.url()).searchParams.get('next')).toBe('/transactions?type=expense&category=uncategorized');
   expect(requests).toEqual([]);
   await page.getByLabel('Email address', { exact: true }).fill('member@example.invalid');
-  await page.getByLabel('Password', { exact: true }).fill('FixturePassword123');
+  await page.getByLabel('Password', { exact: true }).fill('FixtureStrongPassword123');
   await page.locator('.auth-form form').getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page).toHaveURL(/\/transactions\?type=expense&category=uncategorized$/);
   await expect(page.getByRole('heading', { name: 'All transactions', exact: true })).toBeVisible();
@@ -59,7 +67,7 @@ test('protected filtered link returns to its exact destination after fixture sig
 
 test('external return links are rejected and signed-in login refresh reaches a real route', async ({ page }) => {
   await mockSignedInApp(page);
-  await page.goto('/login?next=https%3A%2F%2Fevil.invalid');
+  await Promise.all([ownedResponse(page, 'finance_daily_totals'), page.goto('/login?next=https%3A%2F%2Fevil.invalid')]);
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.locator('.snapshot')).toBeVisible();
   await page.goto('/login?next=%2Faccounts');
@@ -74,6 +82,7 @@ test('external return links are rejected and signed-in login refresh reaches a r
 
 test('MFA gates a login return destination without private queries', async ({ page }) => {
   await mockSignedInApp(page);
+  await page.route(supabaseUrl+'/rest/v1/rpc/financial_access_status',route=>route.fulfill({json:{allowed:false,reason:'needs_mfa',approvedFactorIds:['factor-1','factor-2'],mailboxVerified:false,activated:true}}));
   await page.addInitScript(key => {
     const session = JSON.parse(localStorage.getItem(key)!);
     session.user.factors = [{ id: 'factor-1', factor_type: 'totp', status: 'verified', friendly_name: 'Fixture authenticator' }];
@@ -81,7 +90,7 @@ test('MFA gates a login return destination without private queries', async ({ pa
   }, authStorageKey);
   await page.route(supabaseUrl + '/auth/v1/user', route => route.fulfill({ json: { id: '11111111-1111-4111-8111-111111111111', factors: [{ id: 'factor-1', factor_type: 'totp', status: 'verified', friendly_name: 'Fixture authenticator' }] } }));
   const requests: string[] = [];
-  page.on('request', request => { if (request.url().includes('/rest/v1/')) requests.push(request.url()); });
+  page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status'))) requests.push(request.url()); });
   await page.goto('/login?next=%2Fdebts');
   await expect(page.getByRole('heading', { name: 'One more layer of security' })).toBeVisible();
   await expect(page.locator('.app-shell')).toHaveCount(0);
@@ -101,7 +110,7 @@ test('signup CTA and confirmation keep the safe callback destination', async ({ 
   await expect(page.getByLabel('Your name', { exact: true })).toBeVisible();
   await page.getByLabel('Your name', { exact: true }).fill('Synthetic member');
   await page.getByLabel('Email address', { exact: true }).fill('signup@example.invalid');
-  await page.getByLabel('Password', { exact: true }).fill('FixturePassword123');
+  await page.getByLabel('Password', { exact: true }).fill('FixtureStrongPassword123');
   await page.locator('form').getByRole('button', { name: 'Create account', exact: true }).click();
   const confirmationNotice = 'Check your inbox and spam folder to confirm your account, then sign in.';
   await expect(page.getByRole('status').filter({ hasText: confirmationNotice })).toHaveText(confirmationNotice);
@@ -218,7 +227,7 @@ test('guest language and theme controls persist without private requests', async
 test('setup skips without financial writes and optional demo stays synthetic', async ({ page }) => {
   await mockSignedInApp(page); rows.accounts = [];
   const writes: string[] = [];
-  page.on('request', request => { if (request.url().includes('/rest/v1/') && ['POST', 'PATCH', 'DELETE'].includes(request.method()) && !request.url().includes('/rpc/')) writes.push(request.url()); });
+  page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) && ['POST', 'PATCH', 'DELETE'].includes(request.method()) && !request.url().includes('/rpc/')) writes.push(request.url()); });
   await page.goto('/dashboard');
   const setup = page.getByRole('region', { name: 'Quick setup' });
   await expect(setup).toBeVisible({ timeout: 15_000 });
@@ -265,7 +274,7 @@ test('mobile workspace groups have working routes and restore drawer focus', asy
   const trigger = page.getByRole('button', { name: 'Open navigation' });
   await trigger.click();
   const drawer = page.getByRole('dialog', { name: 'WORKSPACE' });
-  for (const name of ['Money', 'Planning', 'Insights', 'Personal']) await expect(drawer.getByText(name, { exact: true })).toBeVisible();
+  for (const name of ['Your money', 'Understand & act', 'Goals & savings', 'Personal & advanced']) await expect(drawer.getByText(name, { exact: true })).toBeVisible();
   await drawer.getByRole('link', { name: 'Goals', exact: true }).click();
   await expect(page).toHaveURL(/\/goals$/);
   await expect(page.getByRole('heading', { name: 'Goals', exact: true })).toBeVisible();
@@ -275,6 +284,26 @@ test('mobile workspace groups have working routes and restore drawer focus', asy
   await expect(drawer).toHaveCount(0);
   await expect(trigger).toBeFocused();
 });
+
+for (const locale of ['en', 'ms'] as const) {
+  test(`mobile ${locale} sign-out clears the session and guards history and private links`, async ({ page }) => {
+    await mockSignedInApp(page, true);
+    (rows.profiles[0] as Record<string, unknown>).language = locale;
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/accounts');
+    await expect(page.locator('.app-shell')).toBeVisible();
+    await page.getByRole('button', { name: locale === 'en' ? 'Open navigation' : 'Buka navigasi', exact: true }).click();
+    const drawer = page.getByRole('dialog', { name: locale === 'en' ? 'WORKSPACE' : 'RUANG KERJA', exact: true });
+    await drawer.getByRole('button', { name: locale === 'en' ? 'Sign out' : 'Log keluar', exact: true }).click();
+    await expect(page).toHaveURL(/\/login/);
+    expect(await page.evaluate(key => localStorage.getItem(key), authStorageKey)).toBeNull();
+    await page.goBack();
+    await expect(page.locator('.app-shell')).toHaveCount(0);
+    await page.goto('/accounts');
+    await expect(page).toHaveURL(/\/login\?next=%2Faccounts/);
+    await expect(page.locator('.app-shell')).toHaveCount(0);
+  });
+}
 
 test('setup waits for server confirmation and keeps its controls locked while an account save is pending', async ({ page }) => {
   await mockSignedInApp(page); rows.accounts = [];
@@ -313,7 +342,7 @@ test('dashboard planning highlights use native amounts and planned records with 
   rows.transactions.push({ id: 'budget-expense', user_id: '11111111-1111-4111-8111-111111111111', account_id: null, payment_method_id: null, category_id: 'food', currency: 'MYR', amount: '120.00', type: 'expense', description: 'Recorded budget spending', transaction_date: `${month}T00:00:00Z`, financial_date: month, activity_kind: 'ordinary', created_at: '' });
   const recordedTransactions = structuredClone(rows.transactions);
   rows.recurring_rules = [{ id: 'planned', description: 'Future rent record', amount: '25.00', currency: 'MYR', type: 'expense', account_id: null, category_id: null, payment_method_id: null, start_date: '2099-01-01', end_date: null, frequency: 'monthly', interval: 1, next_index: 0, active: true }];
-  await page.goto('/dashboard');
+  await Promise.all([ownedResponse(page, 'finance_daily_totals'), ownedResponse(page, 'exact_monthly_budgets'), page.goto('/dashboard')]);
   const highlights = page.getByRole('region', { name: 'Planning highlights' });
   await expect(highlights).toContainText('Budget reached: Food');
   await expect(highlights).toContainText('120.00');
@@ -341,4 +370,39 @@ test('dashboard planning highlights use native amounts and planned records with 
   await expect(page).toHaveURL(/\/plans\?section=recurring$/);
   await expect(page.getByRole('button', { name: 'Record due occurrence' })).toBeDisabled();
   expect(rows.transactions).toEqual(recordedTransactions);
+});
+
+for (const locale of ['en','ms'] as const) test(`setup retry reports only steps confirmed in the current attempt ${locale}`, async ({page})=>{
+  await mockSignedInApp(page);rows.accounts=[];
+  await page.setViewportSize({width:320,height:740});
+  Object.assign(rows.profiles[0] as object,{language:locale});
+  const originalTransactions=structuredClone(rows.transactions);
+  let accountPosts=0;
+  await page.route(supabaseUrl+'/rest/v1/accounts*',async route=>{
+    if(route.request().method()!=='POST')return route.fallback();
+    accountPosts++;
+    return route.fulfill({status:403,json:{code:'42501',message:'Synthetic account denial'}});
+  });
+  await Promise.all([ownedResponse(page,'finance_daily_totals'),page.goto('/dashboard')]);
+  const setup=page.getByRole('region',{name:locale==='en'?'Quick setup':'Persediaan ringkas',exact:true});
+  await setup.getByLabel(locale==='en'?'First account':'Akaun pertama',{exact:true}).fill('Synthetic pending account');
+  const save=setup.getByRole('button',{name:locale==='en'?'Save setup':'Simpan persediaan',exact:true});
+  const accountDenied=page.waitForResponse(response=>response.url().startsWith(supabaseUrl+'/rest/v1/accounts')&&response.request().method()==='POST'&&response.status()===403);
+  await save.click();await accountDenied;await expect(save).toBeEnabled();
+  await expect(setup.getByRole('listitem').filter({hasText:locale==='en'?/^Preferences:/:/^Pilihan:/})).toHaveText(locale==='en'?'Preferences: Saved':'Pilihan: Disimpan');
+  await expect(setup.getByRole('listitem').filter({hasText:locale==='en'?'Optional categories:':'Kategori pilihan:'})).toHaveText(locale==='en'?'Optional categories: Skipped':'Kategori pilihan: Dilangkau');
+  await page.route(supabaseUrl+'/rest/v1/profiles*',async route=>route.request().method()==='PATCH'?route.fulfill({status:403,json:{code:'42501',message:'Synthetic preferences denial'}}):route.fallback());
+  await setup.getByRole('combobox',{name:locale==='en'?'Primary currency':'Mata wang utama',exact:true}).selectOption('USD');
+  const preferencesDenied=page.waitForResponse(response=>response.url().startsWith(supabaseUrl+'/rest/v1/profiles')&&response.request().method()==='PATCH'&&response.status()===403);
+  await save.click();await preferencesDenied;await expect(save).toBeEnabled();
+  await expect(setup.getByRole('listitem').filter({hasText:locale==='en'?/^Preferences:/:/^Pilihan:/})).toHaveText(locale==='en'?'Preferences: Not yet confirmed':'Pilihan: Belum disahkan');
+  await expect(setup.getByRole('listitem').filter({hasText:locale==='en'?'Optional categories:':'Kategori pilihan:'})).toHaveText(locale==='en'?'Optional categories: Not yet complete':'Kategori pilihan: Belum selesai');
+  await expect(setup.getByRole('alert')).toBeVisible();
+  expect(accountPosts).toBe(1);expect(rows.accounts).toEqual([]);
+  expect(rows.profiles[0]).toMatchObject({currency:'MYR',language:locale});
+  expect(rows.transactions).toEqual(originalTransactions);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  const scan=await new AxeBuilder({page}).include('.onboarding').withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
+  expect(scan.violations).toEqual([]);
+  await page.screenshot({path:`artifacts/calm-precision/screens/onboarding-retry-320-${locale}.png`,fullPage:true});
 });

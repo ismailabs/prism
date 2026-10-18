@@ -1,0 +1,148 @@
+{
+  "startedAt": "2026-10-14T19:21:35.445Z",
+  "environment": "STAGING-HOSTED",
+  "origin": "https://prism-staging-acceptance-ismailstudio.vercel.app",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "syntheticOnly": true,
+  "productionContacted": false,
+  "serviceRoleUsed": false,
+  "credentialsOrStorageStatePublished": false,
+  "protectionAccess": "approved temporary share-link session",
+  "checks": [
+    {
+      "label": "protected preview, security headers, staging-only published API/key and no privileged key",
+      "status": "PASS",
+      "anonymousStatus": 302,
+      "assets": 10,
+      "keyKind": "publishable",
+      "stagingKeyScopeStatus": 200,
+      "entryHash": "644825f17b4ab3ef890c034186d2f03b1af8eea0394e1b2637e8e2b273836c4b"
+    },
+    {
+      "label": "en/light /",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /demo",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /privacy",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /terms",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /login",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "anonymous private route /dashboard",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /transactions",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /analytics",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /accounting",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /accounts",
+      "status": "PASS"
+    }
+  ],
+  "axe": [
+    {
+      "path": "/",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/demo",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/privacy",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/terms",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/login",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    }
+  ],
+  "limits": [
+    "Browser viewport tests are emulation, not physical devices or assistive technology.",
+    "Public routes and anonymous private-route guards do not prove signed-in financial workflows.",
+    "Service workers are blocked in these public UI contexts; genuine hosted PWA acceptance is recorded separately."
+  ],
+  "deploymentId": "dpl_EvDB2x8MjzHpdcYXeKHRv9DPgyeK",
+  "vercelProjectId": "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe",
+  "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+  "status": "FAIL",
+  "failure": {
+    "step": "anonymous private route /plans",
+    "message": "Expected values to be strictly equal:\n\n'/plans' !== '/login'\n"
+  },
+  "finishedAt": "2026-10-14T19:22:16.620Z"
+}

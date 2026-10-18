@@ -31,7 +31,7 @@ for (const language of ['en', 'ms'] as const) {
       const c = copy[language];
       const writes: { method: string; url: string; body: unknown }[] = [];
       page.on('request', request => {
-        if (request.url().startsWith(supabaseUrl + '/rest/v1/') &&
+        if ((request.url().startsWith(supabaseUrl + '/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) &&
           ['POST', 'PATCH', 'DELETE'].includes(request.method()) &&
           !request.url().includes('/rpc/transaction_page')) {
           writes.push({ method: request.method(), url: request.url(), body: request.postDataJSON() });
@@ -95,10 +95,14 @@ for (const language of ['en', 'ms'] as const) {
       await testInfo.attach('amount-error-accessibility-tree', { path: treePath, contentType: 'text/plain' });
       await testInfo.attach('amount-error', { path: screenshotPath, contentType: 'image/png' });
       // Correcting the value clears its stale error association without moving focus.
+      const staleErrorId = await amount.getAttribute('aria-describedby');
       await amount.fill(currency === 'JPY' ? '123' : '1.23');
       await expect(form.getByRole('alert')).toHaveCount(0);
       await expect(amount).not.toHaveAttribute('aria-invalid', 'true');
-      await expect(amount).not.toHaveAttribute('aria-describedby');
+      const hintId = await amount.getAttribute('aria-describedby');
+      expect(hintId).toBeTruthy(); expect(hintId).not.toBe(staleErrorId);
+      await expect(form.locator(`[id="${hintId}"]`)).toContainText(currency);
+      await expect(form.locator(`[id="${hintId}"]`)).toContainText(language === 'en' ? 'Amounts are saved exactly.' : 'Amaun disimpan tepat.');
       await amount.press('Enter');
       await expect(form).toHaveCount(0);
       expect(writes).toHaveLength(1);

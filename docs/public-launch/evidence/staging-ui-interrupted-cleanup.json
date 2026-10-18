@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-14T14:58:15.276Z",
+  "environment": "STAGING-HOSTED",
+  "projectRef": "zwqcdfzfsudqccclficx",
+  "syntheticOnly": true,
+  "serviceRoleUsed": false,
+  "productionContacted": false,
+  "cleanup": [
+    {
+      "table": "transactions",
+      "removed": 5
+    },
+    {
+      "table": "transfers",
+      "removed": 1
+    },
+    {
+      "table": "accounts",
+      "removed": 4
+    }
+  ],
+  "status": "PASS"
+}

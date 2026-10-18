@@ -1,0 +1,15 @@
+{
+  "environment": "LOCAL-WINDOWS",
+  "candidateBaseSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "workingSourceChange": "Settings deletion/privacy text only",
+  "command": "npx vitest run src/domain/ledger-boundary.test.ts --maxWorkers=1",
+  "startedAtLocal": "2026-10-14 23:24:16 Asia/Kuala_Lumpur",
+  "durationSeconds": 9.34,
+  "status": "PASS",
+  "passed": 6,
+  "failed": 0,
+  "sourceOrAssertionsChanged": false,
+  "testTimeoutMillis": 5000,
+  "scope": "Affected test only; full final-head CI still required",
+  "originalFailureRetained": "continuation-unit-first-failure.json"
+}

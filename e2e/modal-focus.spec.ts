@@ -19,7 +19,7 @@ for (const locale of ['en', 'ms']) for (const theme of ['light', 'dark']) {
     Object.assign(rows.profiles[0], { language: locale, theme });
     let writes = 0;
     page.on('request', request => {
-      if (request.url().startsWith(supabaseUrl + '/rest/v1/') && ['POST', 'PATCH', 'DELETE'].includes(request.method())) writes++;
+      if ((request.url().startsWith(supabaseUrl + '/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) && ['POST', 'PATCH', 'DELETE'].includes(request.method())) writes++;
     });
     await page.goto('/settings');
     const opener = page.getByRole('button', { name: locale === 'ms' ? 'Padam akaun Prism' : 'Delete Prism account', exact: true });
@@ -57,7 +57,7 @@ for (const locale of ['en', 'ms']) for (const theme of ['light', 'dark']) {
     Object.assign(rows.profiles[0], { language: locale, theme });
     let writes = 0;
     page.on('request', request => {
-      if (request.url().startsWith(supabaseUrl + '/rest/v1/') && ['POST', 'PATCH', 'DELETE'].includes(request.method())) writes++;
+      if ((request.url().startsWith(supabaseUrl + '/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) && ['POST', 'PATCH', 'DELETE'].includes(request.method())) writes++;
     });
     await page.goto('/accounts');
     await expect(page.getByText('Everyday account', { exact: true })).toBeVisible();
@@ -93,6 +93,7 @@ for (const locale of ['en', 'ms']) {
     const original = JSON.stringify(rows.transactions);
     await page.goto('/transactions');
     const opener = page.getByRole('button', { name: locale === 'ms' ? 'Tambah transaksi' : 'Add transaction', exact: true });
+    await expect(opener).toBeEnabled();
     await opener.focus();
     for (const dismissal of ['escape', 'cancel', 'close']) {
       await page.keyboard.press('Enter');

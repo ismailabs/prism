@@ -1,0 +1,37 @@
+{
+  "checkedAtUTC": "2026-10-14T17:28:46.080Z",
+  "environment": "STAGING-HOSTED",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "syntheticLabel": "C",
+  "productionContacted": false,
+  "serviceRoleUsed": false,
+  "realInboxRead": true,
+  "inbox": true,
+  "issuedAtUTC": "2026-10-14T16:27:44.767Z",
+  "receivedAtUTC": "2026-10-14T16:27:47.000Z",
+  "providerSettingChanged": false,
+  "credentialsOrLinksPublished": false,
+  "checks": [
+    {
+      "label": "actual synthetic Gmail INBOX and unsupported redirect rejected to exact staging origin",
+      "status": "PASS"
+    },
+    {
+      "label": "unconfirmed ordinary password signin rejected without session",
+      "status": "PASS",
+      "code": "email_not_confirmed"
+    },
+    {
+      "label": "first-use real inbox confirmation link expired after normal lifetime",
+      "status": "PASS",
+      "httpStatus": 303,
+      "errorCode": "otp_expired",
+      "elapsedSeconds": 3662
+    },
+    {
+      "label": "expired link leaves identity unconfirmed and signin denied",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

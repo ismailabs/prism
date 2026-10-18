@@ -1,3 +1,4 @@
+import { financialClaims } from './lib/financial-test-identity.mjs';
 import { PGlite } from '@electric-sql/pglite';
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
@@ -20,7 +21,7 @@ try {
    const row=(await db.query('select amount::text,account_id,legacy_id,occurred_at::text from public.financial_events')).rows[0];
    assert.equal(row.amount,'90071992547409.93');assert.equal(row.account_id,null);assert.equal(row.legacy_id,legacy);
  });
- async function identity(user=u1,session=s1,extra={}) { await db.exec('reset role'); await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:user,session_id:session,aal:'aal1',...extra})]); await db.exec('set role authenticated'); }
+ async function identity(user=u1,session=s1,extra={}) { await db.exec('reset role'); await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(db,{sub:user,session_id:session,aal:'aal1',...extra}))]); await db.exec('set role authenticated'); }
  const rpc=async(name,p)=> (await db.query(`select public.${name}($1::jsonb) as result`,[JSON.stringify(p)])).rows[0].result;
  await identity();
  const a=await rpc('finance_save_account',{name:'Cash',type:'cash',currency:'MYR',opening_balance:'1000.10',opening_date:'2020-01-01'});

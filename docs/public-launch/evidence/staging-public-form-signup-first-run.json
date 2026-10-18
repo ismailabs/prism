@@ -1,0 +1,29 @@
+{
+  "startedAtUTC": "2026-10-14T17:27:07.059Z",
+  "environment": "STAGING-HOSTED",
+  "origin": "https://prism-staging-acceptance-ismailstudio.vercel.app",
+  "deploymentId": "dpl_DMi8NkdbUVYQMLNCHttBa6J7pA4z",
+  "vercelProjectId": "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe",
+  "candidateSHA": "7364adacad025c1aa76bf81c196626d0625fee37",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "phase": "public-form-registration",
+  "syntheticLabel": "D",
+  "productionContacted": false,
+  "fixtureResponses": false,
+  "serviceRoleUsed": false,
+  "credentialsOrStoragePublished": false,
+  "checks": [
+    {
+      "label": "real public signup form creates unconfirmed identity, requires actual inbox and clears password",
+      "status": "PASS"
+    }
+  ],
+  "runtimeErrors": 0,
+  "foreignRequests": 0,
+  "transportErrors": 0,
+  "harnessSHA256": "98089aeaff477a0994c0d81dae0617830f2812182b22e469e92ed8d55a327473",
+  "signupHTTP": 200,
+  "status": "FAIL",
+  "remaining": "Actual received confirmation, normal UI signin, own finance and deletion acceptance still required",
+  "finishedAtUTC": "2026-10-14T17:28:29.022Z"
+}

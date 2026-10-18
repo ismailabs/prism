@@ -26,7 +26,7 @@ export function useNavigationGestures(
     } | null = null;
     const begin = (event: TouchEvent) => {
       if (
-        !window.matchMedia("(max-width: 639px)").matches ||
+        !window.matchMedia("(max-width: 767px)").matches ||
         event.touches.length !== 1
       ) {
         start = null;

@@ -1,0 +1,106 @@
+{
+  "startedAt": "2026-10-14T16:08:27.296Z",
+  "environment": "STAGING-HOSTED",
+  "origin": "https://prism-staging-acceptance-ismailstudio.vercel.app",
+  "deploymentId": "dpl_EAGPrj4fQ7zknLtTb58GdxsiePd8",
+  "vercelProjectId": "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "checkoutSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "partialRun": true,
+  "harnessSHA256": "3e9034f19914933647614254db3d3eefe9ab035a52758acb7708ed94286dad5b",
+  "syntheticOnly": true,
+  "fixtureEndpoints": false,
+  "serviceRoleUsed": false,
+  "productionContacted": false,
+  "credentialsOrStoragePublished": false,
+  "checks": [
+    {
+      "label": "A independent cash-flow, goal and principal oracle",
+      "status": "PASS"
+    },
+    {
+      "label": "mobile drawer, quick-add focus and privacy",
+      "status": "PASS"
+    },
+    {
+      "label": "hosted PWA public cache and network-only private screen",
+      "status": "PASS",
+      "cache": [
+        {
+          "name": "prism-public-4bb46bb1b14a1e3df5dd",
+          "paths": [
+            "/assets/index-BIcB2YsG.js",
+            "/assets/AccountingLab-D1Nkh3nN.js",
+            "/assets/ActionLinkPicker-D_l76FyA.js",
+            "/assets/ActionSourceContext-DqQPka7A.js",
+            "/assets/ActionTimelineList-eGOQnjz8.js",
+            "/assets/Analytics-CxVodqhb.js",
+            "/assets/Calendar-CrS8meQk.js",
+            "/assets/Dashboard-XuqQVn0e.js",
+            "/assets/IntelligenceCenter-rr8_FwY6.js",
+            "/assets/Notes-D3_vuUQD.js",
+            "/assets/Notifications-C6Ccdkh1.js",
+            "/assets/Reminders-xk9Uq0DO.js",
+            "/assets/SyntheticLedgerReview-Dq8ZFwjk.js",
+            "/assets/Workspace-ko6u-hNJ.js",
+            "/assets/action-links-D_3l55HR.js",
+            "/assets/button-BuAg0AKZ.js",
+            "/assets/charts-ENlnphXR.js",
+            "/assets/createLucideIcon-CHYcXbyJ.js",
+            "/assets/rolldown-runtime-hePW80VL.js",
+            "/assets/shared-BFy28DIX.js",
+            "/assets/supabase-CbYJpwsV.js",
+            "/assets/ui-ziSTt4RS.js",
+            "/assets/useActionData-CTY_cY31.js",
+            "/assets/useActionTimeline-C64qoW0n.js",
+            "/assets/useAdvancedPlanning-OZ78F8w3.js",
+            "/assets/useAuth-8Ebf2W16.js",
+            "/assets/useGoalActions-C9pS6f8a.js",
+            "/assets/useMutationState-C15UPnfR.js",
+            "/assets/usePlanningData-T0ZcUtY4.js",
+            "/assets/useQuery-BeBt6Tux.js",
+            "/assets/validation-lqT-AmB4.js",
+            "/assets/index-_Tr3ZrjO.css",
+            "/assets/inter-latin-400-normal-C38fXH4l.woff2",
+            "/assets/inter-latin-400-normal-CyCys3Eg.woff",
+            "/assets/inter-latin-500-normal-BL9OpVg8.woff",
+            "/assets/inter-latin-500-normal-Cerq10X2.woff2",
+            "/assets/inter-latin-600-normal-CiBQ2DWP.woff",
+            "/assets/inter-latin-600-normal-LgqL8muc.woff2",
+            "/assets/inter-latin-700-normal-BLAVimhd.woff",
+            "/assets/inter-latin-700-normal-Yt3aPRUw.woff2",
+            "/offline-4bb46bb1b14a1e3df5dd.html",
+            "/offline-4bb46bb1b14a1e3df5dd.css",
+            "/offline-4bb46bb1b14a1e3df5dd.js"
+          ]
+        }
+      ],
+      "restart": true,
+      "privateDataCached": false
+    }
+  ],
+  "axe": [
+    {
+      "label": "mobile drawer, quick-add focus and privacy",
+      "violations": []
+    }
+  ],
+  "runtimeErrors": 0,
+  "foreignBackendRequests": 0,
+  "limits": [
+    "Viewport and network interruption are browser emulation, not physical-device or assistive-technology acceptance.",
+    "Auth inbox/OAuth/CAPTCHA acceptance and production release are separate gates."
+  ],
+  "transportErrors": 0,
+  "providerAccess": "Permitted temporary Vercel share-link session; development OIDC trust remains withdrawn",
+  "status": "FAIL",
+  "failure": {
+    "step": "real signout, back and private deep-link denial",
+    "message": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Sign out', exact: true })\n\nVisible alerts: ",
+    "syntheticSurface": "October 2026\nIncome\nMYR 5,200.00\nExpenses\nMYR 3,060.00\nNet flow\nMYR 2,140.00\nOperating surplus rate (%)\n41.2%\n\nPERSONAL WORKSPACE\n\nAccounts\n\nYour recorded balances, in each account’s native currency.\n\nAdd transaction\n\nBalances use opening amounts, assigned cash transactions, transfers, and account-funded debt principal. Earmarks do not move cash.\n\nAdd account\nPRISM hosted 20261014 Everyday account\n\nMYR · Active\n\nEdit\n\nMYR 2,840.00\n\nOpening MYR 1,000.00 · 3 linked transactions\n\nView transactionsArchive\nPRISM hosted 20261014 Reserve account\n\nMYR · Active\n\nEdit\n\nMYR 2,200.00\n\nOpening MYR 2,000.00 · 0 linked transactions\n\nView transactionsArchive\nTransfers\n\nMove money between accounts. Transfers do not change income or expenses.\n\nNew transfer\nPRISM hosted 20261014 Everyday account → PRISM hosted 20261014 Reserve account\n\nMYR 200.00 → MYR 200.00\n\n2026-10-11 12:00 · PRISM hosted 20261014\n\nEdit\nDelete\n\nRate source: Frankfurter · 10/14/2026"
+  },
+  "temporaryFixturesCleaned": true,
+  "finishedAt": "2026-10-14T16:10:04.527Z",
+  "observedResponses": 0
+}

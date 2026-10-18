@@ -1,0 +1,458 @@
+{
+  "startedAt": "2026-10-14T16:02:43.486Z",
+  "environment": "STAGING-HOSTED",
+  "origin": "https://prism-staging-acceptance-ismailstudio.vercel.app",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "syntheticOnly": true,
+  "productionContacted": false,
+  "serviceRoleUsed": false,
+  "credentialsOrStorageStatePublished": false,
+  "protectionAccess": "approved temporary share-link session",
+  "checks": [
+    {
+      "label": "protected preview, security headers, staging-only published API/key and no privileged key",
+      "status": "PASS",
+      "anonymousStatus": 302,
+      "assets": 10,
+      "keyKind": "publishable",
+      "stagingKeyScopeStatus": 200,
+      "entryHash": "deb5e0967b4c35c25ff9ea90badc644955d7d6fa4fbb474250df5329d8f2be87"
+    },
+    {
+      "label": "en/light /",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /demo",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /privacy",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /terms",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/light /login",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "anonymous private route /dashboard",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /transactions",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /analytics",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /accounting",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /accounts",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /plans",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /goals",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /savings",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /debts",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /categories",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /payments",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /settings",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /notes",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /reminders",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /notifications",
+      "status": "PASS"
+    },
+    {
+      "label": "anonymous private route /calendar",
+      "status": "PASS"
+    },
+    {
+      "label": "en/dark /",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/dark /demo",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/dark /privacy",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/dark /terms",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "en/dark /login",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/light /",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/light /demo",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/light /privacy",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/light /terms",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/light /login",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/dark /",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/dark /demo",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/dark /privacy",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/dark /terms",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    },
+    {
+      "label": "ms/dark /login",
+      "status": "PASS",
+      "responsiveWidths": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "keyboardFocusable": true
+    }
+  ],
+  "axe": [
+    {
+      "path": "/",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/demo",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/privacy",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/terms",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/login",
+      "locale": "en",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/",
+      "locale": "en",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/demo",
+      "locale": "en",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/privacy",
+      "locale": "en",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/terms",
+      "locale": "en",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/login",
+      "locale": "en",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/",
+      "locale": "ms",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/demo",
+      "locale": "ms",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/privacy",
+      "locale": "ms",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/terms",
+      "locale": "ms",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/login",
+      "locale": "ms",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "path": "/",
+      "locale": "ms",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/demo",
+      "locale": "ms",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/privacy",
+      "locale": "ms",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/terms",
+      "locale": "ms",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "path": "/login",
+      "locale": "ms",
+      "theme": "dark",
+      "violations": []
+    }
+  ],
+  "limits": [
+    "Browser viewport tests are emulation, not physical devices or assistive technology.",
+    "Public routes and anonymous private-route guards do not prove signed-in financial workflows.",
+    "Service workers are blocked in these public UI contexts; genuine hosted PWA acceptance is recorded separately."
+  ],
+  "deploymentId": "dpl_EAGPrj4fQ7zknLtTb58GdxsiePd8",
+  "vercelProjectId": "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "status": "PASS",
+  "finishedAt": "2026-10-14T16:05:56.154Z"
+}
