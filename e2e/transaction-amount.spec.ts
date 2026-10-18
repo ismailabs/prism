@@ -31,7 +31,7 @@ for (const language of ['en', 'ms'] as const) {
       const c = copy[language];
       const writes: { method: string; url: string; body: unknown }[] = [];
       page.on('request', request => {
-        if (request.url().startsWith(supabaseUrl + '/rest/v1/') &&
+        if ((request.url().startsWith(supabaseUrl + '/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) &&
           ['POST', 'PATCH', 'DELETE'].includes(request.method()) &&
           !request.url().includes('/rpc/transaction_page')) {
           writes.push({ method: request.method(), url: request.url(), body: request.postDataJSON() });

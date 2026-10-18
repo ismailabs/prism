@@ -74,7 +74,7 @@ try {
  const secret=randomUUID()+randomUUID();
  const apiUrl=`http://127.0.0.1:${apiPort}`;
  api=spawn(binary,[],{env:{...process.env,PATH:nativeBin+delimiter+process.env.PATH,PGRST_DB_URI:`postgresql://postgres:${server.options.password}@127.0.0.1:${dbPort}/postgres`,PGRST_DB_SCHEMAS:'public',PGRST_DB_ANON_ROLE:'anon',PGRST_JWT_SECRET:secret,PGRST_SERVER_PORT:String(apiPort),PGRST_SERVER_HOST:'127.0.0.1'},stdio:'ignore',windowsHide:true});
- const encode=value=>Buffer.from(JSON.stringify(value)).toString('base64url');const unsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode(await financialClaims(db,{sub:user,session_id:session,role:'authenticated',aal:'aal1',exp:Math.floor(Date.now()/1000)+3600}))}`;const token=`${unsigned}.${createHmac('sha256',secret).update(unsigned).digest('base64url')}`;
+ const encode=value=>Buffer.from(JSON.stringify(value)).toString('base64url');const unsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode(await financialClaims(db,{sub:user,session_id:session,role:'authenticated',aal:'aal2',exp:Math.floor(Date.now()/1000)+3600}))}`;const token=`${unsigned}.${createHmac('sha256',secret).update(unsigned).digest('base64url')}`;
  let ready=false;for(let i=0;i<100;i++){try{const response=await fetch(apiUrl);if(response.status<500){ready=true;break;}}catch{}await new Promise(resolve=>setTimeout(resolve,50));}assert(ready,'PostgREST must start');
  const headers={Authorization:`Bearer ${token}`,'Content-Type':'application/json',Prefer:'return=representation'};
  const ledgerUnsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode(await financialClaims(db,{sub:ledgerFixture.user,session_id:ledgerFixture.session,role:'authenticated',aal:'aal2',exp:Math.floor(Date.now()/1000)+3600}))}`;

@@ -49,7 +49,7 @@ try{
   const revoked=await fetch(`${url}/${resource}`,{headers:await headers(f.user,randomUUID())});assert.equal(revoked.status,200);assert.deepEqual(await revoked.json(),[]);
  }
  await admin.query("insert into auth.mfa_factors(id,user_id,status) values($1,$2,'verified')",[randomUUID(),f.user]);
- for(const aal of ['aal1',null]){const deniedMfa=await fetch(`${url}/financial_notes`,{headers:headers(f.user,f.session,aal)});assert.equal(deniedMfa.status,200);assert.deepEqual(await deniedMfa.json(),[]);}
- const allowedMfa=await fetch(`${url}/financial_notes`,{headers:headers(f.user,f.session,'aal2')});assert.equal(allowedMfa.status,200);assert((await allowedMfa.json()).length>0);checks.push('real HTTP exact text, owner CRUD/search/link denial, anon/revoked/MFA truth table');
+ for(const aal of ['aal1',null]){const deniedMfa=await fetch(`${url}/financial_notes`,{headers:await headers(f.user,f.session,aal)});assert.equal(deniedMfa.status,200);assert.deepEqual(await deniedMfa.json(),[]);}
+ const allowedMfa=await fetch(`${url}/financial_notes`,{headers:await headers(f.user,f.session,'aal2')});assert.equal(allowedMfa.status,200);assert((await allowedMfa.json()).length>0);checks.push('real HTTP exact text, owner CRUD/search/link denial, anon/revoked/MFA truth table');
  await mkdir('artifacts/phase5',{recursive:true});await writeFile('artifacts/phase5/native-verification.json',JSON.stringify({environment:'synthetic native PostgreSQL and PostgREST on loopback',checks,hostedVerified:false},null,2)+'\n');console.log('PASS Phase 5 native/HTTP: '+checks.join('; '));
 }finally{if(api)api.kill();for(const client of clients)await client.end().catch(()=>{});await server.stop();}

@@ -97,7 +97,7 @@ export function PasswordRecovery({
                   type="password"
                   autoComplete="new-password"
                   required
-                  minLength={8}
+                  minLength={16}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -109,7 +109,7 @@ export function PasswordRecovery({
                   type="password"
                   autoComplete="new-password"
                   required
-                  minLength={8}
+                  minLength={16}
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                 />

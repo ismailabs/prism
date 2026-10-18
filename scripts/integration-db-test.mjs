@@ -128,6 +128,13 @@ try {
   await assert.rejects(apply(upgraded,{...migrations[15],sql:migrations[15].sql+'select 1;'}), /Incompatible migration content/);
   check('Phase 1 upgrade preserves exact financial rows; four injected DDL failures roll back and recover; clean/upgrade catalogues agree; incompatible receipts denied');
   await identity();
+  assert.equal((await upgraded.query('select count(*)::int as n from public.accounts')).rows[0].n,0,'Pre-upgrade sessions must enroll approved MFA before financial access');
+  await upgraded.query('reset role');
+  // Test-only approved-session fixture for independent financial regression.
+  // Hosted migrations never approve factors or alter existing Auth sessions.
+  await upgraded.query('delete from auth.sessions where id=$1',[session]);
+  await upgraded.query('insert into auth.sessions(id,user_id) values($1,$2)',[session,user]);
+  await identity();
   const at = column => `to_char(${column} at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
   const read = async (table,columns) => (await upgraded.query(`select ${columns} from public.${table} where user_id=auth.uid() order by id`)).rows;
   const historical = {
