@@ -52,6 +52,22 @@ try {
   await deny(db.query('select * from prism_private.approved_mfa_factors'));
   await deny(db.query("insert into public.accounts(user_id,name,currency,opening_balance) values($1,'stolen','MYR','1.00')",[b]));
   pass('two freshly approved factors unlock only the original owner and preserve exact financial values');
+  await actor({...verified,amr:[{method:'oauth',timestamp:time},{method:'totp',timestamp:time}]});
+  assert.equal((await status()).allowed,true);
+  await actor({...verified,aal:'aal1',amr:[{method:'oauth',timestamp:time}]});
+  assert.equal((await ownRows()).length,0);
+  pass('provider-neutral guard permits approved TOTP with OAuth claims and denies OAuth without TOTP');
+  await admin();
+  const oldTotp=time-360;
+  await db.query("update auth.mfa_amr_claims set updated_at=to_timestamp($2) where session_id=$1 and authentication_method='totp'",[sa,oldTotp]);
+  await actor({...verified,amr:[{method:'totp',timestamp:oldTotp},{method:'magiclink',timestamp:time}]});
+  assert.equal((await status()).allowed,true); assert.equal((await status()).recentVerification,false);
+  await deny(db.query('select public.begin_mfa_management()'));
+  await deny(db.query("select public.delete_own_account('DELETE')"));
+  await admin();
+  await db.query("update auth.mfa_amr_claims set updated_at=to_timestamp($2) where session_id=$1 and authentication_method='totp'",[sa,time]);
+  await actor(verified);
+  pass('financial read remains available within 24 hours while six-minute-old TOTP cannot authorize factor management or deletion');
   await admin();
   const surfaces = (await db.query("select c.relname,c.relkind from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in ('r','v') order by c.relname")).rows;
   for (const bad of [token(),{...verified,aal:null},{...verified,aal:undefined},{...verified,session_id:undefined},{...verified,session_id:sb},{...verified,amr:[]},{...verified,is_anonymous:true}]) {

@@ -86,7 +86,7 @@ try {
   await identity(other, otherSession);
   for (const view of ['finance_daily_totals','exact_accounts','exact_debt_repayments']) assert.equal((await db.query(`select * from public.${view}`)).rows.length,0);
   await identity(user,randomUUID()); assert.equal((await db.query('select * from public.finance_daily_totals')).rows.length,0);
-  await db.exec('reset role'); await db.query("insert into auth.mfa_factors values($1,$2,'verified')", [randomUUID(),user]); await identity(user,session);
+  await db.exec('reset role'); await db.query("insert into auth.mfa_factors values($1,$2,'verified')", [randomUUID(),user]); await identity(user,session,'aal1');
   assert.equal((await db.query('select * from public.finance_daily_totals')).rows.length,0);
   await identity(user,session,'aal2'); assert((await db.query('select * from public.finance_daily_totals')).rows.length>0);
   await db.exec('reset role; set role anon'); await assert.rejects(db.query('select * from public.finance_daily_totals'));

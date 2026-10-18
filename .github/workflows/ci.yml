@@ -136,6 +136,8 @@ jobs:
           if-no-files-found: warn
           include-hidden-files: false
           path: |
+            artifacts/security/mandatory-mfa-db.json
+            artifacts/security/enrollment-mail-*.png
             artifacts/ci/*.log
             artifacts/integration/migration-verification.json
             artifacts/integration/adversarial-rollover.json
