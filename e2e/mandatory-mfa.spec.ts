@@ -51,6 +51,16 @@ test('fresh email alone exposes setup, never the financial workspace', async ({ 
   expect(financial).toEqual([]);
 });
 
+test('locked enrollment offers language switching and sign-out without finance reads', async ({ page }) => {
+  const financial = await locked(page, { reason: 'needs_mfa', mailboxVerified: false });
+  await page.goto('/accounts');
+  await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ms');
+  await expect(page.getByRole('heading', { name: 'Sahkan e-mel sedia ada', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Log keluar', exact: true }).press('Enter');
+  await expect(page.getByRole('heading', { name: 'Wang anda. Gambaran lebih jelas.', exact: true })).toBeVisible();
+  expect(financial).toEqual([]);
+});
+
 test('one approved factor still requires backup enrollment', async ({ page }) => {
   const financial = await locked(page, { reason: 'needs_backup', mailboxVerified: true, approvedFactorIds: ['factor-1'], currentFactorId: 'factor-1' }, [{ id: 'factor-1', factor_type: 'totp', status: 'verified', friendly_name: 'Primary fixture' }]);
   await page.goto('/transactions');

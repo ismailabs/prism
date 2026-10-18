@@ -35,7 +35,7 @@ export function MfaGate() {
   if (factorCount === null) return <p role="status">{copy.loading}</p>;
   return <div className="mx-auto w-full max-w-lg space-y-5">
     <section className="card space-y-3 p-6"><h1 className="text-2xl font-semibold">{copy.requiredTitle}</h1><p className="text-sm leading-relaxed text-muted-foreground">{copy.requiredDetail}</p><p className="text-sm font-medium">{copy.approvedProgress.replace('{count}', String(approvedCount))}</p></section>
-    {needsMail ? <section className="card p-6"><MailboxVerification /></section> : factorCount === 0 || securityStatus.reason === 'needs_backup' ? <MfaSetup inline /> : <MfaChallenge />}
+    {needsMail ? <section className="card space-y-5 p-6"><MailboxVerification /><button type="button" className="btn-secondary w-full" onClick={() => void signOut().catch(cause => setError(errorMessage(cause)))}>{copy.signOut}</button></section> : factorCount === 0 || securityStatus.reason === 'needs_backup' ? <MfaSetup inline /> : <MfaChallenge />}
     <p className="px-2 text-sm leading-relaxed text-muted-foreground">{copy.backupWarning}</p>
   </div>;
 }
