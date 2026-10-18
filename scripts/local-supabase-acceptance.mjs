@@ -101,12 +101,24 @@ async function mailboxSession(identity) {
   assert.ok(JSON.parse(Buffer.from(data.session.access_token.split('.')[1],'base64url')).amr.some(entry=>entry.method==='magiclink'));
   identity.auth=next;identity.token=data.session.access_token;
 }
-async function enrollPair(identity,alreadyProved=false) {
+async function enrollPair(identity,alreadyProved=false,legacyFactorTransition=false) {
   if(!alreadyProved)await mailboxSession(identity);
   identity.factors=[];
   for(let index=0;index<2;index++){
     const factor=requireOk(await identity.auth.auth.mfa.enroll({factorType:'totp',friendlyName:`Synthetic separate authenticator ${index+1}` }),'native independent factor enrollment');
     await verifyFactor(identity.auth,factor);
+    if(index===0&&legacyFactorTransition){
+      // A native verified factor exists before PRISM approval, as it would for
+      // an optional-MFA user upgrading to the new approval policy.
+      identity.auth=client();
+      const signedIn=requireOk(await identity.auth.auth.signInWithPassword({email:identity.email,password:identity.password}),'existing MFA user password sign-in');
+      assert.equal(signedIn.user.id,identity.id);
+      assert.equal(requireOk(await identity.auth.rpc('financial_access_status'),'existing unapproved MFA transition').allowed,false);
+      assert.ok(requireOk(await identity.auth.auth.mfa.listFactors(),'preserved legacy native factor').totp.some(f=>f.id===factor.id));
+      await mailboxSession(identity);
+      await verifyFactor(identity.auth,factor);
+      check('existing verified native MFA factor survives fresh password/mail sessions and is approved under its original factor and user IDs');
+    }
     requireOk(await identity.auth.rpc('approve_mfa_factor',{p_factor_id:factor.id,p_separate_backup:true}),'server independently verified factor approval');
     identity.factors.push(factor);
     const state=requireOk(await identity.auth.rpc('financial_access_status'),'server access status');
@@ -165,7 +177,8 @@ try {
   check('stolen password cannot activate attacker TOTP or read an existing financial record; native MFA transaction rolls back');
 
   activeStep='independent mailbox proof, two-factor approval and original ownership';
-  for(const identity of [a,b])await enrollPair(identity);
+  await enrollPair(a,false,true);
+  await enrollPair(b);
   assert.equal(requireOk(await a.auth.from('financial_notes').select('title'),'preserved legacy record').length,1);
   assert.equal(requireOk(await b.auth.from('financial_notes').select('title'),'foreign legacy denial').length,0);
   check('native mailbox proof plus two distinct approved authenticators preserves identities and financial ownership');
