@@ -3,6 +3,7 @@ import type { Account,Category,DebtRepayment,MonthlyBudget,MonthlyTotal,Objectiv
 import type { DebtPlan, ReservePlan } from '@/domain/planning';
 import type { GoalActionPlan,FinancialNote,FinancialReminder,ActionReceipt,ActionPreferences } from './actions';
 import type { LedgerAccount, LedgerReadLine, PostingKind } from '@/domain/accounting';
+import type { FinancialAccessStatus } from '@/domain/auth-security';
 
 type Models={accounts:Account;categories:Category;debt_repayments:DebtRepayment;monthly_budgets:MonthlyBudget;objectives:Objective;objective_contributions:ObjectiveContribution;objective_milestones:ObjectiveMilestone;payment_methods:PaymentMethod;person_debts:PersonDebt;profiles:Profile;recurring_rules:RecurringRule;transactions:Transaction;transfers:Transfer};
 type MoneyColumn='amount'|'opening_balance'|'target_amount'|'original_amount'|'source_amount'|'destination_amount';
@@ -46,4 +47,4 @@ type LocalViews = Omit<Views,'exact_monthly_budgets'> & {
  exact_ledger_lines:{Row:PlanRow<LedgerReadLine & LedgerOwned & {journal_id:string;ordinal:number}>;Relationships:[]};
  exact_ledger_allocations:{Row:LedgerOwned & {event_id:string;goal_id:string;currency:Account['currency'];amount:string};Relationships:[]};
 };
-export type Database=Omit<Generated,'public'> & {public:Omit<Generated['public'],'Tables'|'Views'|'Functions'> & {Tables:LocalTables;Views:LocalViews;Functions:Generated['public']['Functions'] & {record_goal_contribution:{Args:{p_id:string;p_objective:string;p_currency:string;p_amount:string;p_transfer:string|null;p_account:string|null;p_note:string;p_at:string};Returns:string}}}};
+export type Database=Omit<Generated,'public'> & {public:Omit<Generated['public'],'Tables'|'Views'|'Functions'> & {Tables:LocalTables;Views:LocalViews;Functions:Generated['public']['Functions'] & {record_goal_contribution:{Args:{p_id:string;p_objective:string;p_currency:string;p_amount:string;p_transfer:string|null;p_account:string|null;p_note:string;p_at:string};Returns:string};financial_access_status:{Args:Record<string,never>;Returns:FinancialAccessStatus};approve_mfa_factor:{Args:{p_factor_id:string;p_separate_backup:boolean};Returns:FinancialAccessStatus};begin_mfa_management:{Args:Record<string,never>;Returns:undefined}}}};

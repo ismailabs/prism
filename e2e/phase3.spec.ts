@@ -32,8 +32,9 @@ test('public homepage and demo make no financial requests, including before Auth
 
 test('standalone synthetic demo stays isolated even with a signed-in session', async ({ page }) => {
   await mockSignedInApp(page);
+  await page.route(supabaseUrl+'/rest/v1/rpc/financial_access_status',route=>route.fulfill({json:{allowed:false,reason:'needs_mfa',approvedFactorIds:['factor-1','factor-2'],mailboxVerified:false,activated:true}}));
   const requests: string[] = [];
-  page.on('request', request => { if (request.url().includes('/rest/v1/')) requests.push(request.url()); });
+  page.on('request', request => { if (request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) requests.push(request.url()); });
   await page.goto('/demo');
   await expect(page.getByRole('region', { name: 'Synthetic product preview' })).toBeVisible();
   await expect(page.locator('body')).not.toContainText('Test member');
@@ -54,7 +55,7 @@ test('protected filtered link returns to its exact destination after fixture sig
   expect(new URL(page.url()).searchParams.get('next')).toBe('/transactions?type=expense&category=uncategorized');
   expect(requests).toEqual([]);
   await page.getByLabel('Email address', { exact: true }).fill('member@example.invalid');
-  await page.getByLabel('Password', { exact: true }).fill('FixturePassword123');
+  await page.getByLabel('Password', { exact: true }).fill('FixtureStrongPassword123');
   await page.locator('.auth-form form').getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page).toHaveURL(/\/transactions\?type=expense&category=uncategorized$/);
   await expect(page.getByRole('heading', { name: 'All transactions', exact: true })).toBeVisible();
@@ -109,7 +110,7 @@ test('signup CTA and confirmation keep the safe callback destination', async ({ 
   await expect(page.getByLabel('Your name', { exact: true })).toBeVisible();
   await page.getByLabel('Your name', { exact: true }).fill('Synthetic member');
   await page.getByLabel('Email address', { exact: true }).fill('signup@example.invalid');
-  await page.getByLabel('Password', { exact: true }).fill('FixturePassword123');
+  await page.getByLabel('Password', { exact: true }).fill('FixtureStrongPassword123');
   await page.locator('form').getByRole('button', { name: 'Create account', exact: true }).click();
   const confirmationNotice = 'Check your inbox and spam folder to confirm your account, then sign in.';
   await expect(page.getByRole('status').filter({ hasText: confirmationNotice })).toHaveText(confirmationNotice);

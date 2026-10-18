@@ -77,6 +77,7 @@ jobs:
       # Bash pipefail preserves each failing command's exit status through tee.
       - run: npm ci 2>&1 | tee artifacts/ci/install.log
       - run: npm run typecheck 2>&1 | tee artifacts/ci/typecheck.log
+      - run: node scripts/mandatory-mfa-db-test.mjs 2>&1 | tee artifacts/ci/mandatory-mfa.log
       - run: npm run lint 2>&1 | tee artifacts/ci/lint.log
       - run: npm run test 2>&1 | tee artifacts/ci/unit.log
       - run: npm run test:db 2>&1 | tee artifacts/ci/finance-db.log

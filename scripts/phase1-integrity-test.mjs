@@ -1,3 +1,4 @@
+import { financialClaims } from './lib/financial-test-identity.mjs';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 
@@ -9,9 +10,9 @@ export async function exercisePhase1Integrity(db) {
   await db.query('insert into auth.users(id) values($1),($2)',[user,other]);
   await db.query('insert into auth.sessions(id,user_id) values($1,$2),($3,$4)',[session,user,otherSession,other]);
   const identity=async(claims,role='authenticated')=>{
-    await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(claims)]);await db.exec(`set role ${role}`);
+    await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(db,claims))]);await db.exec(`set role ${role}`);
   };
-  const valid={sub:user,session_id:session,aal:'aal1'};
+  const valid={sub:user,session_id:session,aal:'aal2'};
   await identity(valid);
   await db.query("update public.profiles set financial_timezone='UTC' where id=auth.uid()");
   const account=async(name,currency,opening='100.00')=>(await db.query('insert into public.accounts(user_id,name,currency,opening_balance) values(auth.uid(),$1,$2,$3) returning id',[name,currency,opening])).rows[0].id;
@@ -51,7 +52,7 @@ export async function exercisePhase1Integrity(db) {
   const empty=(await db.query("insert into public.person_debts(user_id,direction,counterparty,currency,original_amount) values(auth.uid(),'i_owe','Empty','MYR','1.00') returning id")).rows[0].id;
   assert.equal((await db.query('delete from public.person_debts where id=$1 returning id',[empty])).rows.length,1);
 
-  await identity({sub:other,session_id:otherSession,aal:'aal1'});
+  await identity({sub:other,session_id:otherSession,aal:'aal2'});
   assert.equal((await db.query('select count(*)::int as n from public.exact_accounts')).rows[0].n,0);
   assert.equal((await db.query('update public.accounts set name=$1 where id=$2 returning id',['Intrusion',ids.MYR])).rows.length,0);
   assert.equal((await db.query('delete from public.person_debts where id=$1 returning id',[debt])).rows.length,0);
@@ -64,7 +65,7 @@ export async function exercisePhase1Integrity(db) {
   await denied({...valid,session_id:randomUUID()});await denied({...valid,session_id:otherSession});await denied({sub:user,aal:'aal1'});await denied({...valid,is_anonymous:true});
   await db.exec('reset role');await db.query("update auth.sessions set not_after='2000-01-01' where id=$1",[session]);await denied(valid);
   await db.exec('reset role');await db.query('update auth.sessions set not_after=null where id=$1',[session]);
-  await db.query("insert into auth.mfa_factors(id,user_id,status) values($1,$2,'verified')",[randomUUID(),user]);await denied(valid);
+  await db.query("insert into auth.mfa_factors(id,user_id,status) values($1,$2,'verified')",[randomUUID(),user]);await denied({...valid,aal:'aal1'});
   await identity({...valid,aal:'aal2'});assert.equal((await db.query('select count(*)::int as n from public.exact_accounts')).rows[0].n,5);
   await db.exec('reset role');await db.query('delete from auth.sessions where id=$1',[session]);await denied({...valid,aal:'aal2'});
   await identity({},'anon');await assert.rejects(db.query('select * from public.exact_accounts'));await assert.rejects(tx('1.00','MYR'));

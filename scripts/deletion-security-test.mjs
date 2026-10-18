@@ -1,3 +1,4 @@
+import { financialClaims } from './lib/financial-test-identity.mjs';
 // Synthetic only: no connection string, hosted credentials or RPC transport.
 import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
@@ -21,7 +22,7 @@ export async function exerciseDeletionSecurity(db) {
   const user = randomUUID(), other = randomUUID(), session = randomUUID();
   await db.query('insert into auth.users(id) values($1),($2)', [user, other]);
   await db.query('insert into auth.sessions(id,user_id) values($1,$2)', [session, user]);
-  const identity = sid => db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify({ sub: user, session_id: sid, aal: 'aal1' })]);
+  const identity = async sid => db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(db,{ sub: user, session_id: sid, aal: 'aal2' }))]);
   await identity(session);
   const users = async () => (await db.query('select id from auth.users where id=any($1::uuid[]) order by id', [[user, other]])).rows;
   const before = await users();

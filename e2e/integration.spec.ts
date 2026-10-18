@@ -60,7 +60,8 @@ test('MFA protects the accounting destination before querying private data',asyn
   await mockSignedInApp(page);
   await page.addInitScript(key=>{const value=JSON.parse(localStorage.getItem(key)!);value.user.factors=[{id:'factor-1',factor_type:'totp',status:'verified',friendly_name:'Fixture authenticator'}];localStorage.setItem(key,JSON.stringify(value));},authStorageKey);
   await page.route(supabaseUrl+'/auth/v1/user',route=>route.fulfill({json:{id:userId,factors:[{id:'factor-1',factor_type:'totp',status:'verified'}]}}));
-  const requests:string[]=[];page.on('request',request=>{if(request.url().includes('/rest/v1/'))requests.push(request.url());});
+  await page.route(supabaseUrl+'/rest/v1/rpc/financial_access_status',route=>route.fulfill({json:{allowed:false,reason:'needs_mfa',approvedFactorIds:['factor-1','factor-2'],mailboxVerified:false,activated:true}}));
+  const requests:string[]=[];page.on('request',request=>{if(request.url().includes('/rest/v1/')&&!request.url().endsWith('/rpc/financial_access_status'))requests.push(request.url());});
   await page.goto('/login?next=%2Faccounting');
   await expect(page.getByRole('heading',{name:'One more layer of security'})).toBeVisible();
   expect(requests).toEqual([]);

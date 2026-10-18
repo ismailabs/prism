@@ -1,3 +1,4 @@
+import { financialClaims } from './lib/financial-test-identity.mjs';
 import { PGlite } from '@electric-sql/pglite';
 import { readFile, readdir } from 'node:fs/promises';
 import assert from 'node:assert/strict';
@@ -17,7 +18,7 @@ export async function exercise(db) {
   const user=randomUUID(), other=randomUUID(), session=randomUUID(), otherSession=randomUUID();
   await db.query('insert into auth.users(id) values($1),($2)',[user,other]);
   await db.query('insert into auth.sessions(id,user_id) values($1,$2),($3,$4)',[session,user,otherSession,other]);
-  const identity=async(id,sid,aal='aal1')=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:id,session_id:sid,aal})]);await db.exec('set role authenticated');};
+  const identity=async(id,sid,aal='aal2')=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(db,{sub:id,session_id:sid,aal}))]);await db.exec('set role authenticated');};
   await identity(user,session);
   await db.query("update public.profiles set financial_timezone='Asia/Kuala_Lumpur' where id=auth.uid()");
   await assert.rejects(db.query("update public.profiles set financial_timezone='Not/AZone' where id=auth.uid()"));
@@ -81,7 +82,7 @@ export async function exercise(db) {
   await identity(other,otherSession);
   for(const table of ['accounts','transfers','transactions','objectives','objective_contributions','objective_milestones','person_debts','debt_repayments'])assert.equal((await db.query(`select count(*)::int as count from public.exact_${table}`)).rows[0].count,0,table);
   await assert.rejects(createTransfer(a,b,'1','1'));
-  await identity(user,session);await db.exec('reset role');await db.query("insert into auth.mfa_factors values($1,$2,'verified')",[randomUUID(),user]);await identity(user,session);
+  await identity(user,session);await db.exec('reset role');await db.query("insert into auth.mfa_factors values($1,$2,'verified')",[randomUUID(),user]);await identity(user,session,'aal1');
   assert.equal((await db.query('select count(*)::int as count from public.exact_transfers')).rows[0].count,0);
   await assert.rejects(createTransfer(a,b,'1','1'));await identity(user,session,'aal2');
   assert.equal((await db.query('select count(*)::int as count from public.exact_transfers')).rows[0].count,1);

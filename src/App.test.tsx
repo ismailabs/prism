@@ -84,13 +84,13 @@ describe('application auth and view integration', () => {
   it('requires MFA before mounting the financial workspace', () => {
     fixture.auth.user = { id: 'test-user' } as AuthContextValue['user'];
     fixture.auth.requiresMfa = true;
-    expect(render()).toContain('One more layer of security');
+    expect(render()).toContain('Verify your session');
     expect(render()).not.toContain('app-nav');
   });
   it('requires MFA before showing a recovery password form', () => {
     fixture.auth = { user: { id: 'test-user' } as AuthContextValue['user'], loading: false, requiresMfa: true, recovery: true };
     const html = render();
-    expect(html).toContain('One more layer of security');
+    expect(html).toContain('Verify your session');
     expect(html).not.toContain('Set a new password');
     expect(html).not.toContain('Coffee');
   });

@@ -1,3 +1,4 @@
+import { financialClaims } from './lib/financial-test-identity.mjs';
 import { PGlite } from '@electric-sql/pglite';
 import { replay } from './foundations-db-test.mjs';
 import { buildIntelligence } from '../src/domain/intelligence.ts';
@@ -35,7 +36,7 @@ try {
   const user = randomUUID(), other = randomUUID(), session = randomUUID(), otherSession = randomUUID();
   await db.query('insert into auth.users(id) values($1),($2)', [user, other]);
   await db.query('insert into auth.sessions(id,user_id) values($1,$2),($3,$4)', [session, user, otherSession, other]);
-  const identity = async (id, sid, aal = 'aal1') => { await db.exec('reset role'); await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify({ sub: id, session_id: sid, aal })]); await db.exec('set role authenticated'); };
+  const identity = async (id, sid, aal='aal2') => { await db.exec('reset role'); await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(db,{ sub: id, session_id: sid, aal }))]); await db.exec('set role authenticated'); };
   await identity(user, session);
   const now = Date.now(), today = new Date(now).toISOString().slice(0, 10), month = today.slice(0, 7);
   await db.query("update public.profiles set financial_timezone='UTC' where id=auth.uid()");

@@ -5,7 +5,6 @@ import { OptimisticLedger } from '@/lib/finance';
 import { supabase } from '@/lib/supabase';
 import type { Category,NewCategory,NewPaymentMethod,NewTransaction,PaymentMethod,Profile,Transaction } from '@/types';
 import { useIsMutating,useMutation,useQuery,useQueryClient,type QueryClient,type QueryKey } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 type Resource = 'transactions' | 'categories' | 'payment_methods';
 interface OwnedRow { id: string; user_id: string; created_at: string }
@@ -282,19 +281,5 @@ export function useUpdateProfile() {
   });
 }
 
-export function useFinanceRealtime(): void {
-  const { userId, allowed } = useFinanceAccess();
-  const client = useQueryClient();
-  useEffect(() => {
-    if (!userId || !allowed) return;
-    const refresh = () => {
-      if (client.isMutating({ mutationKey: mutationKey(userId) }) === 0) void client.invalidateQueries({ queryKey: financeKeys.all(userId) });
-    };
-    const channel=supabase.channel(`finance:${userId}`);
-    // Subscribe only to published tables. Other platform resources refresh after
-    // writes and on focus/reconnect; they do not create ineffective subscriptions.
-    for(const table of ['transactions','categories','payment_methods','profiles','transfers','monthly_budgets','recurring_rules'])channel.on('postgres_changes',{event:'*',schema:'public',table},()=>{refresh();void client.invalidateQueries({queryKey:['platform',userId]});});
-    channel.subscribe();
-    return () => { void supabase.removeChannel(channel); };
-  }, [allowed, client, userId]);
-}
+// Financial records deliberately have no Realtime transport. Mutations and
+// the query client retain write/focus/reconnect refetch through guarded REST.

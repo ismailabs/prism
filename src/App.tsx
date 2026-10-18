@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthScreen } from '@/components/auth/AuthScreen';
-import { MfaChallenge } from '@/components/auth/MfaChallenge';
+import { MfaGate } from '@/components/auth/MfaGate';
 import { PasswordRecovery } from '@/components/auth/PasswordRecovery';
 import { LoadingState } from '@/components/LoadingState';
 import { PublicHome } from '@/components/public/PublicHome';
@@ -92,7 +92,7 @@ export default function App() {
       <img src="/built-by-ismail.png" alt="Built by Ismail" className="auth-credit" />
     </div>
   </main>;
-  if (requiresMfa || authError) return <main className="auth-shell"><MfaChallenge /></main>;
+  if (requiresMfa || authError) return <main className="auth-shell"><MfaGate /></main>;
   if (recovery) return <main className="auth-shell"><div className="card p-7 max-w-lg"><PasswordRecovery reset onBack={completeRecovery} /></div></main>;
   if (location.path === '/login') return <main><LoadingState /></main>;
   return <Suspense fallback={<main><LoadingState /></main>}><Workspace key={user.id} /></Suspense>;

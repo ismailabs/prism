@@ -1,3 +1,4 @@
+import { financialClaims } from './lib/financial-test-identity.mjs';
 import EmbeddedPostgres from 'embedded-postgres';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
@@ -15,16 +16,17 @@ import { exerciseLedger, exerciseHistoricalLedger, exerciseLedgerBoundaries } fr
 // Only fresh native databases on loopback, synthetic inputs and random passwords.
 // The receipt map below is a test oracle, not a hosted migration history repair.
 const files = (await readdir('supabase/migrations')).filter(f => f.endsWith('.sql')).sort();
-assert.equal(files.length, 18, 'Review any change to the accepted migration chain');
+assert.equal(files.length, 19, 'Review any change to the accepted migration chain');
 assert.equal(new Set(files.map(f => f.split('_')[0])).size, files.length);
 const audit = JSON.parse(await readFile('docs/phases1-4-audit-evidence.json', 'utf8'));
 const phase5 = JSON.parse(await readFile('docs/phase5-migration-inventory.json','utf8'));
 const repairs = JSON.parse(await readFile('docs/release-validation/production-migration-repairs.json', 'utf8'));
+const security = JSON.parse(await readFile('docs/security/mandatory-mfa-migration.json','utf8'));
 const migrations = [];
 for (const file of files) {
   const sql = await readFile(`supabase/migrations/${file}`, 'utf8');
   const hash = createHash('sha256').update(sql.replaceAll('\r\n', '\n')).digest('hex').toUpperCase();
-  const expected = audit.normalizedMigrationContent.find(m => m.file === file && m.phase === 'phase1') ?? audit.normalizedMigrationContent.find(m => m.file === file) ?? phase5.migrations.find(m => m.file === file) ?? repairs.migrations.find(m => m.file === file);
+  const expected = audit.normalizedMigrationContent.find(m => m.file === file && m.phase === 'phase1') ?? audit.normalizedMigrationContent.find(m => m.file === file) ?? phase5.migrations.find(m => m.file === file) ?? repairs.migrations.find(m => m.file === file) ?? security.migrations.find(m => m.file === file);
   assert(expected, `Unreviewed migration: ${file}`);
   assert.equal(hash, expected.normalizedSha256, `Accepted SQL bytes changed: ${file}`);
   migrations.push({ file, sql, hash });
@@ -75,7 +77,7 @@ const apply = async (db, migration) => {
 try {
   await server.initialise(); await server.start();
   const admin = server.getPgClient('postgres', '127.0.0.1'); await admin.connect(); clients.push(admin);
-  await admin.query('create role anon; create role authenticated; create role service_role bypassrls');
+  await admin.query('create role anon; create role authenticated; create role service_role bypassrls; create role supabase_auth_admin');
   const connect = async name => { await admin.query(`create database ${name}`); const db = server.getPgClient(name, '127.0.0.1'); await db.connect(); clients.push(db); await db.query(bootstrap); receipts.set(db, new Map()); return db; };
   const clean = await connect('integration_clean');
   await assert.rejects(apply(clean,migrations[1]), /Out-of-order migration history/);
@@ -86,7 +88,7 @@ try {
   const user = randomUUID(), session = randomUUID();
   await upgraded.query('insert into auth.users(id) values($1)', [user]);
   await upgraded.query('insert into auth.sessions(id,user_id) values($1,$2)', [session,user]);
-  const identity = async () => { await upgraded.query('reset role'); await upgraded.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify({ sub:user,session_id:session,aal:'aal1' })]); await upgraded.query('set role authenticated'); };
+  const identity = async () => { await upgraded.query('reset role'); await upgraded.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(upgraded,{ sub:user,session_id:session,aal:'aal2' }))]); await upgraded.query('set role authenticated'); };
   await identity();
   await upgraded.query("update public.profiles set currency='JPY',language='ms',financial_timezone='Asia/Tokyo' where id=auth.uid()");
   for (const currency of ['MYR','USD','EUR','JPY']) await upgraded.query('insert into public.accounts(user_id,name,currency,opening_balance) values(auth.uid(),$1,$1,$2)', [currency,currency==='JPY'?'9007199254740993':'90071992547409.93']);
@@ -175,7 +177,7 @@ try {
   await upgraded.query('reset role');
   const left=server.getPgClient('integration_upgrade','127.0.0.1'),right=server.getPgClient('integration_upgrade','127.0.0.1');
   clients.push(left,right);await left.connect();await right.connect();
-  for(const connection of [left,right]) {await connection.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:user,session_id:session,aal:'aal1'})]);await connection.query('set role authenticated');}
+  for(const connection of [left,right]) {await connection.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(upgraded,{sub:user,session_id:session,aal:'aal2'}))]);await connection.query('set role authenticated');}
   const rightPid=(await right.query('select pg_backend_pid() as pid')).rows[0].pid;
   await left.query('begin');await right.query('begin');
   await left.query("insert into public.debt_repayments(user_id,debt_id,currency,amount,account_id) values(auth.uid(),$1,'MYR',20,$2)",[freshDebt,account]);

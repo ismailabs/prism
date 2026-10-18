@@ -1,4 +1,5 @@
 import { MfaSetup } from "../auth/MfaSetup";
+import { MfaChallenge } from '../auth/MfaChallenge';
 import { Button } from "../ui/button";
 import { Modal } from "../ui/dialog";
 import { browserTimezone, validTimezone } from "@/domain/dates";
@@ -20,7 +21,7 @@ export function SettingsView({ profile }: { profile: Profile }) {
   const c = useFinancialCopy();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, securityStatus } = useAuth();
   const update = useUpdateProfile();
   const [username, setUsername] = useState(profile.username);
   const [currency, setCurrency] = useState<Currency>(profile.currency);
@@ -30,6 +31,8 @@ export function SettingsView({ profile }: { profile: Profile }) {
   );
   const [theme, setTheme] = useState<Theme>(profile.theme);
   const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [verifyOpen, setVerifyOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -59,9 +62,10 @@ export function SettingsView({ profile }: { profile: Profile }) {
     setBusy(true);
     setError("");
     try {
-      const result = await supabase.auth.updateUser({ password });
+      const result = await supabase.auth.updateUser({ password, current_password: currentPassword || undefined });
       if (result.error) throw result.error;
       setPassword("");
+      setCurrentPassword("");
       toast.success(t("passwordUpdated"));
     } catch (cause) {
       setError(errorMessage(cause));
@@ -81,6 +85,7 @@ export function SettingsView({ profile }: { profile: Profile }) {
       );
       return;
     }
+    if (!securityStatus?.recentVerification) { setVerifyOpen(true); return; }
     setDeletingAccount(true);
     try {
       const { error: rpcError } = await supabase.rpc("delete_own_account", {
@@ -221,18 +226,23 @@ export function SettingsView({ profile }: { profile: Profile }) {
           <h2 className="text-lg font-semibold">{t("security")}</h2>
           <p className="text-sm text-subtle">{t("securityDescription")}</p>
           <MfaSetup />
+          <Button variant="outline" onClick={() => setVerifyOpen(true)}>{c('Verify authenticator again', 'Sahkan pengesah semula')}</Button>
           <p className="text-sm text-subtle">{t("mfaRecoveryHint")}</p>
           <form
             className="space-y-4 border-t border-border pt-6"
             onSubmit={(event) => void changePassword(event)}
           >
             <label className="form-field">
+              {c('Current password (if you have set one)', 'Kata laluan semasa (jika pernah ditetapkan)')}
+              <input className="input" type="password" autoComplete="current-password" value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} />
+            </label>
+            <label className="form-field">
               {t("newPassword")}
               <input
                 className="input"
                 type="password"
                 autoComplete="new-password"
-                minLength={8}
+                minLength={16}
                 required
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -280,6 +290,9 @@ export function SettingsView({ profile }: { profile: Profile }) {
           />
         </section>
       </div>
+      <Modal open={verifyOpen} onOpenChange={setVerifyOpen} title={c('Verify authenticator again', 'Sahkan pengesah semula')}>
+        <MfaChallenge onVerified={() => setVerifyOpen(false)} />
+      </Modal>
       <Modal
         open={deleteOpen}
         onOpenChange={(value) => {

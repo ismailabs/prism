@@ -24,7 +24,7 @@ async function challenge(page: Page, failsToLoad = false) {
 }
 async function fillLogin(page: Page, locale: 'en' | 'ms' = 'en') {
   await page.getByLabel(locale === 'ms' ? 'Alamat e-mel' : 'Email address', { exact: true }).fill('new-prism-fixture@example.invalid');
-  await page.getByLabel(locale === 'ms' ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticPassword123');
+  await page.getByLabel(locale === 'ms' ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticStrongPassword123');
 }
 
 for (const locale of ['en', 'ms']) for (const hasVerifier of [false, true]) test(`failed PKCE link is sanitized in ${locale}, verifier ${hasVerifier}`, async ({ page }) => {
@@ -169,7 +169,7 @@ for (const locale of ['en', 'ms']) test(`invalid callback and server shutdown ar
   await page.getByRole('group', { name: ms ? 'Cara log masuk' : 'Authentication mode' }).getByRole('button', { name: ms ? 'Cipta akaun' : 'Create account' }).click();
   await page.getByLabel(ms ? 'Nama anda' : 'Your name', { exact: true }).fill('Synthetic member');
   await page.getByLabel(ms ? 'Alamat e-mel' : 'Email address', { exact: true }).fill('new-prism-fixture@example.invalid');
-  await page.getByLabel(ms ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticPassword123');
+  await page.getByLabel(ms ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticStrongPassword123');
   await page.getByRole('button', { name: 'Complete synthetic security check' }).click();
   await page.locator('form').getByRole('button', { name: ms ? 'Cipta akaun' : 'Create account', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText(ms ? 'Ahli sedia ada masih boleh log masuk' : 'Existing members can still sign in');

@@ -1,3 +1,4 @@
+import { financialClaims } from './lib/financial-test-identity.mjs';
 import {PGlite} from '@electric-sql/pglite';
 import {randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
@@ -6,7 +7,7 @@ export async function exerciseGoalActions(db){
  await db.exec('reset role');
  const user=randomUUID(),other=randomUUID(),session=randomUUID(),otherSession=randomUUID();
  await db.query('insert into auth.users(id) values($1),($2)',[user,other]);await db.query('insert into auth.sessions(id,user_id) values($1,$2),($3,$4)',[session,user,otherSession,other]);
- const identity=async(u,s)=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:u,session_id:s,aal:'aal1'})]);await db.exec('set role authenticated');};
+ const identity=async(u,s)=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(db,{sub:u,session_id:s,aal:'aal2'}))]);await db.exec('set role authenticated');};
  await identity(user,session);
  const main=(await db.query("insert into public.accounts(user_id,name,currency,opening_balance) values(auth.uid(),'Main','MYR',2000) returning id")).rows[0].id;
  const savings=(await db.query("insert into public.accounts(user_id,name,currency,opening_balance) values(auth.uid(),'Savings','MYR',0) returning id")).rows[0].id;

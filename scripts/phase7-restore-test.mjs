@@ -40,7 +40,7 @@ let source = cluster(sourceDir), restored, client;
 try {
   await source.initialise(); await source.start(); client = source.getPgClient('postgres', '127.0.0.1'); await client.connect();
   const bootstrap = await readFile('supabase/tests/auth-fixture.sql', 'utf8'); await client.query(bootstrap);
-  const migrations = (await readdir('supabase/migrations')).filter(path => path.endsWith('.sql')).sort(); assert.equal(migrations.length, 18);
+  const migrations = (await readdir('supabase/migrations')).filter(path => path.endsWith('.sql')).sort(); assert.equal(migrations.length, 19);
   for (const path of migrations) await client.query(await readFile(`supabase/migrations/${path}`, 'utf8'));
   const db = { exec: sql => client.query(sql), query: (sql, args) => client.query(sql, args) };
   await exerciseLedger(db); const before = await snapshot(client);
