@@ -89,6 +89,94 @@ test('security-status failure denies cached financial access', async ({ page }) 
   expect(financial).toEqual([]);
 });
 
+test('factor-list retry recovers after a temporary provider failure without private reads', async ({ page }) => {
+  const financial = await locked(page, { reason: 'needs_mfa', mailboxVerified: true });
+  let unavailable = true;
+  await page.route(supabaseUrl + '/auth/v1/user', route => unavailable
+    ? route.fulfill({ status: 503, json: { message: 'Synthetic factor service unavailable' } })
+    : route.fulfill({ json: { id: userId, email: 'test@example.com', factors: [] } }));
+  await page.goto('/dashboard');
+  await expect(page.getByRole('heading', { name: 'Verify your session', exact: true })).toBeVisible();
+  await expect(page.getByRole('alert')).toBeVisible();
+  unavailable = false;
+  const healthyFactors = page.waitForResponse(response => response.url() === supabaseUrl + '/auth/v1/user' && response.status() === 200);
+  await page.getByRole('button', { name: 'Refresh session', exact: true }).click();
+  await healthyFactors;
+  await expect(page.getByRole('button', { name: 'Set up authenticator', exact: true })).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.locator('.app-shell')).toHaveCount(0);
+  expect(financial).toEqual([]);
+});
+
+test('security refresh preserves the selected backup authenticator and entered code', async ({ page }) => {
+  const factors = [
+    { id: 'factor-1', factor_type: 'totp', status: 'verified', friendly_name: 'Primary fixture' },
+    { id: 'factor-2', factor_type: 'totp', status: 'verified', friendly_name: 'Backup fixture' },
+  ];
+  const financial = await locked(page, { reason: 'needs_mfa', activated: true, approvedFactorIds: ['factor-1', 'factor-2'] }, factors);
+  let refreshed = false;
+  await page.route(supabaseUrl + '/auth/v1/user', route => route.fulfill({ json: {
+    id: userId, email: 'test@example.com', factors: factors.map(factor => ({ ...factor, friendly_name: factor.friendly_name + (refreshed ? ' refreshed' : '') })),
+  } }));
+  await page.goto('/accounts');
+  const selector = page.getByRole('combobox', { name: 'Authenticator', exact: true });
+  await selector.selectOption('factor-2');
+  await page.getByLabel('Authentication code', { exact: true }).fill('123456');
+  refreshed = true;
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  // Changed option text proves the refreshed factor response has rendered.
+  await expect(selector.locator('option[value="factor-2"]')).toHaveText('Backup fixture refreshed');
+  await expect(selector).toHaveValue('factor-2');
+  await expect(page.getByLabel('Authentication code', { exact: true })).toHaveValue('123456');
+  expect(financial).toEqual([]);
+});
+
+async function recoveryAtMfaGate(page: Page) {
+  const factors = [
+    { id: 'factor-1', factor_type: 'totp', status: 'verified', friendly_name: 'Primary fixture' },
+    { id: 'factor-2', factor_type: 'totp', status: 'verified', friendly_name: 'Backup fixture' },
+  ];
+  await locked(page, { reason: 'needs_mfa', activated: true, approvedFactorIds: ['factor-1', 'factor-2'] }, factors);
+  await page.addInitScript(key => {
+    localStorage.removeItem(key);
+    localStorage.setItem(key + '-code-verifier', JSON.stringify('fixture-verifier/recovery'));
+  }, authStorageKey);
+  let verified = false;
+  await page.route(supabaseUrl + '/rest/v1/rpc/financial_access_status', route => route.fulfill({ json: verified
+    ? readySecurityStatus
+    : { ...readySecurityStatus, allowed: false, reason: 'needs_mfa' } }));
+  await page.goto('/?code=fixture-recovery&recovery=1');
+  await expect(page.getByRole('heading', { name: 'One more layer of security.', exact: true })).toBeVisible();
+  return { ready: () => { verified = true; } };
+}
+
+test('signing out of recovery clears reset mode before a later ordinary sign-in', async ({ page }) => {
+  const recovery = await recoveryAtMfaGate(page);
+  await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your money. A clearer picture.', exact: true })).toBeVisible();
+  recovery.ready();
+  await page.getByLabel('Email address', { exact: true }).fill('test@example.com');
+  await page.getByLabel('Password', { exact: true }).fill('FixtureStrongPassword123');
+  await page.locator('form').getByRole('button', { name: 'Sign in', exact: true }).click();
+  await expect(page.locator('.app-shell')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Set a new password', exact: true })).toHaveCount(0);
+});
+
+test('genuine recovery mode survives authenticator verification', async ({ page }) => {
+  const recovery = await recoveryAtMfaGate(page);
+  const session = await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), authStorageKey);
+  await page.route(supabaseUrl + '/auth/v1/factors/factor-1/challenge', route => route.fulfill({ json: { id: 'fixture-challenge', type: 'totp' } }));
+  await page.route(supabaseUrl + '/auth/v1/factors/factor-1/verify', route => {
+    expect(route.request().postDataJSON()).toMatchObject({ challenge_id: 'fixture-challenge', code: '123456' });
+    recovery.ready();
+    return route.fulfill({ json: session });
+  });
+  await page.getByLabel('Authentication code', { exact: true }).fill('123456');
+  await page.getByRole('button', { name: 'Verify and continue', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Set a new password', exact: true })).toBeVisible();
+  await expect(page.locator('.app-shell')).toHaveCount(0);
+});
+
 test('expired financial session requires fresh sign-in even with two factors', async ({ page }) => {
   const financial = await locked(page, { reason: 'session_expired', activated: true, approvedFactorIds: ['factor-1', 'factor-2'] });
   await page.goto('/accounts');

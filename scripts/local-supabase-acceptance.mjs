@@ -6,7 +6,8 @@ import { execFileSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createClient } from '@supabase/supabase-js';
 
-const { api, key, mail,dbContainer } = JSON.parse(await readFile('.cache/public-launch-supabase-ci/client.json', 'utf8'));
+const { api, key, mail,dbContainer,authVersion } = JSON.parse(await readFile('.cache/public-launch-supabase-ci/client.json', 'utf8'));
+assert.equal(authVersion, 'v2.197.0', 'Native acceptance requires the verified actual Auth runtime version');
 assert.equal(new URL(api).origin, 'http://127.0.0.1:54321', 'Only the declared local API may be tested');
 assert.equal(new URL(mail).origin, 'http://127.0.0.1:54324', 'Only the declared local SMTP sink may be read');
 assert.ok(typeof key === 'string' && key.length > 20, 'An intended local anon/publishable key is required');
@@ -16,6 +17,7 @@ const receipt = {
   environment: 'real local Supabase GoTrue/PostgREST/PostgreSQL 17 and Mailpit on disposable Linux CI runner',
   checkoutSHA: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   candidateSHA: process.env.PRISM_LOCAL_CANDIDATE_SHA ?? null,
+  nativeAuthVersion: authVersion,
   hostedVerified: false, productionContacted: false, syntheticOnly: true,
   serviceRoleUsed: false, realInboxDeliveryVerified: false,
   databaseAdminForSyntheticFinancialFixtureOnly: true,independentPhysicalAuthenticatorsObserved:false,

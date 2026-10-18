@@ -112,8 +112,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') setAuthLinkError(false);
-      if(event==='PASSWORD_RECOVERY')setRecovery(true);
       const nextUserId = nextSession?.user.id ?? null;
+      if (event === 'PASSWORD_RECOVERY') setRecovery(true);
+      else if (!nextSession || (activeUserId.current !== null && activeUserId.current !== nextUserId)) setRecovery(false);
       if (activeUserId.current !== nextUserId || (nextSession?.access_token && nextSession.access_token !== sessionToken.current)) {
         // Cancel reads before removing private caches on account changes.
         clearPrivateQueries(queryClient);

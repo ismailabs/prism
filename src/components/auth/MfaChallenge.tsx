@@ -26,7 +26,10 @@ export function MfaChallenge({ onVerified }: { onVerified?: () => void } = {}) {
       if (factorError) setError(errorMessage(factorError));
       else {
         const verified = data.totp.filter(factor => factor.status === 'verified').map((factor, index) => ({ id: factor.id, friendlyName: factor.friendly_name || `${copy.authenticator} ${index + 1}` }));
-        setFactors(verified); setFactorId(verified.find(factor => securityStatus?.approvedFactorIds.includes(factor.id))?.id ?? verified[0]?.id ?? '');
+        setFactors(verified);
+        setFactorId(current => verified.some(factor => factor.id === current)
+          ? current
+          : verified.find(factor => securityStatus?.approvedFactorIds.includes(factor.id))?.id ?? verified[0]?.id ?? '');
       }
       setInitializing(false);
     }).catch((cause: unknown) => { if (active) { setError(errorMessage(cause)); setInitializing(false); } });

@@ -17,7 +17,10 @@ export function MfaGate() {
     void supabase.auth.mfa.listFactors().then(({ data, error: cause }) => {
       if (!active) return;
       if (cause) setError(errorMessage(cause));
-      else setFactorCount(data.all.filter(factor => factor.status === 'verified' && factor.factor_type === 'totp').length);
+      else {
+        setError('');
+        setFactorCount(data.all.filter(factor => factor.status === 'verified' && factor.factor_type === 'totp').length);
+      }
     }).catch(cause => { if (active) setError(errorMessage(cause)); });
     return () => { active = false; };
   }, [user?.id, securityStatus]);
