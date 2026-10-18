@@ -257,7 +257,15 @@ try {
   assert.equal((await client().auth.signInWithPassword({ email: b.email, password: b.password })).error?.code, 'invalid_credentials', 'Old password must stop working');
   requireOk(await b.auth.auth.signInWithPassword({ email: b.email, password: changedPassword }), 'new password sign-in');
   assert.equal(requireOk(await b.auth.from('accounts').select('id'),'reset login still needs MFA').length,0);
-  await verifyFactor(b.auth,b.factors[1]);
+  // Model losing the original authenticator installations while a separately
+  // retained setup-key copy survives. This is cryptographic restore evidence,
+  // not an observation of a person's physical backup custody.
+  const restoredBackup=structuredClone(b.factors[1]);
+  for(const original of b.factors)original.totp.secret='';
+  await verifyFactor(b.auth,restoredBackup);
+  assert.equal(requireOk(await b.auth.auth.getUser(),'restored backup original identity').user.id,b.id);
+  assert.equal(requireOk(await b.auth.from('accounts').select('id'),'restored backup original financial ownership').length,1);
+  check('restored offline copy of an existing approved factor recovers native financial access after original authenticator secrets are discarded; no factor reset or admin override');
   assert.equal((await client().auth.verifyOtp({ token_hash: recoveryAction.token_hash, type: recoveryAction.type })).error?.code, 'otp_expired', 'Recovery action must be single use');
   check('actual local recovery delivery, weak reset denial, strong reset, global session termination, old password and reused recovery denial');
 

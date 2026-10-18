@@ -195,7 +195,7 @@ for (const locale of ['en', 'ms']) test(`mandatory mailbox setup consumes fresh 
   expect(requests).toHaveLength(1);
   await page.getByRole('button', { name: 'Complete synthetic security check' }).click();
   await send.press('Enter');
-  await expect(page.getByRole('status')).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: locale === 'en' ? 'Check your inbox and spam folder. Open the newest link' : 'Semak peti masuk dan folder spam. Buka pautan terkini' })).toBeVisible();
   await expect(send).toBeDisabled();
   expect(requests).toHaveLength(2);
   for (const request of requests) {

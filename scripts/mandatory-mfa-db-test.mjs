@@ -70,6 +70,11 @@ try {
   pass('financial read remains available within 24 hours while six-minute-old TOTP cannot authorize factor management or deletion');
   await admin();
   const surfaces = (await db.query("select c.relname,c.relkind from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in ('r','v') order by c.relname")).rows;
+  // Empty fixtures alone cannot demonstrate protection for an unused table.
+  // Check the reviewed ALL-operation guard structurally on every financial table.
+  const missingGuards=(await db.query("select c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and not exists(select 1 from pg_policies p where p.schemaname='public' and p.tablename=c.relname and p.cmd='ALL' and p.qual like '%session_allowed%' and p.with_check like '%session_allowed%' and 'authenticated'=any(p.roles))")).rows;
+  assert.deepEqual(missingGuards,[],'Every public financial table needs its server session guard for all operations');
+  assert.equal((await db.query("select bool_and(coalesce('security_invoker=true'=any(c.reloptions),false)) as ok from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='v'")).rows[0].ok,true);
   for (const bad of [token(),{...verified,aal:null},{...verified,aal:undefined},{...verified,session_id:undefined},{...verified,session_id:sb},{...verified,amr:[]},{...verified,is_anonymous:true}]) {
     await actor(bad);
     for (const surface of surfaces) assert.equal((await db.query(`select * from public.${surface.relname}`)).rows.length,0,`${surface.relname} must hide rows for insufficient proof`);
