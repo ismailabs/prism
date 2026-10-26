@@ -30,7 +30,7 @@ async function seed(page: Parameters<typeof mockSignedInApp>[0], language = 'en'
 }
 test('review reconciles ordinary flows, debt and native balance while future rent remains a scenario', async ({ page }) => {
   await seed(page); const writes: string[] = [];
-  page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')) && request.method() !== 'GET') writes.push(request.url()); });
+  page.on('request', request => { if (request.url().includes('/rest/v1/') && request.method() !== 'GET') writes.push(request.url()); });
   await openAnalytics(page);
   const center = page.getByRole('region', { name: 'Financial intelligence', exact: true });
   await expect(center.getByRole('table', { name: 'Recorded native balances', exact: true })).toContainText('MYR 3,500.00');

@@ -4,14 +4,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,type ReactNode } from 'react';
 import { clearAuthLinkParameters, initialAuthCallback, initialAuthLinkError, supabase } from '../lib/supabase';
 import { errorMessage } from '@/lib/utils';
-import { financialAccessStatus, type FinancialAccessStatus } from '@/domain/auth-security';
 
 export interface AuthContextValue {
   user: User | null;
   session: Session | null;
   loading: boolean;
   requiresMfa: boolean;
-  securityStatus?: FinancialAccessStatus | null;
   authError: string | null;
   authLinkError?: boolean;
   recovery?: boolean;
@@ -31,7 +29,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const completeRecovery=useCallback(()=>{setRecovery(false);window.history.replaceState(null,'',window.location.pathname);},[]);
   const [loading, setLoading] = useState(true);
   const [requiresMfa, setRequiresMfa] = useState(false);
-  const [securityStatus, setSecurityStatus] = useState<FinancialAccessStatus | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authLinkError, setAuthLinkError] = useState(initialAuthLinkError);
   const revision = useRef(0);
@@ -40,31 +37,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const resolveSession = useCallback(async (nextSession: Session | null, expectedRevision: number) => {
     if (!nextSession) {
       if (mounted.current && expectedRevision === revision.current) {
-        setSession(null); setRequiresMfa(false); setSecurityStatus(null); setLoading(false); setAuthError(null);
+        setSession(null); setRequiresMfa(false); setLoading(false); setAuthError(null);
       }
       return;
     }
     try {
-      const { data, error } = await supabase.rpc('financial_access_status');
+      const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (error) throw error;
-      const status = financialAccessStatus(data);
       if (mounted.current && expectedRevision === revision.current) {
         setSession(nextSession);
-        setSecurityStatus(status);
-        setRequiresMfa(!status.allowed);
-        if (!status.allowed) clearPrivateQueries(queryClient);
+        setRequiresMfa(data.nextLevel === 'aal2' && data.currentLevel !== 'aal2');
         setAuthError(null);
       }
     } catch (error) {
       if (mounted.current && expectedRevision === revision.current) {
-        setSession(nextSession); setRequiresMfa(true); setSecurityStatus(null);
-        clearPrivateQueries(queryClient);
+        setSession(nextSession); setRequiresMfa(true);
         setAuthError(errorMessage(error));
       }
     } finally {
       if (mounted.current && expectedRevision === revision.current) setLoading(false);
     }
-  }, [queryClient]);
+  }, []);
 
   const refreshMfa = useCallback(async () => {
     const expectedRevision = ++revision.current;
@@ -72,24 +65,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) throw error;
     await resolveSession(data.session, expectedRevision);
   }, [resolveSession]);
-
-  useEffect(() => {
-    if (!session) return;
-    const check = () => {
-      if (document.visibilityState !== 'hidden') void refreshMfa().catch(() => {
-        setRequiresMfa(true); setSecurityStatus(null); clearPrivateQueries(queryClient);
-      });
-    };
-    const expiry = securityStatus?.sessionExpiresAt ? Date.parse(securityStatus.sessionExpiresAt) - Date.now() : null;
-    const timeout = securityStatus?.allowed && expiry !== null ? setTimeout(() => {
-      setRequiresMfa(true); clearPrivateQueries(queryClient); check();
-    }, Math.max(0, expiry)) : undefined;
-    const interval = setInterval(check, 60_000);
-    window.addEventListener('focus', check);
-    window.addEventListener('online', check);
-    document.addEventListener('visibilitychange', check);
-    return () => { clearTimeout(timeout); clearInterval(interval); window.removeEventListener('focus', check); window.removeEventListener('online', check); document.removeEventListener('visibilitychange', check); };
-  }, [session, securityStatus?.allowed, securityStatus?.sessionExpiresAt, refreshMfa, queryClient]);
 
   useEffect(() => {
     mounted.current = true;
@@ -112,9 +87,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') setAuthLinkError(false);
+      if(event==='PASSWORD_RECOVERY')setRecovery(true);
       const nextUserId = nextSession?.user.id ?? null;
-      if (event === 'PASSWORD_RECOVERY') setRecovery(true);
-      else if (!nextSession || (activeUserId.current !== null && activeUserId.current !== nextUserId)) setRecovery(false);
       if (activeUserId.current !== nextUserId || (nextSession?.access_token && nextSession.access_token !== sessionToken.current)) {
         // Cancel reads before removing private caches on account changes.
         clearPrivateQueries(queryClient);
@@ -124,7 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const expectedRevision = ++revision.current;
       setSession(nextSession);
       setLoading(Boolean(nextSession));
-      if (!nextSession) { setRequiresMfa(false); setSecurityStatus(null); setAuthError(null); }
+      if (!nextSession) { setRequiresMfa(false); setAuthError(null); }
       // Supabase holds an Auth lock while notifying subscribers. Defer Auth
       // calls to a new task so this callback cannot deadlock token refresh.
       const timer = setTimeout(() => {
@@ -145,7 +119,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) throw error;
   }, []);
 
-  const value = useMemo<AuthContextValue>(() => ({ user: session?.user ?? null, session, loading, requiresMfa, securityStatus, authError, authLinkError, recovery, completeRecovery, refreshMfa, signOut }), [session, loading, requiresMfa, securityStatus, authError, authLinkError, recovery, completeRecovery, refreshMfa, signOut]);
+  const value = useMemo<AuthContextValue>(() => ({ user: session?.user ?? null, session, loading, requiresMfa, authError, authLinkError, recovery, completeRecovery, refreshMfa, signOut }), [session, loading, requiresMfa, authError, authLinkError, recovery, completeRecovery, refreshMfa, signOut]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

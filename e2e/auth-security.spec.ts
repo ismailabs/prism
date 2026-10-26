@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { mockSignedInApp, readySecurityStatus, supabaseUrl } from './fixtures';
+import { mockSignedInApp, supabaseUrl } from './fixtures';
 
 // This is a controllable third-party widget double, not a CAPTCHA bypass in the
 // application. Every Auth request is intercepted at a synthetic provider URL.
@@ -24,7 +24,7 @@ async function challenge(page: Page, failsToLoad = false) {
 }
 async function fillLogin(page: Page, locale: 'en' | 'ms' = 'en') {
   await page.getByLabel(locale === 'ms' ? 'Alamat e-mel' : 'Email address', { exact: true }).fill('new-prism-fixture@example.invalid');
-  await page.getByLabel(locale === 'ms' ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticStrongPassword123');
+  await page.getByLabel(locale === 'ms' ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticPassword123');
 }
 
 for (const locale of ['en', 'ms']) for (const hasVerifier of [false, true]) test(`failed PKCE link is sanitized in ${locale}, verifier ${hasVerifier}`, async ({ page }) => {
@@ -169,38 +169,8 @@ for (const locale of ['en', 'ms']) test(`invalid callback and server shutdown ar
   await page.getByRole('group', { name: ms ? 'Cara log masuk' : 'Authentication mode' }).getByRole('button', { name: ms ? 'Cipta akaun' : 'Create account' }).click();
   await page.getByLabel(ms ? 'Nama anda' : 'Your name', { exact: true }).fill('Synthetic member');
   await page.getByLabel(ms ? 'Alamat e-mel' : 'Email address', { exact: true }).fill('new-prism-fixture@example.invalid');
-  await page.getByLabel(ms ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticStrongPassword123');
+  await page.getByLabel(ms ? 'Kata laluan' : 'Password', { exact: true }).fill('SyntheticPassword123');
   await page.getByRole('button', { name: 'Complete synthetic security check' }).click();
   await page.locator('form').getByRole('button', { name: ms ? 'Cipta akaun' : 'Create account', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText(ms ? 'Ahli sedia ada masih boleh log masuk' : 'Existing members can still sign in');
-});
-
-for (const locale of ['en', 'ms']) test(`mandatory mailbox setup consumes fresh CAPTCHA tokens (${locale})`, async ({ page }) => {
-  await mockSignedInApp(page);
-  await challenge(page);
-  await page.addInitScript(language => localStorage.setItem('prism-preferences', JSON.stringify({ state: { locale: language }, version: 1 })), locale);
-  await page.route(supabaseUrl + '/rest/v1/rpc/financial_access_status', route => route.fulfill({ json: { ...readySecurityStatus, allowed: false, reason: 'needs_approval', approvedFactorIds: [], mailboxVerified: false, activated: false } }));
-  const requests: Record<string, unknown>[] = [];
-  await page.route(supabaseUrl + '/auth/v1/otp*', route => {
-    requests.push(route.request().postDataJSON());
-    return requests.length === 1 ? route.fulfill({ status: 503, json: { message: 'Synthetic mail service unavailable' } }) : route.fulfill({ json: {} });
-  });
-  await page.goto('/accounts');
-  const send = page.getByRole('button', { name: locale === 'en' ? 'Send secure verification link' : 'Hantar pautan pengesahan selamat', exact: true });
-  await expect(send).toBeDisabled();
-  await page.getByRole('button', { name: 'Complete synthetic security check' }).click();
-  await send.press('Enter');
-  await expect(page.getByRole('alert')).toBeVisible();
-  await expect(send).toBeDisabled();
-  expect(requests).toHaveLength(1);
-  await page.getByRole('button', { name: 'Complete synthetic security check' }).click();
-  await send.press('Enter');
-  await expect(page.getByRole('status').filter({ hasText: locale === 'en' ? 'Check your inbox and spam folder. Open the newest link' : 'Semak peti masuk dan folder spam. Buka pautan terkini' })).toBeVisible();
-  await expect(send).toBeDisabled();
-  expect(requests).toHaveLength(2);
-  for (const request of requests) {
-    expect(request.create_user).toBe(false);
-    expect(request.gotrue_meta_security).toMatchObject({ captcha_token: expect.stringMatching(/^fixture-token-/) });
-  }
-  await expect(page.locator('.app-shell')).toHaveCount(0);
 });

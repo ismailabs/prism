@@ -23,6 +23,7 @@ import { PeriodSelector, periodLabel } from '@/components/analytics/PeriodSelect
 import { useAuth } from "@/hooks/useAuth";
 import {
   useCategories,
+  useFinanceRealtime,
   usePaymentMethods,
   useProfile,
   useTransactionMutations,
@@ -76,6 +77,7 @@ export default function Workspace() {
   const objectiveContributions = usePlatformTable("objective_contributions");
   const debtRepayments = usePlatformTable("debt_repayments");
   const mutations = useTransactionMutations();
+  useFinanceRealtime();
   const { selection, period, setSelection } = useFinancialPeriod();
   const label = periodLabel(selection, store.locale, t);
   const report = useFinancialReport(period, store.personalization.analyticsBar || ['dashboard', 'analytics'].includes(store.activeTab));

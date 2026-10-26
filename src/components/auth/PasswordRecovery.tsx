@@ -35,14 +35,14 @@ export function PasswordRecovery({
       if (reset) {
         if (
           password !== confirm ||
-          password.length < 16 ||
+          password.length < 8 ||
           !/[A-Za-z]/.test(password) ||
           !/[0-9]/.test(password)
         )
           throw new Error(
             ms
-              ? "Gunakan sekurang-kurangnya 16 aksara termasuk huruf dan nombor; kedua-dua kata laluan mesti sepadan."
-              : "Use at least 16 characters including a letter and number; both passwords must match.",
+              ? "Gunakan sekurang-kurangnya 8 aksara termasuk huruf dan nombor; kedua-dua kata laluan mesti sepadan."
+              : "Use at least 8 characters including a letter and number; both passwords must match.",
           );
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
@@ -97,7 +97,7 @@ export function PasswordRecovery({
                   type="password"
                   autoComplete="new-password"
                   required
-                  minLength={16}
+                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -109,7 +109,7 @@ export function PasswordRecovery({
                   type="password"
                   autoComplete="new-password"
                   required
-                  minLength={16}
+                  minLength={8}
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                 />

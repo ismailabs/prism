@@ -48,19 +48,17 @@ if (mode === 'prepare') {
   set('db.seed', 'enabled', 'false');
   set('auth', 'site_url', '"http://127.0.0.1:5173"');
   set('auth', 'additional_redirect_urls', '["http://127.0.0.1:5173/?recovery=1"]');
-  set('auth', 'minimum_password_length', '16');
+  set('auth', 'minimum_password_length', '12');
   set('auth', 'password_requirements', '"lower_upper_letters_digits_symbols"');
   set('auth.rate_limit', 'email_sent', '100');
   set('auth.email', 'enable_confirmations', 'true');
   set('auth.email', 'secure_password_change', 'true');
-  set('auth.email', 'max_frequency', '"1s"');
   set('auth.email', 'otp_expiry', '60');
   set('auth.mfa.totp', 'enroll_enabled', 'true');
   set('auth.mfa.totp', 'verify_enabled', 'true');
-  config += '\n[auth.hook.custom_access_token]\nenabled = true\nuri = "pg-functions://postgres/prism_private/mfa_access_token_hook"\n';
   await writeFile(join(root, 'supabase/config.toml'), config);
   const files = (await readdir('supabase/migrations')).filter(name => /^\d{14}_[a-z0-9_]+\.sql$/.test(name)).sort();
-  assert.equal(files.length, 19, 'Review any change to the migration chain before running this local stack');
+  assert.equal(files.length, 18, 'Review any change to the migration chain before running this local stack');
   await mkdir(join(root, 'supabase/migrations'), { recursive: true });
   const chain = [];
   for (const name of files) {
@@ -97,20 +95,10 @@ if (mode === 'prepare') {
     assert.ok(bindings >= 3, 'API, database and local SMTP sink must have verified loopback bindings');
     const status = JSON.parse((await cli(['status', '--output', 'json'])).stdout);
     assert.equal(new URL(status.API_URL).origin, 'http://127.0.0.1:54321', 'Refuse a non-local API');
-    const authContainer = inspected.find(container => container.Name === `/supabase_auth_${project}`);
-    assert.ok(authContainer?.Config.Image.endsWith('/gotrue:v2.197.0'), 'The native Auth image must match the reviewed hosted Auth version');
-    const authHealth = await fetch(`${status.API_URL}/auth/v1/health`, {
-      headers: { apikey: status.ANON_KEY ?? status.PUBLISHABLE_KEY }, signal: AbortSignal.timeout(15_000),
-    });
-    assert.equal(authHealth.status, 200, 'The actual local Auth service must be healthy');
-    const authVersion = (await authHealth.json()).version;
-    assert.equal(authVersion, 'v2.197.0', 'Record actual Auth runtime parity rather than inferring it from the CLI version');
     // Persist only the intended local anon/publishable key, never service-role or database credentials.
-    const dbContainer=inspected.find(container=>container.Name===`/supabase_db_${project}`)?.Name.slice(1);
-    assert.ok(dbContainer,'The inspected isolated database container is required for synthetic financial fixture preparation');
-    await writeFile(join(root, 'client.json'), JSON.stringify({ api: status.API_URL, key: status.ANON_KEY ?? status.PUBLISHABLE_KEY, mail: 'http://127.0.0.1:54324',dbContainer,authVersion }), { mode: 0o600 });
+    await writeFile(join(root, 'client.json'), JSON.stringify({ api: status.API_URL, key: status.ANON_KEY ?? status.PUBLISHABLE_KEY, mail: 'http://127.0.0.1:54324' }), { mode: 0o600 });
     const services = inspected.map(container => ({ name: container.Name.replace(/^\//, ''), image: container.Config.Image }));
-    await writeFile('artifacts/public-launch/local-supabase-runtime.json', JSON.stringify({ observedAtUTC: new Date().toISOString(), cliVersion: (await execute('supabase', ['--version'], { env })).stdout.trim(), authVersion, project, environment: 'isolated local Supabase containers on disposable Linux CI runner', hostedVerified: false, syntheticOnly: true, bindings, loopbackOnly: true, services }, null, 2) + '\n');
+    await writeFile('artifacts/public-launch/local-supabase-runtime.json', JSON.stringify({ observedAtUTC: new Date().toISOString(), cliVersion: (await execute('supabase', ['--version'], { env })).stdout.trim(), project, environment: 'isolated local Supabase containers on disposable Linux CI runner', hostedVerified: false, syntheticOnly: true, bindings, loopbackOnly: true, services }, null, 2) + '\n');
     console.log(`Started ${services.length} actual local Supabase services; all ${bindings} published port bindings are loopback-only. Keys and payloads are excluded from logs/artifacts.`);
   }
 }

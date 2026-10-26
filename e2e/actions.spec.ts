@@ -21,7 +21,7 @@ test('goal cadence and distinct funding evidence remain planning only',async({pa
 });
 test('manual reminders, preferences and deduplicated receipts never post money',async({page})=>{
  await mockSignedInApp(page);await page.clock.install({time:new Date('2026-10-10T02:00:00Z')});
- const writes:string[]=[];page.on('request',request=>{if(['POST','PATCH','DELETE'].includes(request.method())&&(request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status')))writes.push(request.url());});
+ const writes:string[]=[];page.on('request',request=>{if(['POST','PATCH','DELETE'].includes(request.method())&&request.url().includes('/rest/v1/'))writes.push(request.url());});
  await page.goto('/reminders');await page.getByRole('button',{name:'New reminder',exact:true}).click();
  await page.getByLabel('Title',{exact:true}).fill('Review family bill');
  await page.getByLabel('Due local time',{exact:true}).fill('2026-10-11T18:00');

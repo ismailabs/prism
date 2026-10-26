@@ -5,9 +5,8 @@ export const supabaseUrl=process.env.PRISM_E2E_SUPABASE_URL ?? 'https://fixture.
 export const authStorageKey=`sb-${new URL(supabaseUrl).hostname.split('.')[0]}-auth-token`;
 const now = Math.floor(Date.now() / 1000);
 const encode = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
-const accessToken = `${encode({ alg: 'none', typ: 'JWT' })}.${encode({ sub: userId, email: 'test@example.com', role: 'authenticated', aud: 'authenticated', aal: 'aal2', amr:[{method:'totp',timestamp:now}], session_id: '22222222-2222-4222-8222-222222222222', exp: now + 3600 })}.fixture`;
-const user = { id: userId, email: 'test@example.com', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, identities: [], factors:[{id:'factor-1',factor_type:'totp',status:'verified',friendly_name:'Fixture primary'},{id:'factor-2',factor_type:'totp',status:'verified',friendly_name:'Fixture backup'}], created_at: new Date().toISOString() };
-export const readySecurityStatus={allowed:true,reason:'ready',approvedFactorIds:['factor-1','factor-2'],currentFactorId:'factor-1',mailboxVerified:false,activated:true,recentVerification:true,sessionExpiresAt:new Date(Date.now()+24*60*60*1000).toISOString()};
+const accessToken = `${encode({ alg: 'none', typ: 'JWT' })}.${encode({ sub: userId, email: 'test@example.com', role: 'authenticated', aud: 'authenticated', aal: 'aal1', session_id: '22222222-2222-4222-8222-222222222222', exp: now + 3600 })}.fixture`;
+const user = { id: userId, email: 'test@example.com', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, identities: [], created_at: new Date().toISOString() };
 export const rows: Record<string, unknown[]> = {
   profiles: [{ id:userId, username:'Test member', currency:'MYR', language:'en', theme:'light', mfa_enabled:false, financial_timezone:'Asia/Kuala_Lumpur', default_analysis_period:'month', created_at:new Date().toISOString() }],
   categories: [], payment_methods: [],
@@ -51,7 +50,6 @@ async function handleSupabase(route: Route) {
   if(url.pathname==='/auth/v1/recover')return route.fulfill({json:{}});
   if (url.pathname === '/auth/v1/user') return route.fulfill({ status:200, contentType:'application/json', body:JSON.stringify(user) });
   if (url.pathname === '/auth/v1/logout') return route.fulfill({ status:204 });
-  if (url.pathname === '/rest/v1/rpc/financial_access_status') return route.fulfill({json:readySecurityStatus});
   if (url.pathname === '/rest/v1/rpc/delete_own_account') return route.fulfill({ status:204, contentType:'application/json', body:'' });
   const resource=url.pathname.split('/').at(-1)??'';
   if(resource==='record_goal_contribution'){

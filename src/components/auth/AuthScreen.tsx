@@ -29,7 +29,7 @@ export function AuthScreen() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError(''); setNotice('');
     const passwordRule = mode === 'signup'
-      ? z.string().min(16, copy.invalidPassword).regex(/[A-Za-z]/, copy.invalidPassword).regex(/[0-9]/, copy.invalidPassword)
+      ? z.string().min(8, copy.invalidPassword).regex(/[A-Za-z]/, copy.invalidPassword).regex(/[0-9]/, copy.invalidPassword)
       : z.string().min(1, copy.requiredPassword);
     const schema = z.object({
       email: z.string().trim().email(copy.invalidEmail), password: passwordRule,

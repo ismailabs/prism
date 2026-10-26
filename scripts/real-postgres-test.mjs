@@ -1,4 +1,3 @@
-import { financialClaims } from './lib/financial-test-identity.mjs';
 import EmbeddedPostgres from 'embedded-postgres';
 import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -33,7 +32,7 @@ try {
  const goal=(await admin.query("insert into public.objectives(user_id,kind,name,currency,target_amount) values($1,'goal','Race','MYR','50.00') returning id",[user])).rows[0].id;
  const debt=(await admin.query("insert into public.person_debts(user_id,direction,counterparty,currency,original_amount) values($1,'i_owe','Race','MYR','50.00') returning id",[user])).rows[0].id;
  const a=await connect(), b=await connect();
- for(const client of [a,b]){await client.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(db,{sub:user,session_id:session,aal:'aal2'}))]);await client.query('set role authenticated');await client.query("set statement_timeout='10s'");}
+ for(const client of [a,b]){await client.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:user,session_id:session,aal:'aal1'})]);await client.query('set role authenticated');await client.query("set statement_timeout='10s'");}
  await a.query('begin');await a.query("insert into public.objective_contributions(user_id,objective_id,currency,transaction_id) values(auth.uid(),$1,'MYR',$2)",[goal,tx]);
  let finished=false;const racing=b.query("insert into public.debt_repayments(user_id,debt_id,currency,transaction_id) values(auth.uid(),$1,'MYR',$2)",[debt,tx]).then(()=>({ok:true}),error=>({ok:false,error})).finally(()=>{finished=true;});
  // Wait until PostgreSQL confirms the second connection is waiting on a lock.
@@ -74,10 +73,10 @@ try {
  const secret=randomUUID()+randomUUID();
  const apiUrl=`http://127.0.0.1:${apiPort}`;
  api=spawn(binary,[],{env:{...process.env,PATH:nativeBin+delimiter+process.env.PATH,PGRST_DB_URI:`postgresql://postgres:${server.options.password}@127.0.0.1:${dbPort}/postgres`,PGRST_DB_SCHEMAS:'public',PGRST_DB_ANON_ROLE:'anon',PGRST_JWT_SECRET:secret,PGRST_SERVER_PORT:String(apiPort),PGRST_SERVER_HOST:'127.0.0.1'},stdio:'ignore',windowsHide:true});
- const encode=value=>Buffer.from(JSON.stringify(value)).toString('base64url');const unsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode(await financialClaims(db,{sub:user,session_id:session,role:'authenticated',aal:'aal2',exp:Math.floor(Date.now()/1000)+3600}))}`;const token=`${unsigned}.${createHmac('sha256',secret).update(unsigned).digest('base64url')}`;
+ const encode=value=>Buffer.from(JSON.stringify(value)).toString('base64url');const unsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode({sub:user,session_id:session,role:'authenticated',aal:'aal1',exp:Math.floor(Date.now()/1000)+3600})}`;const token=`${unsigned}.${createHmac('sha256',secret).update(unsigned).digest('base64url')}`;
  let ready=false;for(let i=0;i<100;i++){try{const response=await fetch(apiUrl);if(response.status<500){ready=true;break;}}catch{}await new Promise(resolve=>setTimeout(resolve,50));}assert(ready,'PostgREST must start');
  const headers={Authorization:`Bearer ${token}`,'Content-Type':'application/json',Prefer:'return=representation'};
- const ledgerUnsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode(await financialClaims(db,{sub:ledgerFixture.user,session_id:ledgerFixture.session,role:'authenticated',aal:'aal2',exp:Math.floor(Date.now()/1000)+3600}))}`;
+ const ledgerUnsigned=`${encode({alg:'HS256',typ:'JWT'})}.${encode({sub:ledgerFixture.user,session_id:ledgerFixture.session,role:'authenticated',aal:'aal2',exp:Math.floor(Date.now()/1000)+3600})}`;
  const ledgerToken=`${ledgerUnsigned}.${createHmac('sha256',secret).update(ledgerUnsigned).digest('base64url')}`;
  const ledgerHeaders={...headers,Authorization:`Bearer ${ledgerToken}`};
  const ledgerRequest={...ledgerFixture.salary,request_key:'http-ledger-retry'};

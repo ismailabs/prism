@@ -1,4 +1,3 @@
-import { financialClaims } from './lib/financial-test-identity.mjs';
 import {PGlite} from '@electric-sql/pglite';
 import {randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
@@ -7,7 +6,7 @@ import {buildPosting} from '../src/domain/accounting.ts';
 import {exerciseGoalActions} from './goal-actions-db-test.mjs';
 export async function exerciseActions(db){
  const f=await exerciseGoalActions(db);
- const identity=async(user,session,aal='aal2')=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(db,{sub:user,session_id:session,aal}))]);await db.exec('set role authenticated');};
+ const identity=async(user,session,aal='aal1')=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:user,session_id:session,aal})]);await db.exec('set role authenticated');};
  await identity(f.user,f.session);
  const createLedger=async(code,classification)=>(await db.query('select public.create_ledger_account($1::jsonb) as id',[JSON.stringify({code,classification,currency:'MYR'})])).rows[0].id;
  const cash=await createLedger('action-cash','asset'),equity=await createLedger('action-equity','equity');

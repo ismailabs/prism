@@ -1,4 +1,3 @@
-import { financialClaims } from './lib/financial-test-identity.mjs';
 import { PGlite } from "@electric-sql/pglite";
 import { readFile, readdir } from "node:fs/promises";
 import assert from "node:assert/strict";
@@ -33,7 +32,7 @@ try {
   const identity = async (id = u, session = s, extra = {}) => {
     await db.exec("reset role");
     await db.query("select set_config('request.jwt.claims',$1,false)", [
-      JSON.stringify(await financialClaims(db,{ sub: id, session_id: session, aal:'aal2', ...extra })),
+      JSON.stringify({ sub: id, session_id: session, aal: "aal1", ...extra }),
     ]);
     await db.exec("set role authenticated");
   };
@@ -289,7 +288,7 @@ try {
         randomUUID(),
         u,
       ]);
-      await identity(u, s, { aal: 'aal1' });
+      await identity();
       assert.equal(
         (await db.query("select * from public.exact_debt_plans")).rows.length,
         0,

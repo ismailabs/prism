@@ -8,7 +8,6 @@ for (const name of ['PRISM_E2E_BASE_URL', 'PRISM_E2E_STORAGE_STATE']) {
   assert.ok(!process.env[name], 'Hosted data must never enter CI evidence');
 }
 const files = [
-  'artifacts/security/mandatory-mfa-db.json',
   'artifacts/integration/migration-verification.json',
   'artifacts/integration/adversarial-rollover.json',
   'artifacts/phase2/final-review-probes.json',

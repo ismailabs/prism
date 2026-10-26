@@ -6,7 +6,7 @@ for (const locale of ['en', 'ms'] as const) {
   test(`public policies are readable before signup with safe contact and no financial reads (${locale})`, async ({ page }) => {
     await page.addInitScript(language => localStorage.setItem('prism-preferences', JSON.stringify({ state: { locale: language }, version: 1 })), locale);
     const privateReads: string[] = [];
-    page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status'))) privateReads.push(request.url()); });
+    page.on('request', request => { if (request.url().includes('/rest/v1/')) privateReads.push(request.url()); });
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/privacy');
     const privacy = locale === 'ms' ? 'Notis privasi' : 'Privacy notice';
@@ -35,7 +35,7 @@ for (const locale of ['en', 'ms'] as const) {
 test('signed-in visitors can read policies without loading private financial tables', async ({ page }) => {
   await mockSignedInApp(page);
   const privateReads: string[] = [];
-  page.on('request', request => { if ((request.url().includes('/rest/v1/') && !request.url().endsWith('/rpc/financial_access_status'))) privateReads.push(request.url()); });
+  page.on('request', request => { if (request.url().includes('/rest/v1/')) privateReads.push(request.url()); });
   await page.goto('/privacy');
   await expect(page.getByRole('heading', { name: 'Privacy notice', exact: true })).toBeVisible();
   await expect(page.locator('.app-nav')).toHaveCount(0);

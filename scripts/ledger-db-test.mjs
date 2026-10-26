@@ -1,4 +1,3 @@
-import { financialClaims } from './lib/financial-test-identity.mjs';
 import { PGlite } from '@electric-sql/pglite';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -13,9 +12,9 @@ export async function exerciseLedger(db) {
   const user = randomUUID(), session = randomUUID(), other = randomUUID(), otherSession = randomUUID();
   await db.query('insert into auth.users(id) values($1),($2)', [user, other]);
   await db.query('insert into auth.sessions(id,user_id) values($1,$2),($3,$4)', [session, user, otherSession, other]);
-  const identity = async (id = user, sid = session, aal='aal2') => {
+  const identity = async (id = user, sid = session, aal = 'aal1') => {
     await db.exec('reset role');
-    await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(db,{ sub: id, session_id: sid, aal }))]);
+    await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify({ sub: id, session_id: sid, aal })]);
     await db.exec('set role authenticated');
   };
   await identity();
@@ -95,7 +94,7 @@ export async function exerciseLedger(db) {
   await identity(user,expiredSession);await assert.rejects(post({...salary,request_key:'expired-session'}),/session required/);
   assert.equal((await db.query('select count(*)::int as n from public.exact_ledger_lines')).rows[0].n,0);
   await identity(other,session);await assert.rejects(post({...salary,request_key:'wrong-session-owner'}),/session required/);
-  await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify(await financialClaims(db,{sub:user,session_id:session,aal:'aal1',is_anonymous:true}))]);await db.exec('set role authenticated');
+  await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:user,session_id:session,aal:'aal1',is_anonymous:true})]);await db.exec('set role authenticated');
   await assert.rejects(post({...salary,request_key:'anonymous-signin'}),/session required/);assert.equal((await db.query('select count(*)::int as n from public.exact_ledger_lines')).rows[0].n,0);
   await db.exec('reset role'); await db.query("insert into auth.mfa_factors(id,user_id,status) values($1,$2,'verified')", [randomUUID(), user]);
   // Missing/null AAL yields SQL NULL in the dependency's session helper.
@@ -112,8 +111,8 @@ export async function exerciseLedger(db) {
   };
   const sealed = await snapshot();
   for (const [label, claims, allowed] of [
-    ['missing-aal', { sub: user, session_id: session }, false],
-    ['null-aal', { sub: user, session_id: session, aal: null }, false],
+    ['missing-aal', { sub: user, session_id: session }, null],
+    ['null-aal', { sub: user, session_id: session, aal: null }, null],
     ['missing-session', { sub: user, aal: 'aal2' }, false],
     ['invalid-session', { sub: user, session_id: randomUUID(), aal: 'aal2' }, false],
     ['wrong-owner', { sub: user, session_id: otherSession, aal: 'aal2' }, false],
@@ -123,7 +122,7 @@ export async function exerciseLedger(db) {
     ['invalid-assurance', { sub: user, session_id: session, aal: 'aal3' }, false],
   ]) {
     for (const operation of ['create', 'post']) {
-      await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(db,claims))]);
+      await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(claims)]);
       await db.exec('set role authenticated');
       assert.equal((await db.query('select prism_private.session_allowed() as allowed')).rows[0].allowed, allowed);
       assert.equal((await db.query('select count(*)::int as n from public.exact_ledger_lines')).rows[0].n, 0, label);
@@ -133,7 +132,7 @@ export async function exerciseLedger(db) {
       assert.deepEqual(await snapshot(), sealed, `${operation}: ${label} must leave every table unchanged`);
     }
   }
-  await identity(user, session, 'aal1'); await assert.rejects(post({ ...salary, request_key: 'mfa-denied' }), /session required/);
+  await identity(); await assert.rejects(post({ ...salary, request_key: 'mfa-denied' }), /session required/);
   await identity(user, session, 'aal2'); assert.equal(await post(salary), salaryId);
   assert.equal((await db.query('select prism_private.session_allowed() as allowed')).rows[0].allowed, true);
   assert.ok(await create('explicit-true', 'asset'));
@@ -192,7 +191,7 @@ export async function exerciseHistoricalLedger(db) {
   for (const x of f.debt_repayments) await db.query('insert into public.debt_repayments(id,user_id,debt_id,currency,amount,transaction_id,account_id,paid_at) values($1,$2,$3,$4,$5,$6,$7,$8)', [x.id, x.user_id, x.debt_id, x.currency, x.amount, x.transaction_id, x.account_id, x.paid_at]);
   for (const x of f.objective_contributions) await db.query('insert into public.objective_contributions(id,user_id,objective_id,currency,amount,transaction_id,account_id,transfer_id,contributed_at) values($1,$2,$3,$4,$5,$6,$7,$8,$9)', [x.id, x.user_id, x.objective_id, x.currency, x.amount, x.transaction_id, x.account_id, x.transfer_id, x.contributed_at]);
   await db.query("update public.profiles set financial_timezone=$1 where id=$2", [f.timezone, f.user_id]);
-  await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(db,{ sub: f.user_id, session_id: session, aal: 'aal2' }))]); await db.exec('set role authenticated');
+  await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify({ sub: f.user_id, session_id: session, aal: 'aal1' })]); await db.exec('set role authenticated');
   const ids = new Map();
   for (const a of t.accounts) {
     const legacy_source = a.id.startsWith('cash:') ? 'accounts' : a.id.startsWith('debt:') ? 'person_debts' : undefined;
@@ -252,7 +251,7 @@ export async function exerciseLedgerBoundaries(db) {
   await db.query('insert into auth.sessions(id,user_id) values($1,$2)', [session,user]);
   await db.query("insert into public.accounts(id,user_id,name,currency,opening_balance) values($1,$2,'Microsecond boundary','MYR',0)", [account,user]);
   for (const row of f.transactions) await db.query('insert into public.transactions(id,user_id,currency,type,account_id,amount,transaction_date) values($1,$2,$3,$4,$5,$6,$7)', [row.id,user,row.currency,row.type,account,row.amount,row.transaction_date]);
-  await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(db,{sub:user,session_id:session,aal:'aal2'}))]); await db.exec('set role authenticated');
+  await db.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify({sub:user,session_id:session,aal:'aal1'})]); await db.exec('set role authenticated');
   const ids = new Map();
   for (const a of t.accounts) ids.set(a.id, (await db.query('select public.create_ledger_account($1::jsonb) as id', [JSON.stringify({code:a.code,classification:a.classification,currency:a.currency})])).rows[0].id);
   for (const p of t.postings) {
@@ -277,7 +276,7 @@ export async function exerciseLedgerBoundaries(db) {
 
 export async function exerciseLedgerConcurrency(admin, a, b, fixture) {
   for (const client of [a, b]) {
-    await client.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(await financialClaims(db,{ sub: fixture.user, session_id: fixture.session, aal: 'aal2' }))]); await client.query('set role authenticated'); await client.query("set statement_timeout='10s'");
+    await client.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify({ sub: fixture.user, session_id: fixture.session, aal: 'aal2' })]); await client.query('set role authenticated'); await client.query("set statement_timeout='10s'");
   }
   const waitForLock = async () => {
     for (let i = 0; i < 100; i++) { if ((await admin.query('select wait_event_type from pg_stat_activity where pid=$1', [b.processID])).rows[0]?.wait_event_type === 'Lock') return; await new Promise(resolve => setTimeout(resolve, 20)); }
