@@ -90,7 +90,7 @@ export function Transfers() {
     accounts.data?.find((a) => a.id === id)?.name ?? id;
   return (
     <section className="card p-5 space-y-4">
-      <div className="flex justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-semibold flex items-center gap-2"><ActivityIcon kind="transfer"/>{c("Transfers", "Pindahan")}</h2>
           <p className="text-sm text-subtle">
@@ -100,7 +100,7 @@ export function Transfers() {
             )}
           </p>
         </div>
-        <Button onClick={() => begin()} disabled={accounts.isPending}>
+        <Button className="shrink-0 whitespace-nowrap" onClick={() => begin()} disabled={accounts.isPending}>
           {c("New transfer", "Pindahan baharu")}
         </Button>
       </div>

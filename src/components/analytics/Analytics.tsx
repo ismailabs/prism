@@ -135,7 +135,7 @@ export function Analytics({
                   >
                     <span>{t(item.label)}</span>
                     <strong>
-                      <MoneyText text={money(item.value)} />
+                      <MoneyText fit text={money(item.value)} />
                     </strong>
                     {period.comparison !== false && <small>
                       {t("previousPeriod")}: {money(item.previous)}

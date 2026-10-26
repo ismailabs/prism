@@ -19,11 +19,14 @@ export const rows: Record<string, unknown[]> = {
 };
 
 const baseline=structuredClone(rows);
-export async function mockSignedInApp(page: Page) {
+export async function mockSignedInApp(page: Page, initialSessionOnly = false) {
   for(const key of Object.keys(rows))rows[key]=structuredClone(baseline[key]);
-  await page.addInitScript(({ token, authUser, storageKey }) => {
-    localStorage.setItem(storageKey, JSON.stringify({ access_token:token, refresh_token:'fixture-refresh', expires_at:Math.floor(Date.now()/1000)+3600, expires_in:3600, token_type:'bearer', user:authUser }));
-  }, { token:accessToken, authUser:user, storageKey:authStorageKey });
+  await page.addInitScript(({ token, authUser, storageKey, seedOnce }) => {
+    if (!seedOnce || !sessionStorage.getItem('prism-fixture-session-seeded')) {
+      localStorage.setItem(storageKey, JSON.stringify({ access_token:token, refresh_token:'fixture-refresh', expires_at:Math.floor(Date.now()/1000)+3600, expires_in:3600, token_type:'bearer', user:authUser }));
+      sessionStorage.setItem('prism-fixture-session-seeded', 'true');
+    }
+  }, { token:accessToken, authUser:user, storageKey:authStorageKey, seedOnce:initialSessionOnly });
   await page.route(supabaseUrl+'/**', async route => handleSupabase(route));
   // HTTP routing does not intercept WebSockets. Keep synthetic Realtime local
   // instead of repeatedly attempting DNS/connections to the fixture hostname.

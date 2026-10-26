@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-14T16:27:47.843Z",
+  "issuedAt": "2026-10-14T16:27:44.767Z",
+  "environment": "STAGING-HOSTED",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "syntheticLabel": "C",
+  "lastObservedOTPSeconds": 3600,
+  "providerSettingChanged": false,
+  "earliestExpiryCheckUTC": "2026-10-14T17:28:44.767Z",
+  "publicSignupStatus": 200,
+  "errorCode": null,
+  "userCreated": true,
+  "sessionIssued": false,
+  "requestedUnsupportedRedirect": true,
+  "credentialsOrAddressPublished": false
+}

@@ -1,0 +1,482 @@
+{
+  "schemaVersion": 2,
+  "mission": "PRISM Autonomous Public Launch",
+  "checkedAtUTC": "2026-10-14T21:38:12.273Z",
+  "decision": "LAUNCH BLOCKED",
+  "checkpointScope": "Verified hosted application checkpoint before final harness/documentation publication. Subsequent exact head/CI/staging identity supersede in PR6 and ignored final-ledger.json; no future result predeclared.",
+  "repository": "https://github.com/ismailabs/prism",
+  "originalPR": "https://github.com/ismailabs/prism/pull/5",
+  "originalPRSHA": "345d26caa904c088c76f5c40c4435f6509260ffc",
+  "candidatePR": "https://github.com/ismailabs/prism/pull/6",
+  "branch": "codex/public-launch-20261014",
+  "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+  "candidateUpdateUncommitted": true,
+  "worktree": "C:/Users/moham/.codex/worktrees/5e1d/prism-finance-baseline",
+  "production": {
+    "url": "https://prism.ismailstudio.my/",
+    "lastKnownMainSHA": "d1438197a33d179cedd6c54bad3bfcf9a06db31f",
+    "lastKnownDeployment": "dpl_7ybY6ao53z2BG6yhhyrDpKX7CGNk",
+    "providerReceiptDateUTC": "2026-10-14",
+    "freshProductionAccess": false,
+    "reason": "Owner restricts production access during integration continuation",
+    "continuationChanges": [],
+    "customerRowsAccessed": false,
+    "financialExported": false,
+    "syntheticProductionWrites": false,
+    "autoAssignCustomDomainsLastObserved": false,
+    "gitDeploymentsDisabled": true
+  },
+  "staging": {
+    "supabaseProject": "zwqcdfzfsudqccclficx",
+    "name": "prism-staging",
+    "organization": "zwgtqvqlmcwbjssyoysv",
+    "health": "ACTIVE_HEALTHY",
+    "lastObservedDateUTC": "2026-10-14T21:35:46.605Z",
+    "apiURL": "https://zwqcdfzfsudqccclficx.supabase.co",
+    "vercelProject": "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe",
+    "url": "https://prism-staging-acceptance-ismailstudio.vercel.app/",
+    "initialDatabaseEmpty": true,
+    "customerDataImported": false,
+    "syntheticOnly": true,
+    "serviceRoleUserProof": false,
+    "canonicalMigrationCount": 18,
+    "plan": "Free",
+    "productionEnvironmentVariables": 0,
+    "protected": true,
+    "developmentOIDCAdmission": "withdrawn; do not restore defaults",
+    "deploymentId": "dpl_EvDB2x8MjzHpdcYXeKHRv9DPgyeK",
+    "immutableURL": "https://prism-staging-ofratclmt-ismailstudio.vercel.app/"
+  },
+  "owner": {
+    "breachProtection": "Keep release blocked for breach protection",
+    "humanObservations": "UNPROVIDED",
+    "operatorAcceptance": "UNPROVIDED",
+    "recoveryTargets": "PROVISIONAL, NOT APPROVED"
+  },
+  "gates": [
+    {
+      "id": "G01",
+      "status": "PASS",
+      "environment": "GITHUB/LOCAL",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/github-readiness-f42.json"
+      ],
+      "observedOutcome": "Latest PR5 ancestor and f42 remote candidate verified; main unprotected, no effective rules or required review submissions.",
+      "remainingAction": "Recheck subsequent final immutable head/source/rules/reviews.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "G02",
+      "status": "BLOCKED",
+      "environment": "DATED-PRODUCTION/LOCAL",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-deployment-playbook.md"
+      ],
+      "observedOutcome": "Dated freeze proof retained; current owner prohibits production provider access. No continuation production action.",
+      "remainingAction": "Permitted fresh effective production-safeguard verification before GO.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "G03",
+      "status": "PASS",
+      "environment": "GITHUB-CI/LOCAL-SUPABASE",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/f42-ci-artifact-review.json"
+      ],
+      "observedOutcome": "Four f42 jobs PASS; actual downloaded archives/digests and merge/candidate tree correspondence verified.",
+      "remainingAction": "Inspect all four subsequent exact-head jobs and actual artifacts.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "G04",
+      "status": "BLOCKED",
+      "environment": "STAGING/LOCAL",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-password-security-disposition.md"
+      ],
+      "observedOutcome": "Owner retained server breach protection, unavailable Free. Runtime audit zero; five inherited build-tool findings documented. Staging incident admission contained.",
+      "remainingAction": "Genuine required protection within authorized cost; no waiver/purchase, keep development trust withdrawn.",
+      "responsibleHumanDecision": "Owner: keep release blocked for breach protection"
+    },
+    {
+      "id": "G05",
+      "status": "PASS",
+      "environment": "STAGING-HOSTED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/staging-project-health-final.json"
+      ],
+      "observedOutcome": "Empty-start stage,18 reviewed migrations, scoped client/env/key, no customer imports, protected READY f42 artifact; health independently verified.",
+      "remainingAction": "Bind final subsequent stage-only artifact and unchanged source/assets.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "G06",
+      "status": "BLOCKED",
+      "environment": "STAGING-HOSTED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/staging-expired-confirmation-acceptance.json"
+      ],
+      "observedOutcome": "Real inbox/timely B PKCE/reuse, recovery5, expiry4, MFA/refresh/revocation and password denials PASS. Google/CAPTCHA not accepted; transport parity unclaimed.",
+      "remainingAction": "Private provider setup and genuine challenge/consent success/denials; supported mail parity.",
+      "responsibleHumanDecision": "Private provider/account or actual owner/operator evidence required; no fabricated approval"
+    },
+    {
+      "id": "G07",
+      "status": "PASS",
+      "environment": "STAGING-HOSTED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/hosted-backend-finance.json"
+      ],
+      "observedOutcome": "Ordinary A/B concrete CRUD/RPC denial across25 tables/19 views and reviewed catalog PASS. Guarded financial/Auth/migration source unchanged.",
+      "remainingAction": "Refresh affected checks only if source/configuration changes.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "G08",
+      "status": "BLOCKED",
+      "environment": "STAGING-HOSTED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/hosted-pwa-native-transport-blocker.json"
+      ],
+      "observedOutcome": "Public37 and declared non-PWA workspace75 PASS,89 zero-violation scans/228 widths. Native PWA blocked by preview protection; prior relay-cookie observations superseded.",
+      "remainingAction": "Supported isolated protected host with credentialless public manifest; actual native PWA/cache/offline/restart acceptance.",
+      "responsibleHumanDecision": "Private provider/account or actual owner/operator evidence required; no fabricated approval"
+    },
+    {
+      "id": "G09",
+      "status": "BLOCKED",
+      "environment": "HUMAN-PENDING",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-owner-acceptance.md"
+      ],
+      "observedOutcome": "No actual physical Windows/Android/iPhone, screen-reader or Malay-reviewer observations.",
+      "remainingAction": "Actual dated owner form W1-W4/A1/I1/M1/P1; repair/retest failures.",
+      "responsibleHumanDecision": "Private provider/account or actual owner/operator evidence required; no fabricated approval"
+    },
+    {
+      "id": "G10",
+      "status": "BLOCKED",
+      "environment": "HUMAN-PENDING/STAGING",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/staging-account-deletion-readback.json"
+      ],
+      "observedOutcome": "Objective policy/deletion consistency and ordinary signup/deletion verified; owner/contact/retention/support/provider-use acceptance absent.",
+      "remainingAction": "Truthful O1-O3 contact, privacy, retention, incident and commercial-provider eligibility records.",
+      "responsibleHumanDecision": "Private provider/account or actual owner/operator evidence required; no fabricated approval"
+    },
+    {
+      "id": "G11",
+      "status": "BLOCKED",
+      "environment": "LOCAL-ENCRYPTED-METADATA/DATED-PRODUCTION",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch/evidence/recovery-metadata-review.json"
+      ],
+      "observedOutcome": "40 historical hashes and declared-key signature valid; old point/config drift, current frequency/custody/permissions UNKNOWN, targets unapproved.",
+      "remainingAction": "Current non-secret R1-R3 evidence; feasibility before target approval.",
+      "responsibleHumanDecision": "Private provider/account or actual owner/operator evidence required; no fabricated approval"
+    },
+    {
+      "id": "G12",
+      "status": "BLOCKED",
+      "environment": "STAGING/PROVIDER",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-password-security-disposition.md"
+      ],
+      "observedOutcome": "Mandatory breach protection and actual configured public-signup integrations unsatisfied.",
+      "remainingAction": "Meet retained security criteria without purchase, bypass or invented equivalent.",
+      "responsibleHumanDecision": "Owner: keep release blocked for breach protection"
+    },
+    {
+      "id": "G13",
+      "status": "BLOCKED",
+      "environment": "MISSION",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-owner-decisions.md"
+      ],
+      "observedOutcome": "All mandatory gates are not PASS; production merge/build/promotion unauthorized.",
+      "remainingAction": "Every pre-release gate PASS with current scope/provider control and final GO evidence.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "L01",
+      "status": "BLOCKED",
+      "environment": "PRODUCTION-NOT-RELEASED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-deployment-playbook.md"
+      ],
+      "observedOutcome": "Candidate not released; no candidate public smoke or monitoring.",
+      "remainingAction": "After full GO only: actual canonical artifact, minimal synthetic smoke and bounded monitoring/recovery.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "L02",
+      "status": "BLOCKED",
+      "environment": "PRODUCTION-NOT-RELEASED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-deployment-playbook.md"
+      ],
+      "observedOutcome": "Candidate not released; no candidate public smoke or monitoring.",
+      "remainingAction": "After full GO only: actual canonical artifact, minimal synthetic smoke and bounded monitoring/recovery.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "L03",
+      "status": "BLOCKED",
+      "environment": "PRODUCTION-NOT-RELEASED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-deployment-playbook.md"
+      ],
+      "observedOutcome": "Candidate not released; no candidate public smoke or monitoring.",
+      "remainingAction": "After full GO only: actual canonical artifact, minimal synthetic smoke and bounded monitoring/recovery.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    },
+    {
+      "id": "L04",
+      "status": "BLOCKED",
+      "environment": "PRODUCTION-NOT-RELEASED",
+      "candidateSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+      "evidenceDateUTC": "2026-10-14T21:38:12.273Z",
+      "evidence": [
+        "docs/public-launch-deployment-playbook.md"
+      ],
+      "observedOutcome": "Candidate not released; no candidate public smoke or monitoring.",
+      "remainingAction": "After full GO only: actual canonical artifact, minimal synthetic smoke and bounded monitoring/recovery.",
+      "responsibleHumanDecision": "No routine repeat approval; verify actual scope and external controls"
+    }
+  ],
+  "publishedReceiptIntegrity": [
+    {
+      "path": "docs/public-launch/evidence/ci-contrast-first-failure.json",
+      "sha256": "a19e94b52fc75ceb11e977700c1b595b413b48018c622772227f1c7de349f729"
+    },
+    {
+      "path": "docs/public-launch/evidence/continuation-full-audit.json",
+      "sha256": "46ee59abad96c0ccef0e0838064a177f780588dfb52bd7d2b567f96ae4626230"
+    },
+    {
+      "path": "docs/public-launch/evidence/continuation-runtime-audit.json",
+      "sha256": "85c9dab7c11af55e76629c8ae785ba8b79443ed9387de660f659c9ba7a22ab5b"
+    },
+    {
+      "path": "docs/public-launch/evidence/continuation-unit-affected-retest.json",
+      "sha256": "ad8a1acff07be2fddb974acf8acd8b7776568ddb905b9615b9876634286a3765"
+    },
+    {
+      "path": "docs/public-launch/evidence/continuation-unit-final.json",
+      "sha256": "8dcabc22b89c87327724dd89e3f5080405d166a01857a3a700371cf11b856013"
+    },
+    {
+      "path": "docs/public-launch/evidence/continuation-unit-first-failure.json",
+      "sha256": "9dd390b9fe0ba32896fe6c5163794718fa863e71cd523c94e392664528b0385a"
+    },
+    {
+      "path": "docs/public-launch/evidence/contrast-repair-local-regression.json",
+      "sha256": "27acfc6652ddf801957872d366e4e480d7035d24ab5219021a7a1af015ffe639"
+    },
+    {
+      "path": "docs/public-launch/evidence/f42-ci-artifact-review.json",
+      "sha256": "737f72241d9956496c18997f1fa019aba4def06392db2c94f3dbde23174db0be"
+    },
+    {
+      "path": "docs/public-launch/evidence/github-readiness-f42.json",
+      "sha256": "8977a984e23973a63f118447c31eb15c50f0e80c87acae474c8077727f36e4a4"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-backend-finance-oracle.json",
+      "sha256": "d4d7447beb2bcca30f4a1893a6e69825be563c999ab65a178ecf17b39ca73277"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-backend-finance.json",
+      "sha256": "9434cde4572e8f12964b86860690434223b591053e1590752e6cfd99f069fcdc"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-backend-security.json",
+      "sha256": "8d58e860ece0ed3ad5a85f37d3e92a2ec391e087085ac0c70f0be18e6f67cc98"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-public-browser-acceptance.json",
+      "sha256": "af552ef5129d7e2f9b4ac3119a2c17565c305b274b9123fb0d79f170f5659283"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-public-close-first-failure.json",
+      "sha256": "3ba87c799f544e4c911f0a7e47e7b8d7a8f47d67d19e5b756ccb4666a7fad750"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-public-f42-final.json",
+      "sha256": "bf0fbbed715817aef9d4bc9653c80de615d312ab8021eb2d441355e869ac0128"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-public-redirect-first-failure.json",
+      "sha256": "13a060b21475b37ff24efe4f9a1b698d21955fdb4c8d42a3a1bfc37847003d85"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-pwa-native-transport-blocker.json",
+      "sha256": "37369e75fa788e7ab8846efa14eda624319854d520412ffec91e944a0d2d4857"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-workspace-54cc9b2d.json",
+      "sha256": "03f9c5cc2764f4bc4cc84ce420ac06abb5bc5e5795e09df0191f5bd0cb7dcf41"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-workspace-context-generation-first-failure.json",
+      "sha256": "9bb95c296afb48cdcdd31c3446d8422ed90607a47e1fa23ffb34c33b39dc6dbe"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-workspace-controller-first-failure.json",
+      "sha256": "e3d87ec9a865458767a6a396a8cf9728b20bda5f22e79d25d8550fe623de4f9b"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-workspace-f42-non-pwa.json",
+      "sha256": "4563998b147c10cc3ef10292fb6a7a002c2d489ca53f514de58bd030b46edc96"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-workspace-focused-teardown-retest.json",
+      "sha256": "58bbec7a1ccb3bdda5902a6f5e030650432f79f9b276b5b0deadabe254957581"
+    },
+    {
+      "path": "docs/public-launch/evidence/hosted-workspace-functional-pass-teardown-failure.json",
+      "sha256": "2ec8b69f395c47fc642296c1e4cdf199f97d7be4a404e3f82f7e1e4e081bcc26"
+    },
+    {
+      "path": "docs/public-launch/evidence/mobile-signout-local-regression.json",
+      "sha256": "1d6f07af4bd7a2f7cd1184dec7c863b27b5aeb24fe19208eaccbc938a7a33629"
+    },
+    {
+      "path": "docs/public-launch/evidence/recovery-metadata-review.json",
+      "sha256": "23da52483f7adadf767e74fae1db867f34faf561e64b079fc459c8137a20a221"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-account-deletion-readback.json",
+      "sha256": "cfac05bf352c35b98503fe894053d62418b02cd04cfc24ff4503c9f14d1a9b59"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-confirmation-b-acceptance.json",
+      "sha256": "2a7eaaa858ef2f7d60edd7f17d9e14207df8b1159ed19bcdd5e872b5bb035a8e"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-expired-confirmation-acceptance.json",
+      "sha256": "793def3d0f8438fd14f6cb760a7e274d1f4cd671e52b777aa0accda3f325a9aa"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-expiry-preflight.json",
+      "sha256": "f4164c665c3118f6253246aac6e7ad39c3e40209d69c4817ed8c98d1b8203910"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-expiry-quota-failure.json",
+      "sha256": "c5e05d6aa6d7a2d5b70ac24a2618ddcc1fab024c79c6611e0ea6226c4dd7fcc4"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-expiry-request.json",
+      "sha256": "a9be086d8ef2d1bac9c1d91d19506f858d2c3da5d0d13a167fd136fd99dea5c1"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-password-denials.json",
+      "sha256": "4ca4cd7e853729cdb1d06d089434a6dacfaae581314cb347489c801ee85aa542"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-preview-credential-containment.json",
+      "sha256": "95d0792f71a5b7f9ee8f7fd08e51e211613e60a6dd0af9d806f0f57a0ac5cdb2"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-project-final-controls.json",
+      "sha256": "7cc1a4d65515b3c8bd5b18c1f135c61e82a06782e16778c5d4867e54b7e09621"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-project-health-final.json",
+      "sha256": "9bdcbaeed71cab5de8a0642208c5a13de1f363025ae7f95913beb8f4512fd385"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-public-form-signup-first-run.json",
+      "sha256": "443330048da6cf64d44bdabc99418bf40874701df70c6e50b5e4c3db5df03d71"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-public-lifecycle-normal-signin.json",
+      "sha256": "aacd4b6ef366157604864573fdd84f98af29b068a40f42b6d3ce420f401bab9b"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-recovery-acceptance.json",
+      "sha256": "375b8ee4b4c6e566a8d487e2215dd4436de7e9a63b762d977bbffdec59e54d3f"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-schema-receipt.json",
+      "sha256": "81a270f81fcb4d4c33eb0d166081ba65146ef93bf10b0d3a6713fe38ccef116e"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-turnstile-widget.json",
+      "sha256": "b35d253af98758862050971f6fa23f0eb4af082517361a0f0683b69cf7603f90"
+    },
+    {
+      "path": "docs/public-launch/evidence/staging-ui-interrupted-cleanup.json",
+      "sha256": "6c6942feaf5c0c8ddf05c0bb41d1588d09899679c281ce96d858715773e91546"
+    }
+  ],
+  "nextSafeAction": "Publish reviewed source/evidence nonforce to PR6; full final-head CI/artifact review; staging-only identity refresh and affected checks. Then exact blocked handoff if genuine external/human gates remain.",
+  "receiptHashBasis": "Exact indexed Git blob bytes; line-ending normalization included before publication",
+  "completedHosted": {
+    "applicationSHA": "f42a359cffcef91b688568dc936c11c367c2e3db",
+    "public": {
+      "checks": 37,
+      "axeScans": 20,
+      "widths": 100,
+      "status": "PASS",
+      "finishedAt": "2026-10-14T21:34:07.178Z",
+      "entryHash": "644825f17b4ab3ef890c034186d2f03b1af8eea0394e1b2637e8e2b273836c4b",
+      "publishedJavaScriptSHA256": "01b5652df1017b826116c6163095bc9200cdf7643a7980475d28be4559639b3f"
+    },
+    "workspace": {
+      "checks": 75,
+      "axeScans": 69,
+      "widths": 128,
+      "status": "PASS",
+      "declaredSubset": true,
+      "excluded": "Native hosted PWA",
+      "finishedAt": "2026-10-14T20:15:50.602Z",
+      "cleanup": true,
+      "observedResponses": 1119,
+      "latency": {
+        "median": 274.87,
+        "p95": 949.62
+      }
+    },
+    "financeGroups": 10,
+    "securityGroups": 4,
+    "recoveryChecks": 5,
+    "expiredConfirmationChecks": 4,
+    "serverWeakPasswordDenials": 3,
+    "nativeHostedPwa": "BLOCKED: credentialless protected-cache assets redirect; earlier relayed observations superseded",
+    "publicFormDAndOrdinaryDeletion": "PASS with separate erasure-readback limits",
+    "humanAndOperatorAcceptance": "UNPROVIDED"
+  }
+}

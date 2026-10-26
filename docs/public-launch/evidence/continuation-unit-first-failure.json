@@ -1,0 +1,18 @@
+{
+  "observedAtUTC": "2026-10-14T15:19:25Z",
+  "environment": "LOCAL-WINDOWS",
+  "candidateBaseSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "workingSourceChange": "Settings deletion/privacy text only",
+  "status": "FAIL",
+  "passed": 165,
+  "failed": 1,
+  "filesPassed": 20,
+  "filesFailed": 1,
+  "durationSeconds": 644.62,
+  "workersSpawned": 21,
+  "reportedStartupSecondsPerWorker": 8.76,
+  "failure": "ledger-boundary.test.ts historical microsecond cutoff/reconciliation case exceeded the unchanged 5000ms deadline",
+  "logicAssertionsReportedFailed": false,
+  "causeVerified": false,
+  "correctiveAction": "Run the unchanged affected test with one worker, then verify final-head full CI; do not raise deadlines or weaken financial assertions"
+}

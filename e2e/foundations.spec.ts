@@ -1,13 +1,21 @@
 import {expect,test} from '@playwright/test';
-import {mockSignedInApp,rows} from './fixtures';
+import {mockSignedInApp,rows,supabaseUrl,userId} from './fixtures';
+function exactSaved(page:Parameters<typeof mockSignedInApp>[0], amount:string) {
+ return page.waitForResponse(async response=>{
+  const url=new URL(response.url());
+  if(url.origin!==supabaseUrl||url.pathname!=='/rest/v1/exact_transactions'||response.status()!==200||url.searchParams.get('user_id')!==`eq.${userId}`||!url.searchParams.get('id')?.startsWith('eq.'))return false;
+  const saved=await response.json();return saved.amount===amount&&saved.user_id===userId;
+ });
+}
 test('ordinary transaction create and edit retain exact text through the typed repository',async({page})=>{
- await mockSignedInApp(page);await page.goto('/transactions');await page.getByRole('button',{name:'Add transaction',exact:true}).click();await page.getByLabel('Description',{exact:true}).fill('Exact ordinary activity');await page.getByLabel('Amount',{exact:true}).fill('90071992547409.93');await page.getByRole('dialog').getByRole('button',{name:'Add transaction',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);expect(rows.transactions.at(-1)).toMatchObject({amount:'90071992547409.93'});
- await page.getByRole('button',{name:'Actions: Exact ordinary activity'}).click();await page.getByRole('menuitem',{name:'Edit',exact:true}).click();await page.getByLabel('Amount',{exact:true}).fill('90071992547409.94');await page.getByRole('dialog').getByRole('button',{name:'Save changes',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);expect(rows.transactions.at(-1)).toMatchObject({amount:'90071992547409.94'});
+ await page.goto('/transactions');await page.getByRole('button',{name:'Add transaction',exact:true}).click();await page.getByLabel('Description',{exact:true}).fill('Exact ordinary activity');await page.getByLabel('Amount',{exact:true}).fill('90071992547409.93');await Promise.all([exactSaved(page,'90071992547409.93'),page.getByRole('dialog').getByRole('button',{name:'Add transaction',exact:true}).click()]);await expect(page.getByRole('dialog')).toHaveCount(0);expect(rows.transactions.at(-1)).toMatchObject({amount:'90071992547409.93'});
+ await page.getByRole('button',{name:'Actions: Exact ordinary activity'}).click();await page.getByRole('menuitem',{name:'Edit',exact:true}).click();await page.getByLabel('Amount',{exact:true}).fill('90071992547409.94');await Promise.all([exactSaved(page,'90071992547409.94'),page.getByRole('dialog').getByRole('button',{name:'Save changes',exact:true}).click()]);await expect(page.getByRole('dialog')).toHaveCount(0);expect(rows.transactions.at(-1)).toMatchObject({amount:'90071992547409.94'});
 });
 test('default reporting month follows the persisted timezone across the UTC month boundary',async({page})=>{
  await page.clock.setFixedTime(new Date('2026-10-01T00:30:00Z'));
  (rows.profiles[0] as Record<string,unknown>).financial_timezone='America/Los_Angeles';
- await page.goto('/');await expect(page.getByText('Tracked net flow')).toBeVisible();await expect(page.getByLabel('Month',{exact:true})).toHaveValue('2026-09');
+ // The report includes August as the comparison source for selected September.
+ await Promise.all([page.waitForResponse(response=>{const url=new URL(response.url());return url.origin===supabaseUrl&&url.pathname==='/rest/v1/finance_daily_totals'&&url.searchParams.get('user_id')===`eq.${userId}`&&url.searchParams.getAll('financial_date').includes('gte.2026-08-01')&&url.searchParams.getAll('financial_date').includes('lte.2026-09-30')&&response.status()===200;}),page.goto('/')]);await expect(page.getByText('Tracked net flow')).toBeVisible();await expect(page.getByLabel('Month',{exact:true})).toHaveValue('2026-09');
 });
 test.beforeEach(async({page})=>{await mockSignedInApp(page);});
 test('cross-currency transfer create/edit/delete uses one event and exact amounts',async({page})=>{

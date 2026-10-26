@@ -34,7 +34,7 @@ export const defaultPersonalization: Personalization = {
   chartAnimation: true,
   compactLegend: false,
   dateFormat: "locale",
-  dashboardOrder: [...dashboardModules],
+  dashboardOrder: ['cashFlow', 'spending', 'position', 'recent', 'pulse'],
   hiddenModules: [],
   showAccounts: true,
   showGoals: true,
@@ -43,7 +43,7 @@ export const defaultPersonalization: Personalization = {
 export function sanitizePersonalization(value: unknown): Personalization {
   const result = {
     ...defaultPersonalization,
-    dashboardOrder: [...dashboardModules],
+    dashboardOrder: [...defaultPersonalization.dashboardOrder],
     hiddenModules: [] as DashboardModule[],
   };
   if (!value || typeof value !== "object") return result;

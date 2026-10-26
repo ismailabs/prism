@@ -1,0 +1,155 @@
+{
+  "checkedAt": "2026-10-14 12:50:03 UTC",
+  "candidateSHA": "5e9d034cdd6bf516fc7bf335cf4fcbca7efae784",
+  "stagingRef": "zwqcdfzfsudqccclficx",
+  "stagingURL": "https://zwqcdfzfsudqccclficx.supabase.co",
+  "vercelStagingProjectId": "prj_nrfjV3bBN8WnVcGINUUZlLL4HuYe",
+  "originalSourceFilesPreserved": true,
+  "productionMigrationHistoryUnmodified": true,
+  "migrations": [
+    {
+      "source": "supabase/migrations/20260928000200_initial_finance_tracker.sql",
+      "sha256": "8b6edbafe0d0c8abf40f790c2bbbcf9e8333dcd05c1e600152fa8e04ca5d2dcf",
+      "receipt": {
+        "version": "20261014124713",
+        "name": "source_20260928000200_initial_finance_tracker"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260928031516_personal_finance_platform.sql",
+      "sha256": "694fe175c0d84ad19d843ef307dd7f383ddaf3ac21c66d810f814793aa9e215b",
+      "receipt": {
+        "version": "20261014124715",
+        "name": "source_20260928031516_personal_finance_platform"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260928032448_exact_money_validation.sql",
+      "sha256": "a1ae2e71a99e01c66bba5f5173ab2d028d4143b3bcc2d730dea1f6555b6ff520",
+      "receipt": {
+        "version": "20261014124717",
+        "name": "source_20260928032448_exact_money_validation"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260928043611_focused_crud_integrity.sql",
+      "sha256": "09d6ff559ec89ab610ac9afa8e9e53db6aa27ff42f8f6d4940ede4b11ba544e5",
+      "receipt": {
+        "version": "20261014124720",
+        "name": "source_20260928043611_focused_crud_integrity"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260928082016_harden_self_delete_rpc.sql",
+      "sha256": "a15abe93ca22d798ee36a21fce9b16e3b64cafce0c5135f94fee9914f4c00255",
+      "receipt": {
+        "version": "20261014124748",
+        "name": "source_20260928082016_harden_self_delete_rpc"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260930135217_financial_foundations.sql",
+      "sha256": "a17de5726e92918f98ee31e931003b56da367b59dc31e01a6b6100f6ff328a36",
+      "receipt": {
+        "version": "20261014124750",
+        "name": "source_20260930135217_financial_foundations"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260930135222_reporting_and_planning.sql",
+      "sha256": "2bc5c6bcad616b2947cd0af82b50b9f53d13618077e6490e0406283f1ee5db64",
+      "receipt": {
+        "version": "20261014124752",
+        "name": "source_20260930135222_reporting_and_planning"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260930135716_financial_relationship_indexes.sql",
+      "sha256": "2c6d7dafb39982e0f79308b7edfb007989b016068dfdb08e54c2ec51c8db7319",
+      "receipt": {
+        "version": "20261014124755",
+        "name": "source_20260930135716_financial_relationship_indexes"
+      }
+    },
+    {
+      "source": "supabase/migrations/20260930141104_canonical_financial_transport.sql",
+      "sha256": "12a7de302d5d2a790419d091a00aa9df8f526b5ce0cb70d31331cd49d65039e0",
+      "receipt": {
+        "version": "20261014124757",
+        "name": "source_20260930141104_canonical_financial_transport"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261001033902_analytics_drilldown_filters.sql",
+      "sha256": "7358956bf1c261e2b7035ad39848767611c98f184c5f0af2736f2bca64bdea4d",
+      "receipt": {
+        "version": "20261014124759",
+        "name": "source_20261001033902_analytics_drilldown_filters"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261001083346_period_analytics_preferences.sql",
+      "sha256": "93738e0efbdf892c60b1f1e59db237a16c0ff15142cdf0902248a9981ad28854",
+      "receipt": {
+        "version": "20261014124825",
+        "name": "source_20261001083346_period_analytics_preferences"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261001083350_present_financial_progress.sql",
+      "sha256": "2f96377f695550c63e1010df4a5e17b734cd463cf7648b1b7328f4fdab8c3d6a",
+      "receipt": {
+        "version": "20261014124827",
+        "name": "source_20261001083350_present_financial_progress"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261009162324_protect_debt_repayment_history.sql",
+      "sha256": "1876fd422284c7c69d60e41ca622d0a8b342ab7510c2d9bf4b888d607bb23513",
+      "receipt": {
+        "version": "20261014124828",
+        "name": "source_20261009162324_protect_debt_repayment_history"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261009220402_shadow_double_entry_ledger.sql",
+      "sha256": "0c89ad1de837cb7ed79f9a0c0042939e1faa05b7593a96b02a049720cab840fe",
+      "receipt": {
+        "version": "20261014124830",
+        "name": "source_20261009220402_shadow_double_entry_ledger"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261010021500_malaysia_profile_defaults.sql",
+      "sha256": "dea70b1077b4a50f704359a0ea30781a9b869ac453f2844369b504eeae8a7839",
+      "receipt": {
+        "version": "20261014124832",
+        "name": "source_20261010021500_malaysia_profile_defaults"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261010024257_phase4_planning.sql",
+      "sha256": "93719388a1eaa50caf0c6a221dfbbfced093e7993073290d99abec637fe92f0d",
+      "receipt": {
+        "version": "20261014124834",
+        "name": "source_20261010024257_phase4_planning"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261010062259_phase5_connected_actions.sql",
+      "sha256": "d09b8e535d491d0d9da6d699cf3c0d578cf6e49c16a82ed4945727f10e8214ee",
+      "receipt": {
+        "version": "20261014124836",
+        "name": "source_20261010062259_phase5_connected_actions"
+      }
+    },
+    {
+      "source": "supabase/migrations/20261013031257_enforce_hosted_transaction_currency_precision.sql",
+      "sha256": "539b86be8e6e1912cfe9251b290e3df32847254ed2bc312ff281ab4602d3fcb9",
+      "receipt": {
+        "version": "20261014124838",
+        "name": "source_20261013031257_enforce_hosted_transaction_currency_precision"
+      }
+    }
+  ]
+}

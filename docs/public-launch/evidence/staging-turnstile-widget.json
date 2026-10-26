@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "status": 200,
+  "name": "PRISM staging",
+  "domains": [
+    "prism-staging-acceptance-ismailstudio.vercel.app"
+  ],
+  "mode": "managed",
+  "clearance_level": "no_clearance",
+  "bot_fight_mode": false,
+  "ephemeral_id": false,
+  "offlabel": false,
+  "created_on": "2026-10-14T14:16:17.65528Z",
+  "modified_on": "2026-10-14T14:16:17.65528Z",
+  "secretReturned": false,
+  "checkedAt": "2026-10-14 14:19:19 UTC",
+  "environment": "STAGING-HOSTED",
+  "accountId": "44214a829e2337ca50cf40e4cd827cba",
+  "provider": "Cloudflare Turnstile Free",
+  "supabaseServerConfigured": false,
+  "realChallengeTested": false,
+  "productionChanged": false
+}

@@ -16,6 +16,7 @@ import { Modal } from "../ui/dialog";
 import { usePlatformText } from "./copy";
 import { Failure, ProgressBar, currencies, money, positive, useFinancialCopy } from "./shared";
 export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
+  const privateMode = useAppStore(s => s.personalization.privacyMode);
   const L = usePlatformText();
   const c = useFinancialCopy();
   const goalActions = useGoalActions();
@@ -238,7 +239,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                   className={`card selection-card block w-full p-5 text-left hover:border-primary ${selected === o.id ? "border-primary" : ""}`}
                   onClick={() => setSelected(o.id)}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="selection-summary">
                     <div>
                       <h2 className="font-semibold">{o.name}</h2>
                       <p className="mt-1 text-xs text-subtle">
@@ -254,7 +255,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                                 : L("Active")}
                       </p>
                     </div>
-                    <strong>{p.percent.toFixed(0)}%</strong>
+                    <strong>{privateMode ? '•••' : `${p.percent.toFixed(0)}%`}</strong>
                   </div>
                   <div className="mt-4">
                     <ProgressBar value={p.percent} />
@@ -313,7 +314,7 @@ export function ObjectivesPage({ kind }: { kind: ObjectiveKind }) {
                         {money(p.funded, current.currency)}
                       </strong>
                       <span className="text-sm text-subtle">
-                        {p.percent.toFixed(1)}%
+                        {privateMode ? '•••' : `${p.percent.toFixed(1)}%`}
                       </span>
                     </div>
                     <div className="mt-3">

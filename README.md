@@ -3,8 +3,11 @@
 PRISM is a personal finance tracker with accounts, transactions, transfers, goals, savings, debts, CSV import/export, category budgets, and explicitly recorded recurring activity. It supports English/Malay, password and Google sign-in, TOTP MFA, and password recovery.
 
 Current local stabilization: [Phase 1 evidence](docs/phase1-stabilization.md).
-The [Phase 02 shadow ledger](docs/phase2-accounting.md) remains local-only and
-unapplied remotely. Historical deployment reports below describe earlier releases.
+The [Phase 02 shadow ledger](docs/phase2-accounting.md) now has a private hosted
+inspection route. Read-only migration metadata verified on 13 October 2026 includes
+`20261013023346_shadow_double_entry_ledger`. It remains a partial shadow record;
+ordinary account balances and financial reports retain their existing authority.
+Historical deployment reports below describe earlier releases.
 
 ## Architecture
 
@@ -90,10 +93,12 @@ PRISM does not connect to banks, trade investments, provide AI advice, infer his
 
 ## Phase 02 local accounting foundation
 
-The additive double-entry ledger is local-only and remains a shadow foundation.
+The additive double-entry ledger remains a shadow foundation.
 Existing application balances and reports retain their legacy authority. New
 financial events post atomically with exact native money, durable request identity
-and immutable inverse corrections. The migration is unapplied remotely.
+and immutable inverse corrections. The current `/accounting` route reads the
+private hosted shadow ledger and offers a clearly separated synthetic example.
+This UI delivery changes no hosted migrations, posting logic or accounting authority.
 
 Run `npm run test:ledger-db`, `npm run ledger:dry-run`, and
 `npm run test:ledger-preview` for synthetic checks. `npm run ledger:preview`

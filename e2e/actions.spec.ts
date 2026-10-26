@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {mockSignedInApp,rows,userId} from './fixtures';
+import {mockSignedInApp,rows,userId,supabaseUrl} from './fixtures';
 import AxeBuilder from '@axe-core/playwright';
 test('goal cadence and distinct funding evidence remain planning only',async({page})=>{
  await mockSignedInApp(page);await page.goto('/goals');
@@ -107,7 +107,8 @@ test('private notes render plain text, search, tags, pin, archive and restore',a
 test('private note pagination and read errors preserve context without fabricating empty success',async({page})=>{
  await mockSignedInApp(page);
  for(let index=0;index<26;index++)rows.financial_notes.push({id:`note-${String(index).padStart(2,'0')}`,user_id:userId,title:`Context ${index}`,body:'Private planning',tags:[],pinned:false,archived:false,transaction_id:null,account_id:null,debt_id:null,objective_id:null,budget_id:null,reminder_id:null,period_month:null,created_at:'2026-10-10T00:00Z',updated_at:'2026-10-10T00:00Z'});
- await page.goto('/notes');await expect(page.getByRole('heading',{name:'Context 0',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Context 25',exact:true})).toHaveCount(0);
+ const loadedNotes=page.waitForResponse(async response=>{const url=new URL(response.url());if(url.origin!==supabaseUrl||url.pathname!=='/rest/v1/financial_notes'||url.searchParams.get('user_id')!==`eq.${userId}`||response.status()!==200)return false;const data=await response.json();return Array.isArray(data)&&data.some(row=>row.id==='note-00'&&row.user_id===userId);});
+ await Promise.all([loadedNotes,page.goto('/notes')]);await page.getByText('Loading notes…',{exact:true}).waitFor({state:'hidden'});await expect(page.getByRole('heading',{name:'Context 0',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Context 25',exact:true})).toHaveCount(0);
  await page.getByRole('navigation',{name:'Notes pagination',exact:true}).getByRole('button',{name:'Next',exact:true}).click();await expect(page.getByRole('heading',{name:'Context 25',exact:true})).toBeVisible();
  await page.route('**/rest/v1/financial_notes*',route=>route.fulfill({status:403,json:{message:'Synthetic note access denied',code:'42501'}}));
  const denied=page.waitForResponse(response=>response.url().includes('/rest/v1/financial_notes')&&response.status()===403);
@@ -118,7 +119,8 @@ test('private note pagination and read errors preserve context without fabricati
 test('calendar accepts a month whose financial-zone midnight is a DST gap',async({page})=>{
  await mockSignedInApp(page);rows.profiles[0]={...(rows.profiles[0] as object),financial_timezone:'Africa/Cairo'};
  rows.transactions.push({id:'cairo-tx',user_id:userId,description:'Cairo month boundary',amount:'1.00',currency:'MYR',type:'expense',category_id:null,payment_method_id:null,transaction_date:'2014-07-31T22:30:00Z',created_at:''});
- await page.goto('/calendar?month=2014-08');await expect(page.getByRole('heading',{name:'Cairo month boundary',exact:true})).toBeVisible();
+ const recorded=page.waitForResponse(async response=>{const url=new URL(response.url());if(url.origin!==supabaseUrl||url.pathname!=='/rest/v1/exact_transactions'||url.searchParams.get('user_id')!==`eq.${userId}`||!url.searchParams.has('transaction_date')||response.status()!==200)return false;const data=await response.json();return Array.isArray(data)&&data.some(row=>row.id==='cairo-tx'&&row.user_id===userId);});
+ await Promise.all([recorded,page.goto('/calendar?month=2014-08')]);await page.getByText('Loading timeline…',{exact:true}).waitFor({state:'hidden'});await expect(page.getByRole('heading',{name:'Cairo month boundary',exact:true})).toBeVisible();
  const posted=page.getByRole('listitem',{name:'Transaction · Posted',exact:true});
  await expect(posted).toContainText('1 Aug 2014');
  await expect(posted).not.toContainText('Unread');

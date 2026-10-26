@@ -213,15 +213,14 @@ test("analytics calculates comparison and supports income and uncategorized dril
   );
   await expect(page.locator(".analytics-metric").nth(1)).toContainText("-MYR");
   await expect(
-    page.locator(".analytics-metric.expense .money-group").first(),
+    page.locator(".analytics-metric.expense .money-token"),
   ).toHaveCSS("color", "rgb(180, 66, 66)");
   await expect(
-    page.locator(".analytics-metric.income .money-group").first(),
+    page.locator(".analytics-metric.income .money-token"),
   ).toHaveCSS("color", "rgb(8, 119, 95)");
   expect(
     await page
-      .locator(".analytics-metric.expense .money-group")
-      .first()
+      .locator(".analytics-metric.expense .money-token")
       .evaluate((element) => parseFloat(getComputedStyle(element).fontSize)),
   ).toBeGreaterThanOrEqual(16);
   await expect(page.locator(".analytics-metric").nth(1)).toContainText("40.00");
@@ -515,4 +514,36 @@ test("new surfaces, palette, and drawer pass WCAG AA accessibility scans", async
     .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
     .analyze();
   expect(drawer.violations).toEqual([]);
+});
+
+test('page labels retain WCAG AA contrast during entrance motion in both themes', async ({ page }) => {
+  await realistic(page);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  for (const [locale, theme] of [['en', 'light'], ['ms', 'dark']] as const) {
+    Object.assign(rows.profiles[0] as object, { language: locale, theme });
+    await page.goto('/transactions');
+    await expect(page.locator('html')).toHaveAttribute('lang', locale);
+    if (theme === 'dark') await expect(page.locator('html')).toHaveClass(/dark/);
+    else await expect(page.locator('html')).not.toHaveClass(/dark/);
+    await expect(page.locator('main h1')).toBeVisible();
+    for (const fraction of [0.25, 0.75]) {
+      const moving = await page.locator('.page-heading').evaluate((element, progress) => {
+        const heading = element as HTMLElement;
+        heading.style.animation = 'none';
+        void heading.offsetWidth;
+        heading.style.animation = '';
+        void heading.offsetWidth;
+        const animations = heading.getAnimations();
+        for (const animation of animations) {
+          animation.pause();
+          animation.currentTime = Number(animation.effect?.getTiming().duration) * progress;
+        }
+        return animations.length;
+      }, fraction);
+      expect(moving).toBeGreaterThan(0);
+      const result = await new AxeBuilder({ page }).include('.page-heading')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      expect(result.violations).toEqual([]);
+    }
+  }
 });
